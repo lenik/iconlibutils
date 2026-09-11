@@ -47,7 +47,10 @@ def run(args: argparse.Namespace) -> int:
 
     # Optional FAISS enrichment when indexes exist; otherwise keep semantics only.
     if pattern and is_plain_query(pattern):
-        has_faiss = any(find_faiss_dir(lib.path, lib.meta_path) for lib in ctx.libs)
+        has_faiss = any(
+            find_faiss_dir(lib.path, lib.meta_path, lib.faiss_index)
+            for lib in ctx.libs
+        )
         if has_faiss:
             try:
                 faiss_hits = query_libraries_faiss(

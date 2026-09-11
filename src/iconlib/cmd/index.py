@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 from ..faissidx import generate_faiss_index
+from ..paths import load_project_library
 from .context import Context
 
 
@@ -142,9 +143,12 @@ def register(sub: argparse._SubParsersAction) -> None:
     xp.add_argument(
         "-o",
         "--outdir",
-        default=".",
+        default=None,
         metavar="DIR",
-        help=_("output directory (default: .)"),
+        help=_(
+            "web preview output directory "
+            "(default: index/ with project library.iconlib, else .)"
+        ),
     )
     xp.add_argument(
         "--name",
@@ -204,10 +208,30 @@ def run(args: argparse.Namespace) -> int:
     if not do_web and not do_faiss:
         do_web = True
 
+    project = Path.cwd().resolve()
+    proj_lib = load_project_library(project)
+    # Packaging tree: ``iconlib index -F`` builds both web (index/) and FAISS (.).
+    if do_faiss and proj_lib is not None and not args.web:
+        do_web = True
+
     roots = [Path(p).expanduser() for p in (args.icons_roots or [])]
     name = args.index_name or ""
+    title = args.index_title or ""
+    license_ = args.index_license
+    homepage = args.index_homepage
     verbose = -1 if args.quiet else args.verbose
-    outdir = Path(args.outdir).expanduser()
+    icons_url_prefix = args.icons_url_prefix
+
+    if not roots and proj_lib is not None and proj_lib.icons_roots:
+        roots = [(project / rel).expanduser() for rel in proj_lib.icons_roots]
+        if not name:
+            name = proj_lib.name
+        if not title:
+            title = proj_lib.title or proj_lib.name
+        if license_ == "see-upstream" and proj_lib.license:
+            license_ = proj_lib.license
+        if homepage == "#" and proj_lib.homepage:
+            homepage = proj_lib.homepage
 
     if not roots:
         try:
@@ -221,23 +245,48 @@ def run(args: argparse.Namespace) -> int:
         roots = [lib.path for lib in ctx.libs]
         if not name and ctx.libs:
             name = ctx.libs[0].name
+            if not title:
+                title = ctx.libs[0].title or name
+            if license_ == "see-upstream" and ctx.libs[0].license:
+                license_ = ctx.libs[0].license
+            if homepage == "#" and ctx.libs[0].homepage:
+                homepage = ctx.libs[0].homepage
         verbose = ctx.verbose
 
     if not roots:
         print(
-            "iconlib: index requires -l LIBRARY and/or --icons-root DIR",
+            "iconlib: index requires -l LIBRARY, --icons-root DIR, "
+            "or library.iconlib with icons_root=",
             file=sys.stderr,
         )
         return 1
     if not name:
         name = roots[0].name
 
+    # Web → index/ in packaging trees; FAISS → package root (.).
+    if args.outdir is not None:
+        web_outdir = Path(args.outdir).expanduser()
+        faiss_outdir = web_outdir
+    elif proj_lib is not None:
+        web_outdir = project / "index"
+        faiss_outdir = project
+    else:
+        web_outdir = Path(".")
+        faiss_outdir = web_outdir
+
+    if icons_url_prefix == ".." and proj_lib is not None and len(roots) == 1:
+        try:
+            rel_root = roots[0].resolve().relative_to(project)
+            icons_url_prefix = f"../{rel_root.as_posix()}"
+        except ValueError:
+            pass
+
     if do_web:
         web_outs = [
-            outdir / "index.html",
-            outdir / "icons.json",
-            outdir / "style.css",
-            outdir / "app.js",
+            web_outdir / "index.html",
+            web_outdir / "icons.json",
+            web_outdir / "style.css",
+            web_outdir / "app.js",
         ]
         if not args.force and any(p.exists() for p in web_outs):
             print(
@@ -251,26 +300,26 @@ def run(args: argparse.Namespace) -> int:
         try:
             count = generate_index(
                 name=name,
-                title=args.index_title or name,
-                license_=args.index_license,
-                homepage=args.index_homepage,
-                outdir=outdir,
+                title=title or name,
+                license_=license_,
+                homepage=homepage,
+                outdir=web_outdir,
                 icons_roots=roots,
                 template=template,
-                icons_url_prefix=args.icons_url_prefix,
+                icons_url_prefix=icons_url_prefix,
                 max_icons=args.max_icons,
             )
         except (FileNotFoundError, ValueError) as e:
             print(f"iconlib: {e}", file=sys.stderr)
             return 1
         if verbose >= 0:
-            print(f"iconlib: wrote web preview for {name}: {count} icons → {outdir}")
+            print(f"iconlib: wrote web preview for {name}: {count} icons → {web_outdir}")
 
     if do_faiss:
         try:
             n = generate_faiss_index(
                 icons_roots=roots,
-                outdir=outdir,
+                outdir=faiss_outdir,
                 upscale=args.upscale,
                 force=args.force,
                 verbose=verbose,
@@ -279,6 +328,6 @@ def run(args: argparse.Namespace) -> int:
             print(f"iconlib: {e}", file=sys.stderr)
             return 1
         if verbose >= 0:
-            print(f"iconlib: wrote FAISS index for {n} icons → {outdir}")
+            print(f"iconlib: wrote FAISS index for {n} icons → {faiss_outdir}")
 
     return 0

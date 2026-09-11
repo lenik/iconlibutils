@@ -1,3 +1,11 @@
+iconlibutils (0.0.6) unstable; urgency=medium
+
+  * Project-tree index: read library.iconlib icons_root=/faiss_index=;
+    iconlib index -F writes index/ (web) and faiss.* at package root.
+  * Discover FAISS via faiss_index= metadata for natural-language search.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Sat, 12 Sep 2026 03:20:00 +0800
+
 iconlibutils (0.0.5) unstable; urgency=medium
 
   * Clarify FAISS CLIP dependency errors (torch vs transformers) with

@@ -31,6 +31,10 @@ class Library:
     license: str = ""
     homepage: str = ""
     description: str = ""
+    # Optional absolute dir containing faiss.index / faiss.map (packaging install).
+    faiss_index: Path | None = None
+    # Project-tree icon roots (relative paths from library.iconlib), pre-install.
+    icons_roots: tuple[str, ...] = ()
     meta_path: Path | None = field(default=None, compare=False)
 
 
@@ -65,6 +69,13 @@ def parse_library_conf(path: Path) -> dict[str, str]:
     return data
 
 
+def _split_roots(raw: str) -> tuple[str, ...]:
+    """Split comma-separated icons_root values; strip empties."""
+    if not raw:
+        return ()
+    return tuple(p.strip() for p in raw.split(",") if p.strip())
+
+
 def library_from_data(
     data: dict[str, str],
     *,
@@ -76,6 +87,11 @@ def library_from_data(
     if not lib_path:
         lib_path = str(default_icon_datadir(name))
     typ = data.get("type") or "auto"
+    faiss_raw = data.get("faiss_index") or data.get("faiss") or ""
+    faiss_index = Path(faiss_raw).expanduser() if faiss_raw else None
+    roots = _split_roots(
+        data.get("icons_root") or data.get("icons_roots") or ""
+    )
     return Library(
         type=typ,
         name=name,
@@ -84,8 +100,19 @@ def library_from_data(
         license=data.get("license") or "",
         homepage=data.get("homepage") or "",
         description=data.get("description") or "",
+        faiss_index=faiss_index,
+        icons_roots=roots,
         meta_path=meta_path,
     )
+
+
+def load_project_library(start: Path | None = None) -> Library | None:
+    """Load ``library.iconlib`` from *start* (default cwd) if present."""
+    cur = (start or Path.cwd()).resolve()
+    meta = cur / "library.iconlib"
+    if not meta.is_file():
+        return None
+    return library_from_meta_file(meta)
 
 
 def library_from_meta_file(meta_file: Path) -> Library | None:

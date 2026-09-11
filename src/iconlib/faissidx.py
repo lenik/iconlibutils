@@ -424,9 +424,16 @@ def generate_faiss_index(
     return len(paths)
 
 
-def find_faiss_dir(lib_path: Path, meta_path: Path | None = None) -> Path | None:
+def find_faiss_dir(
+    lib_path: Path,
+    meta_path: Path | None = None,
+    faiss_index: Path | None = None,
+) -> Path | None:
     """Locate a directory containing faiss.index + faiss.map for a library."""
-    candidates: list[Path] = [lib_path, lib_path / "preview"]
+    candidates: list[Path] = []
+    if faiss_index is not None:
+        candidates.append(Path(faiss_index))
+    candidates.extend([lib_path, lib_path / "preview", lib_path / "index"])
     if meta_path is not None:
         # meta_path is normally a drop-in file; FAISS lives beside icons, not meta.
         if meta_path.is_dir():
@@ -522,7 +529,7 @@ def query_libraries_faiss(
     plain_libs = [lib for lib in libs if isinstance(lib, Library)]
     indexed: list[tuple] = []
     for lib in plain_libs:
-        d = find_faiss_dir(lib.path, lib.meta_path)
+        d = find_faiss_dir(lib.path, lib.meta_path, lib.faiss_index)
         if d is not None:
             indexed.append((lib, d))
     if not indexed:
