@@ -1,9 +1,9 @@
-iconlibutils (0.0.4) UNRELEASED; urgency=medium
+iconlibutils (0.0.4) unstable; urgency=medium
 
   * Resolve CLIP model path via Hugging Face hub cache/API instead of
     hardcoded ~/models.
 
- -- Lenik (谢继雷) <lenik@bodz.net>  Sat, 12 Sep 2026 02:43:13 +0800
+ -- Lenik (谢继雷) <lenik@bodz.net>  Sat, 12 Sep 2026 02:48:00 +0800
 
 iconlibutils (0.0.3) unstable; urgency=medium
 
