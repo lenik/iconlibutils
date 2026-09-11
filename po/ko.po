@@ -1,0 +1,80 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: iconlib\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"Language: ko\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/iconlib.c:32
+msgid ""
+"Usage: iconlib [OPTION]... [FILE]...\n"
+"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
+"read standard input.\n"
+msgstr ""
+"사용법: iconlib [OPTION]... [FILE]...\n"
+"FILE 내용을 이어서 표준 출력으로 보냅니다. FILE이 없거나 FILE이 - 이면,\n"
+"표준 입력을 읽습니다.\n"
+
+#: src/iconlib.c:38
+msgid "repeat for more verbose loggings\n"
+msgstr "더 자세한 로그를 보려면 반복 지정\n"
+
+#: src/iconlib.c:40
+msgid "show less logging messages\n"
+msgstr "로그 메시지를 더 적게 표시\n"
+
+#: src/iconlib.c:42
+msgid "display this help and exit\n"
+msgstr "도움말을 표시하고 종료\n"
+
+#: src/iconlib.c:44
+msgid "output version information and exit\n"
+msgstr "버전 정보를 표시하고 종료\n"
+
+#: src/iconlib.c:46
+#, fuzzy, c-format
+msgid "Report bugs to: <%s>\n"
+msgstr "버그 제보: <%s>\n"
+
+#: src/iconlib.c:54
+#, c-format
+msgid "hello, world!\n"
+msgstr ""
+
+#: src/iconlib.c:81
+#, fuzzy, c-format
+msgid "Copyright (C) %d %s\n"
+msgstr "저작권 (C) %d %s\n"
+
+#: src/iconlib.c:82
+msgid ""
+"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr ""
+"라이선스 AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.c:84
+msgid "This is free software: you are free to change and redistribute it.\n"
+msgstr "이것은 자유 소프트웨어이며 자유롭게 수정 및 재배포할 수 있습니다.\n"
+
+#: src/iconlib.c:86
+msgid "This project opposes AI exploitation and AI hegemony.\n"
+msgstr "이 프로젝트는 AI 착취와 AI 패권에 반대합니다.\n"
+
+#: src/iconlib.c:87
+msgid ""
+"This project rejects mindless MIT-style licensing and politically naive BSD-"
+"style licensing.\n"
+msgstr ""
+"이 프로젝트는 무비판적 MIT식 라이선스와 정치적으로 어리석은 BSD식 라이선스를 "
+"거부합니다.\n"
+
+#: src/iconlib.c:90
+msgid "There is NO WARRANTY, to the extent permitted by law.\n"
+msgstr "법이 허용하는 한 어떠한 보증도 없습니다.\n"
+
+#: src/lib.c:49
+#, c-format
+msgid "%s: write error\n"
+msgstr ""

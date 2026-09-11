@@ -1,0 +1,26 @@
+# Example remote build hosts for packaging/win32 (copy, do not commit secrets).
+#
+# Lookup:
+#   <project>/.config/iconlibutils/mingw.build-host
+#   <project>/.config/iconlibutils/innosetup.build-host
+#   <project>/.config/iconlibutils/wix.build-host
+#   <project>/.config/iconlibutils/win32.build-host
+#   $HOME/.config/iconlibutils/<same>
+#
+# Multiple stanzas (blank-line separated) are ssh ProxyJump hops.
+# Only the last host's build_dir / shell is used for the build.
+# innosetup / wix default shell=powershell when omitted.
+
+# name: bastion
+# host: jump.example.com:22
+# user: ops
+# identity: ~/.ssh/id_ed25519
+
+# name: winbuild
+# host: 10.0.0.8
+# user: builder
+# shell: powershell
+# # shell: cmd
+# identity: ~/.ssh/winbuild
+# build_dir: C:/build/iconlibutils
+# preserved: true

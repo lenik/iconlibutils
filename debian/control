@@ -1,0 +1,18 @@
+Source: iconlibutils
+Section: utils
+Priority: optional
+Maintainer: Lenik <iconlibutils@bodz.net>
+Build-Depends: debhelper-compat (= 13), meson, ninja-build, python3, gettext, asciidoctor
+Standards-Version: 4.6.0
+Homepage: https://github.com/lenik/iconlibutils
+Rules-Requires-Root: no
+
+Package: iconlibutils
+Architecture: any
+Depends: 
+    python3, 
+    ${misc:Depends}
+Description: Meson-based CLI project template with example app
+ iconlibutils is a template repository for small Python command-line utilities.
+ It currently ships the iconlib example application and Debian packaging
+ metadata, and includes Python unittest integration.
