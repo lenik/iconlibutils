@@ -91,7 +91,7 @@ nom, chemin d'exemple et formats.
 
 Pour un mot anglais simple (ni glob ni */regex*), la correspondance est
 enrichie avec les flexions singulier/pluriel et les synonymes/sens proches
-WordNet via *python3-pattern* (par exemple, chercher *cat* peut aussi trouver
+WordNet via *python3-inflect + wordnet-base* (par exemple, chercher *cat* peut aussi trouver
 *kitty*).
 Les motifs glob, regex et vides conservent une correspondance litterale.
 

@@ -90,7 +90,7 @@ ruta de ejemplo y formatos.
 
 Para una palabra inglesa simple (ni glob ni */regex*), la coincidencia se
 enriquece con inflexiones singular/plural y sinonimos/sentidos relacionados de
-WordNet mediante *python3-pattern* (por ejemplo, buscar *cat* tambien puede
+WordNet mediante *python3-inflect + wordnet-base* (por ejemplo, buscar *cat* tambien puede
 encontrar *kitty*).
 Los patrones glob, regex y vacios mantienen la coincidencia literal.
 

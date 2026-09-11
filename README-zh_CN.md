@@ -32,7 +32,7 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 
 - `search [-l/--long | -1/--names] [pattern]` — 列出匹配图标（按 score
   降序；`--long` 含 score）。普通英文词会做单复数与 WordNet 同义词联想
- （依赖 `python3-pattern`，例如 `cat` → `kitty`）。
+ （依赖 `python3-inflect` + `wordnet-base`，例如 `cat` → `kitty`）。
 - `which [-a] <name>` — 打印首选路径（`-a` 打印全部）
 - `info <name>` — 格式、尺寸、变体与路径
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — 复制到项目

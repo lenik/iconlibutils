@@ -17,5 +17,9 @@ iconlibutils (0.0.1) unstable; urgency=medium
     noarch.
   * Rename commons.py to ilcommon.py; install localized man pages.
   * Add gettext and L1 man translations; Architecture all.
+  * Raise meson unit-test timeout for Pattern/WordNet cold start under
+    debuild.
+  * Use offline wordnet-base + python3-inflect for search (avoid pattern
+    hang in debuild).
 
  -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 17:21:59 +0800

@@ -90,7 +90,7 @@ Formate ausgeben.
 
 Bei einem einfachen englischen Wort (kein Glob und kein */regex*) wird der
 Abgleich um Singular-/Pluralflexionen und WordNet-Synonyme/verwandte Sinne ueber
-*python3-pattern* erweitert (beispielsweise kann die Suche nach *cat* auch
+*python3-inflect + wordnet-base* erweitert (beispielsweise kann die Suche nach *cat* auch
 *kitty* finden).
 Glob-, Regex- und leere Muster behalten den woertlichen Abgleich.
 

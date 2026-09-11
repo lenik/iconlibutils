@@ -32,8 +32,8 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 
 - `search [-l/--long | -1/--names] [pattern]` — list matching icons (score
   descending; `--long` includes score). Plain English queries expand
-  singular/plural and WordNet synonyms via `python3-pattern` (e.g. `cat` →
-  `kitty`).
+  singular/plural and WordNet synonyms via `python3-inflect` + `wordnet-base`
+  (e.g. `cat` → `kitty`).
 - `which [-a] <name>` — print preferred path (or all with `-a`)
 - `info <name>` — formats, sizes, variants, paths
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — copy into the project

@@ -53,6 +53,13 @@ iconlib_exe = custom_target(
     install_dir: bindir,
 )
 
+# Alias used by per-library launcher shortcuts (e.g. /usr/bin/heroicons)
+install_symlink(
+    'iconlibutils',
+    pointing_to: 'iconlib',
+    install_dir: bindir,
+)
+
 findicon_exe = custom_target(
     'findicon',
     input: 'src/findicon.py',
@@ -186,6 +193,7 @@ test(
         'PYTHONPATH=' + (meson.project_source_root() / 'src'),
         'ICONLIBUTILS_LOCALEDIR=' + (meson.project_build_root() / 'po'),
     ],
+    timeout: 180,
 )
 
 run_target(

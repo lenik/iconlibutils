@@ -11,12 +11,14 @@ Package: iconlibutils
 Architecture: all
 Depends:
     python3,
-    python3-pattern,
+    python3-inflect,
+    wordnet-base,
     ${misc:Depends}
 Suggests: themestylebrowser
 Description: search and manage icons from installed icon libraries
  iconlibutils provides the iconlib command to search, inspect, pull, and
  browse icons from libraries such as tabler-icons, streamline-vectors, and
  heroicons. Library search paths are configured in /etc/iconlibutils/path
- and ~/.config/iconlibutils/path. Plain-English search uses Pattern/WordNet
- for inflection and synonym expansion, ranked by score.
+ and ~/.config/iconlibutils/path. Plain-English search uses offline WordNet
+ (wordnet-base) and python3-inflect for inflection and synonym expansion,
+ ranked by score.

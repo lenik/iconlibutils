@@ -25,15 +25,17 @@ BuildRequires:  gettext
 BuildRequires:  asciidoctor
 
 Requires:       python3
-Requires:       python3-pattern
+Requires:       python3-inflect
+Requires:       wordnet-base
 Suggests:       themestylebrowser
 
 %description
 iconlibutils provides the iconlib command to search, inspect, pull, and
 browse icons from libraries such as tabler-icons, streamline-vectors, and
 heroicons. Library search paths are configured in /etc/iconlibutils/path
-and ~/.config/iconlibutils/path. Plain-English search uses Pattern/WordNet
-for inflection and synonym expansion, ranked by score.
+and ~/.config/iconlibutils/path. Plain-English search uses offline WordNet
+(wordnet-base) and python3-inflect for inflection and synonym expansion,
+ranked by score.
 
 %prep
 %setup -q -n %{name}-%{srcversion}
@@ -54,6 +56,7 @@ meson install -C build --destdir=%{buildroot}
 
 %files
 %{_bindir}/iconlib
+%{_bindir}/iconlibutils
 %{_bindir}/findicon
 %{_bindir}/ilcommon.py
 %{_bindir}/paths.py

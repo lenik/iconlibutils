@@ -4,13 +4,23 @@ set -e
 # Known icon libraries from /home/cursor/icon packaging trees.
 # NAME|SHARE_DIR  (SHARE_DIR relative to /usr/share)
 KNOWN_LIBS='
+bootstrap-icons|bootstrap-icons
+css-gg|css-gg
+eva-icons|eva-icons
+feather|feather
 flowbite|flowbite-icons
 heroicons|heroicons
 iconify|iconify
+iconoir|iconoir
+ionicons|ionicons
 lucide|lucide
 materialdesignicons|materialdesignicons
+octicons|octicons
 openmoji|openmoji
 phosphor-icons|phosphor-icons
+radix-icons|radix-icons
+remixicon|remixicon
+simple-icons|simple-icons
 streamline-vectors|streamline-vectors
 tabler-icons|tabler-icons
 '

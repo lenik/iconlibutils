@@ -234,10 +234,9 @@ class SemanticTests(unittest.TestCase):
             scores = {g.name: s for s, g in ranked}
             self.assertGreater(scores["cat"], scores.get("dog", 0))
             self.assertNotIn("chess-queen", names)
-            try:
-                import pattern.en  # noqa: F401
-            except ImportError:
-                self.skipTest("python3-pattern not available")
+            from pathlib import Path as _P
+            if not (_P("/usr/share/wordnet/index.noun").is_file()):
+                self.skipTest("wordnet-base not available")
             self.assertIn("kitty", names)
             self.assertGreater(scores["kitty"], 45.0)
 

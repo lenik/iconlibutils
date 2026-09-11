@@ -86,7 +86,7 @@ _pattern_ に一致するアイコンを関連度スコアの高い順に一覧�
 *--long* ではタブ区切りで *score*、ライブラリ、名前、サンプルパス、形式を
 表示します。
 
-通常の英語単語（glob でも */regex* でもない）では、*python3-pattern* 経由で
+通常の英語単語（glob でも */regex* でもない）では、*python3-inflect + wordnet-base* 経由で
 単複の屈折と WordNet の同義語／関連義が照合に加わります（例: *cat* の検索で
 *kitty* も出ることがあります）。
 glob、regex、空のパターンは文字どおりの照合のままです。

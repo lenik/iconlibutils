@@ -84,8 +84,9 @@ With *--long*, print tab-separated *score*, library, name, sample path, and
 formats.
 
 For a plain English word (not a glob or */regex*), matching is enhanced with
-singular/plural inflection and WordNet synonyms/related senses via
-*python3-pattern* (for example, searching *cat* can also surface *kitty*).
+singular/plural inflection (*python3-inflect*) and offline WordNet
+(*wordnet-base*) synonyms/related senses (for example, searching *cat* can
+also surface *kitty*).
 Glob, regex, and empty patterns keep literal matching.
 
 === which

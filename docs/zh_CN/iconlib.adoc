@@ -79,7 +79,7 @@ iconlib - 从已安装的图标库搜索和管理图标
 默认只输出名称。
 使用 *--long* 时，以制表符分隔输出 *score*、库名、名称、示例路径与格式。
 
-对于普通英文词（非 glob 或 */正则*），匹配会借助 *python3-pattern* 增强单复
+对于普通英文词（非 glob 或 */正则*），匹配会借助 *python3-inflect + wordnet-base* 增强单复
 数屈折以及 WordNet 同义词/相关义项（例如搜索 *cat* 也可能出现 *kitty*）。
 glob、正则与空模式仍使用字面匹配。
 

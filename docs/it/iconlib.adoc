@@ -89,7 +89,7 @@ percorso di esempio e formati.
 
 Per una parola inglese semplice (non un glob ne */regex*), la corrispondenza e
 arricchita con flessioni singolare/plurale e sinonimi/sensi correlati WordNet
-tramite *python3-pattern* (ad esempio, cercare *cat* puo anche trovare
+tramite *python3-inflect + wordnet-base* (ad esempio, cercare *cat* puo anche trovare
 *kitty*).
 Glob, regex e motivi vuoti mantengono la corrispondenza letterale.
 
