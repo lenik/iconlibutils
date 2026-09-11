@@ -15,7 +15,7 @@ Depends:
     python3-cairosvg,
     wordnet-base,
     ${misc:Depends}
-Suggests: themestylebrowser, python3-faiss, python3-pil
+Suggests: themestylebrowser, python3-faiss, python3-pil, python3-torch
 Description: search and manage icons from installed icon libraries
  iconlibutils provides the iconlib command to search, inspect, pull, and
  browse icons from libraries such as tabler-icons, streamline-vectors, and
@@ -23,5 +23,6 @@ Description: search and manage icons from installed icon libraries
  uses <pkgdatadir>/library/<name> drop-in files (and optional path
  registries). Plain-English search uses offline WordNet (wordnet-base) and
  python3-inflect, with optional FAISS enrichment when an index is present.
- Optional FAISS indexing (-F) needs python3-faiss, python3-pil, python3-cairosvg,
- and CLIP via torch/transformers.
+ Optional FAISS indexing (-F) needs python3-faiss, python3-pil,
+ python3-cairosvg, python3-torch, and the Hugging Face transformers package
+ (pip; not packaged in Debian).

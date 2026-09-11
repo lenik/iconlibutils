@@ -245,23 +245,29 @@ def _require_deps():
     try:
         import faiss  # noqa: F401
     except ImportError:
-        missing.append("faiss (python3-faiss)")
+        missing.append("faiss (apt: python3-faiss)")
     try:
         import PIL  # noqa: F401
     except ImportError:
-        missing.append("PIL (python3-pil)")
+        missing.append("PIL (apt: python3-pil)")
     try:
         import cairosvg  # noqa: F401
     except ImportError:
-        missing.append("cairosvg (python3-cairosvg)")
+        missing.append("cairosvg (apt: python3-cairosvg)")
     try:
         import torch  # noqa: F401
+    except ImportError:
+        missing.append("torch (apt: python3-torch)")
+    try:
         from transformers import CLIPModel, CLIPProcessor  # noqa: F401
     except ImportError:
-        missing.append("torch + transformers (CLIP)")
+        missing.append(
+            "transformers (no Debian package; "
+            "pip install --user --break-system-packages transformers)"
+        )
     if missing:
         raise RuntimeError(
-            "FAISS indexing requires: " + ", ".join(missing)
+            "FAISS indexing requires: " + "; ".join(missing)
         )
 
 
