@@ -1,35 +1,70 @@
 # iconlibutils
 
-`iconlibutils` 是一个 Python + Meson 命令行应用项目模板。  
-`iconlib` 是此模板中的一个**示例应用**；同一仓库中可以继续添加更多应用。
+`iconlibutils` 提供 **iconlib** 命令行工具，用于搜索与管理已安装的图标库
+（tabler-icons、streamline-vectors、heroicons 等）。
 
 ## 仓库结构
 
-- `src/` - Python 源码（示例 `iconlib.py` 与共享辅助模块 `commons.py`）
-- `tests/` - Python 单元测试（`unittest`）
-- `debian/` - Debian 打包元数据
-- `po/` - gettext 翻译目录
-- `docs/` - AsciiDoc man 页源文件（`docs/*.adoc`）
-- `meson.build` - 安装、测试与辅助目标
+- `src/` — Python 源码（`iconlib.py`、`findicon.py` 与共享模块）
+- `tests/` — 单元测试（`unittest`）
+- `debian/` — Debian 打包（含 path 文件的 postinst）
+- `po/` — gettext 翻译
+- `docs/` — AsciiDoc man 页
+- `meson.build` — 安装与测试规则
 
-## 示例应用：`iconlib`
-
-`iconlib` 是一个类似 `cat` 的工具：
+## 命令：`iconlib`
 
 ```bash
-iconlib [OPTION]... [FILE]...
+iconlib [OPTIONS] COMMAND [ARGS...]
 ```
 
-- 如果未提供 `FILE`，则从 `stdin` 读取。
-- 如果某个 `FILE` 为 `-`，则在该位置从 `stdin` 读取。
-- 输出写入 `stdout`。
+### 全局选项
 
-支持的选项：
+| 选项 | 含义 |
+|------|------|
+| `-l LIBRARY` | 选择图标库（可重复；无歧义前缀即可） |
+| `-d DIR` / `--local-dir DIR` | pull 目标目录（相对 project-dir，默认 `icons`） |
+| `-s SCHEMA` / `--schema SCHEMA` | 路径配方（默认 `n`）：`l/f/n`、`l/v/n` 等 |
+| `-m NAME=DIR` / `--map NAME=DIR` | 库名映射到本地目录名 |
+| `-v` / `-q` / `-h` / `--version` | 详细、安静、帮助、版本 |
 
-- `-v`, `--verbose`
-- `-q`, `--quiet`
-- `-h`, `--help`
-- `--version`
+### 子命令
+
+- `search [-l/--long | -1/--names] [pattern]` — 列出匹配图标（按 score
+  降序；`--long` 含 score）。普通英文词会做单复数与 WordNet 同义词联想
+ （依赖 `python3-pattern`，例如 `cat` → `kitty`）。
+- `which [-a] <name>` — 打印首选路径（`-a` 打印全部）
+- `info <name>` — 格式、尺寸、变体与路径
+- `pull [-F FORMAT]... [-S SIZE]... [pattern]` — 复制到项目
+- `push [pattern]` — 尚未实现
+- `browse [pattern]` — 对含 `.themestyles` 的库启动 `themestylebrowser`
+
+### 匹配模式
+
+- 空 — 全部
+- `name` — 精确名
+- `glob` — 通配符
+- `/regex` — 正则
+
+### 配置
+
+合并的库注册表（`TYPE NAME PATH`；`auto` 会遍历图片树）：
+
+- `/etc/iconlibutils/path`（打包 postinst 写入）
+- `~/.config/iconlibutils/path`
+
+项目文件 `.iconlibrc`（从 cwd 向上查找）：选项与全局相同；所在目录为
+project-dir。命令行覆盖 rc。
+
+### Schema 记号
+
+`o`/`orig`、`l`/`lib`、`f`/`fmt`、`n`/`name`（stem.ext）、`m`/`stem`、
+`e`/`extension`、`s`/`size`、`v`/`variant`，用 `/` 组合。默认：`n`。
+
+示例：`-d assets -S medium=64 -s s/l/f/n` →
+`assets/medium/tabler-icons/png/foo.png`。
+
+示例：`-s l/v/n` → `tabler-icons/outline/foo.svg`。
 
 ## 构建与测试
 
@@ -39,9 +74,7 @@ iconlib [OPTION]... [FILE]...
 sudo apt install meson ninja-build python3 gettext asciidoctor
 ```
 
-### 配置并构建
-
-使用绝对构建目录 `/build`：
+### 配置与构建
 
 ```bash
 meson setup /build
@@ -54,74 +87,33 @@ ninja -C /build
 meson test -C /build
 ```
 
-Meson 通过 `python3 -m unittest discover` 执行 `tests/test_*.py`。
-
-## i18n（gettext）
-
-`iconlib` 使用 `po/` 下的 gettext 翻译文件（`*.po` 与生成的 `.mo` 文件）。
-
-Iconlibutils 风格建议 `po/LINGUAS` 至少包含：**ar bn de es fr hi id it ja ko pt ru sv
-ta te th tr ur vi zh_CN zh_TW**（英文为 msgid 源语言；`zh-cn`/`zh-tw` 对应
-`zh_CN`/`zh_TW`）。
-
-- 安装后运行时从系统 locale 目录加载翻译。
-- 开发态运行（`/build/iconlib`）若存在 `/build/po`，会优先使用项目内翻译资源。
-
-### 同步翻译词条
-
-使用 `posync` 从当前源码字符串同步词条：
+## 国际化（gettext）
 
 ```bash
 ninja -C /build posync
 ```
 
-`posync` 会：
-
-- 为 `po/LINGUAS` 中每种语言补齐缺失消息
-- 移除源码中已不再使用的废弃消息
-
-### 构建翻译文件
-
-```bash
-ninja -C /build
-```
-
-### 快速测试语言
-
-建议优先使用 `LANGUAGE=<lang>`，在开发环境中选择更稳定：
-
-```bash
-LANGUAGE=ja /build/iconlib -h
-LANGUAGE=zh_CN /build/iconlib -h
-```
-
-`LANG=<lang>.<encoding>` 是否生效取决于系统是否已生成对应 locale。
-
-## 安装 / 符号链接辅助命令
-
-常规安装：
+## 安装
 
 ```bash
 meson install -C /build
 ```
 
-调试符号链接工作流（在已配置的安装前缀下）：
+调试符号链接：`ninja -C /build install-symlinks`。
 
-```bash
-ninja -C /build install-symlinks
-ninja -C /build uninstall-symlinks
-```
-
-## Debian 打包
+## Debian 包
 
 ```bash
 dpkg-buildpackage -us -uc
 ```
 
+postinst 会在 `/usr/share/…` 存在时，把已知图标库写入
+`/etc/iconlibutils/path`。
+
 ## 许可证
 
 Copyright (C) 2026 Lenik <iconlibutils@bodz.net>
 
-采用 **AGPL-3.0-or-later** 许可。  
-本项目明确反对 AI 剥削与 AI 霸权，反对无脑 MIT 式许可证和政治愚蠢的 BSD 式许可证。  
-完整文本及项目补充条款见 `LICENSE`。
+以 **AGPL-3.0-or-later** 许可。  
+本项目明确反对 AI 剥削与 AI 霸权，并拒绝无脑的 MIT 式许可与政治上幼稚的
+BSD 式许可。详见 `LICENSE`。

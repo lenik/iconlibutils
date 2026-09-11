@@ -7,77 +7,141 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
+"الأوامر:\n"
+"  search [pattern]   سرد أسماء الأيقونات المطابقة\n"
+"  which [-a] name    طباعة مسار/مسارات الأيقونة\n"
+"  info name          طباعة بيانات الأيقونة الوصفية\n"
+"  pull [pattern]     نسخ الأيقونات إلى المشروع\n"
+"  push [pattern]     رفع الأيقونات (غير مُنفَّذ)\n"
+"  browse [pattern]   فتح themestylebrowser\n"
+"\n"
+"النمط: فارغ=الكل، اسم دقيق، glob، أو /تعبير_منتظم\n"
+"الكلمات الإنجليزية العادية تطابق أيضاً المرادفات/التصريف (مع درجة).\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr ""
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "البحث في مكتبات الأيقونات المثبتة وإدارتها."
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr ""
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "إضافة/تقييد مكتبة أيقونات (قابل للتكرار؛ مطابقة بادئة)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr ""
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "دليل الأصول المحلي لـ pull (نسبي إلى project-dir)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr ""
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "مخطط مسار pull (مثل n، l/f/n، l/v/n)"
 
-#: src/iconlib.c:46
-#, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr ""
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "ربط اسم المكتبة باسم دليل محلي"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "كرر لمزيد من رسائل السجل التفصيلية"
 
-#: src/iconlib.c:81
-#, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr ""
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "إظهار رسائل سجل أقل"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "إخراج معلومات الإصدار والخروج"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "العثور على أيقونات تطابق الاستعلام"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "تنسيق طويل يتضمن الدرجة"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "إخراج الأسماء فقط (افتراضي)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "طباعة مسارات الأيقونة للاسم"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "طباعة كل المسارات المطابقة"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "طباعة معلومات الأيقونة"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "جلب الأيقونات إلى المشروع"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "إضافة تنسيق (قابل للتكرار)؛ الافتراضي الكل"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "إضافة حجم صورة أو alias=size (قابل للتكرار)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "رفع الأيقونات إلى مكتبة بعيدة"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "التصفح باستخدام themestylebrowser"
+
+#: src/iconlib.py:163
+#, python-brace-format
+msgid "Copyright (C) {year} {author}\n"
+msgstr "حقوق النشر (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "الترخيص AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr ""
+msgstr "هذا برنامج حر: لك حرية تغييره وإعادة توزيعه.\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr ""
+msgstr "يعارض هذا المشروع استغلال الذكاء الاصطناعي وهيمنته.\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "يرفض هذا المشروع الترخيص الأعمى بأسلوب MIT والترخيص الساذج سياسياً بأسلوب BSD.\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr ""
+msgstr "لا توجد أي ضمانات، في الحدود التي يسمح بها القانون.\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "تم نسخ {n} ملف/ملفات إلى {dir}"

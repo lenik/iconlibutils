@@ -69,15 +69,17 @@ findicon_exe = custom_target(
     install_dir: bindir,
 )
 
-commons_mod = custom_target(
-    'commons',
-    input: 'src/commons.py',
-    output: 'commons.py',
-    command: ['cp', '@INPUT@', '@OUTPUT@'],
-    build_by_default: true,
-    install: true,
-    install_dir: bindir,
-)
+foreach mod : ['ilcommon', 'paths', 'rc', 'autoindex', 'schema', 'semantic']
+  custom_target(
+      mod,
+      input: 'src' / (mod + '.py'),
+      output: mod + '.py',
+      command: ['cp', '@INPUT@', '@OUTPUT@'],
+      build_by_default: true,
+      install: true,
+      install_dir: bindir,
+  )
+endforeach
 
 install_data(
     'iconlib.bash',
@@ -117,6 +119,63 @@ custom_target(
     build_by_default: true,
     install: true,
     install_dir: mandir / 'man1',
+)
+
+custom_target(
+    'findicon-man',
+    input: 'docs/findicon.adoc',
+    output: 'findicon.1',
+    command: [
+        asciidoctor,
+        '-b', 'manpage',
+        '-a', 'project-version=' + meson.project_version(),
+        '-a', 'project-year=@0@'.format(project_year),
+        '-a', 'project-author=' + project_author,
+        '-a', 'project-email=' + project_email,
+        '-o', '@OUTPUT@',
+        '@INPUT@',
+    ],
+    build_by_default: true,
+    install: true,
+    install_dir: mandir / 'man1',
+)
+
+manpage_langs = ['ar', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'zh_CN']
+manpage_cmds = ['iconlib', 'findicon']
+foreach lang : manpage_langs
+  foreach cmd : manpage_cmds
+    custom_target(
+        cmd + '-man-' + lang,
+        input: 'docs' / lang / (cmd + '.adoc'),
+        output: cmd + '.1.' + lang,
+        command: [
+            asciidoctor,
+            '-b', 'manpage',
+            '-a', 'project-version=' + meson.project_version(),
+            '-a', 'project-year=@0@'.format(project_year),
+            '-a', 'project-author=' + project_author,
+            '-a', 'project-email=' + project_email,
+            '-o', '@OUTPUT@',
+            '@INPUT@',
+        ],
+        build_by_default: true,
+    )
+  endforeach
+endforeach
+
+meson.add_install_script(
+    'sh',
+    '-euc',
+    '''
+        build="@0@"
+        mandir="@1@"
+        for lang in ar de es fr it ja ko zh_CN; do
+            dest="${DESTDIR}${mandir}/${lang}/man1"
+            mkdir -p "$dest"
+            install -m644 "$build/iconlib.1.$lang" "$dest/iconlib.1"
+            install -m644 "$build/findicon.1.$lang" "$dest/findicon.1"
+        done
+    '''.format(meson.project_build_root(), mandir),
 )
 
 test(
@@ -203,23 +262,4 @@ run_target(
             done
         '''.format(get_option('prefix'), bindir, datadir, mandir),
     ],
-)
-
-custom_target(
-    'findicon-man',
-    input: 'docs/findicon.adoc',
-    output: 'findicon.1',
-    command: [
-        asciidoctor,
-        '-b', 'manpage',
-        '-a', 'project-version=' + meson.project_version(),
-        '-a', 'project-year=@0@'.format(project_year),
-        '-a', 'project-author=' + project_author,
-        '-a', 'project-email=' + project_email,
-        '-o', '@OUTPUT@',
-        '@INPUT@',
-    ],
-    build_by_default: true,
-    install: true,
-    install_dir: mandir / 'man1',
 )

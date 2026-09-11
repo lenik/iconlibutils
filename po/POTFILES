@@ -1,2 +1,7 @@
 src/iconlib.py
-src/common_lib.py
+src/ilcommon.py
+src/paths.py
+src/rc.py
+src/autoindex.py
+src/schema.py
+src/semantic.py

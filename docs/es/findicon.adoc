@@ -1,0 +1,67 @@
+= findicon(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+findicon - concatenar archivos a la salida estandar
+
+== Synopsis
+
+*findicon* [_OPTION_]... [_FILE_]...
+
+== Description
+
+Copiar cada _FILE_ a la salida estandar en orden.
+Si _FILE_ es un unico guion (*-*), leer la entrada estandar en esa posicion.
+Si no se da ningun _FILE_, leer la entrada estandar una vez.
+
+*findicon* es similar en espiritu a *cat*(1): escribe la concatenacion de las
+entradas en la salida estandar.
+
+== Options
+
+*-v, --verbose*::
+  Mostrar cada nombre de archivo (o ``standard input`` para *-*) en la salida
+  de error estandar antes de copiar esa entrada.
+  Repetir para mensajes mas detallados.
+
+*-q, --quiet*::
+  Suprimir los mensajes que imprimiria *--verbose*.
+  Si se dan *--verbose* y *--quiet*, prevalece *--quiet*.
+
+*-h, --help*::
+  Mostrar un resumen de uso y salir con exito.
+
+*--version*::
+  Mostrar version e informacion de licencia y salir con exito.
+
+== Exit status
+
+*0*::
+  Exito.
+
+*1*::
+  Ocurrio un error (opciones invalidas, archivo ilegible, o error de E/S).
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+Este es software libre: puede modificarlo y redistribuirlo bajo los terminos de
+la GNU Affero General Public License.
+NO HAY GARANTIA, en la medida permitida por la ley.
+Consulte el archivo LICENSE en la distribucion fuente para el texto completo de
+la licencia, incluidos los terminos suplementarios que indican que este
+proyecto se opone a la explotacion de la IA y a la hegemonia de la IA, y
+rechaza las licencias irreflexivas al estilo MIT y politicamente ingenuas al
+estilo BSD.

@@ -1,0 +1,167 @@
+= iconlib(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+iconlib - 从已安装的图标库搜索和管理图标
+
+== Synopsis
+
+*iconlib* [_OPTION_]... _COMMAND_ [_ARGS_]...
+
+== Description
+
+*iconlib* 搜索已安装的图标库（tabler-icons、streamline-vectors、heroicons
+等），打印路径与元数据，将图标复制到项目中，并可对提供 *.themestyles* 文件的
+库打开 *themestylebrowser*(1)。
+
+库根路径从以下位置读取（后者按名称覆盖前者）：
+
+* */etc/iconlibutils/path*
+* *~/.config/iconlibutils/path*
+
+每行非空且非注释内容为：*TYPE* *NAME* *PATH*。
+目前仅支持 *TYPE* = *auto*：遍历 *PATH* 下的目录树查找图像文件。
+
+若从当前目录向上遍历至文件系统根时找到 *.iconlibrc* 文件，则该文件所在目录为
+*project-dir*。*.iconlibrc* 中的选项使用与下方全局选项相同的标志。命令行标志
+优先于 rc 文件。
+
+== Global options
+
+*-l* _LIBRARY_::
+  限制或选择图标库（可重复）。
+  接受已注册库名的无歧义前缀。
+
+*-d, --local-dir* _DIR_::
+  *pull* 写入文件时位于 *project-dir* 下的目录（默认：*icons*）。
+
+*-s, --schema* _SCHEMA_::
+  *pull* 的目标路径配方（默认：*n*）。
+  由 */* 连接的记号：
+
+  * *o* / *orig* — 原始相对路径
+  * *l* / *lib* — 映射后的库目录名
+  * *f* / *fmt* — 格式（*svg*、*png* 等）
+  * *n* / *name* — 文件名（*stem.ext*）
+  * *m* / *stem* — 不含扩展名的文件名主干
+  * *e* / *extension* — 不含点的扩展名
+  * *s* / *size* — 尺寸记号或别名
+  * *v* / *variant* — 样式/变体（*outline*、*filled* 等），或 *none*
+*-m, --map* _NAME_=_DIR_::
+  将库名映射为本地目录名（默认：与名称相同）。
+
+*-v, --verbose*::
+  向标准错误输出更多日志。重复可增加详细程度。
+
+*-q, --quiet*::
+  抑制信息性消息。
+
+*-h, --help*::
+  显示帮助并退出。
+
+*--version*::
+  打印版本与许可证信息并退出。
+
+== Commands
+
+=== search
+
+*iconlib* *search* [*-l*|*--long* | *-1*|*--names*] [_pattern_]
+
+列出与 _pattern_ 匹配的图标，按相关度评分从高到低排序。
+默认只输出名称。
+使用 *--long* 时，以制表符分隔输出 *score*、库名、名称、示例路径与格式。
+
+对于普通英文词（非 glob 或 */正则*），匹配会借助 *python3-pattern* 增强单复
+数屈折以及 WordNet 同义词/相关义项（例如搜索 *cat* 也可能出现 *kitty*）。
+glob、正则与空模式仍使用字面匹配。
+
+=== which
+
+*iconlib* *which* [*-a*] _name_
+
+打印 _name_ 的首选文件系统路径。
+使用 *-a* 时打印所有匹配路径。
+
+=== info
+
+*iconlib* *info* _name_
+
+打印格式、尺寸、变体、库与资源路径。
+
+=== pull
+
+*iconlib* *pull* [*-F* _FORMAT_]... [*-S* _SIZE_]... [_pattern_]
+
+按 *--schema* 将匹配的图标文件复制到 *project-dir*/*local-dir*。
+
+*-F, --format* _FORMAT_::
+  限制为 *svg* 或 *png* 等扩展名（可重复；默认：全部）。
+
+*-S, --size* _SIZE_::
+  限制图像尺寸。形式：*16*、*16x16*，或 *medium=32x32*（别名）。
+
+=== push
+
+*iconlib* *push* [_pattern_]
+
+预留用于将项目图标上传到远程库。
+尚未实现。
+
+=== browse
+
+*iconlib* *browse* [_pattern_]
+
+对第一个包含 *.themestyles* 的匹配库运行 *themestylebrowser*。
+没有该文件的库会跳过并给出警告。
+
+== Patterns
+
+* (empty):: 全部图标
+* _name_:: 精确名称匹配
+* _glob_:: shell 风格通配符（*?*)
+* /_regex_:: 对图标名的正则表达式匹配
+
+== Files
+
+*.iconlibrc*::
+  每项目选项（*-l*、*-d*、*-s*、*-m* 等）。
+
+*/etc/iconlibutils/path*::
+  系统库注册表（当 share 目录存在时由软件包 postinst 初始化）。
+
+*~/.config/iconlibutils/path*::
+  用户库注册表。
+
+== Exit status
+
+*0*::
+  成功。
+
+*1*::
+  错误（未找到、选项无效，或 *push* 占位实现）。
+
+== See also
+
+*themestylebrowser*(1)
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+这是自由软件：你可以在 GNU Affero General Public License 的条款下自由修改并
+重新分发。
+在法律允许范围内，不提供任何担保。
+完整许可证文本见源码发行包中的 LICENSE 文件，其中包括补充条款：本项目反对
+AI 剥削与 AI 霸权，并拒绝无脑 MIT 式许可证和政治幼稚的 BSD 式许可证。

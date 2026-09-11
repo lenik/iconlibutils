@@ -2,79 +2,136 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "Language: vi\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
-"Cách dùng: iconlib [OPTION]... [FILE]...\n"
-"Nối các FILE và ghi ra đầu ra chuẩn. Khi không có FILE hoặc FILE là -,\n"
-"đọc từ đầu vào chuẩn.\n"
+"Lenh:\n"
+"  search [pattern]   liet ke ten bieu tuong khop\n"
+"  which [-a] name    in duong dan bieu tuong\n"
+"  info name          in metadata bieu tuong\n"
+"  pull [pattern]     sao chep bieu tuong vao du an\n"
+"  push [pattern]     tai len bieu tuong (chua thuc hien)\n"
+"  browse [pattern]   mo themestylebrowser\n"
+"\n"
+"Mau: trong=tat ca, ten chinh xac, glob, hoac /regex\n"
+"Tu tieng Anh thuong cung khop dong nghia/bien the (co diem).\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr "lap lai de hien thi nhieu nhat ky chi tiet hon\n"
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "Tim va quan ly bieu tuong tu cac thu vien bieu tuong da cai."
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr "hien thi it thong diep nhat ky hon\n"
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "them/gioi han thu vien bieu tuong (lap lai duoc; khop tien to)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr "hiển thị trợ giúp này và thoát\n"
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "thu muc tai nguyen cuc bo cho pull (tuong doi voi project-dir)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr "in thông tin phiên bản và thoát\n"
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "schema duong dan pull (vd. n, l/f/n, l/v/n)"
 
-#: src/iconlib.c:46
-#, fuzzy, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr "Báo lỗi tới: <%s>\n"
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "anh xa ten thu vien sang ten thu muc cuc bo"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "lap lai de ghi nhat ky chi tiet hon"
 
-#: src/iconlib.c:81
-#, fuzzy, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr "Bản quyền (C) %d %s\n"
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "hien it thong bao nhat ky hon"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
-"Giấy phép AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "in thong tin phien ban va thoat"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "tim bieu tuong khop voi truy van"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "dinh dang dai gom diem so"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "chi in ten (mac dinh)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "in duong dan bieu tuong cho ten"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "in tat ca duong dan khop"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "in thong tin bieu tuong"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "lay bieu tuong vao du an"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "them dinh dang (lap lai duoc); mac dinh tat ca"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "them kich thuoc anh hoac alias=size (lap lai duoc)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "tai len bieu tuong len thu vien tu xa"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "duyet voi themestylebrowser"
+
+#: src/iconlib.py:163
+msgid "Copyright (C) {year} {author}\n"
+msgstr "Ban quyen (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "Giay phep AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr "Đây là phần mềm tự do: bạn có thể sửa đổi và phân phối lại.\n"
+msgstr "Day la phan mem tu do: ban duoc phep sua doi va phan phoi lai.\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr "Dự án này phản đối bóc lột AI và bá quyền AI.\n"
+msgstr "Du an nay phan doi boc lot AI va ba quyen AI.\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
-"Dự án này bác bỏ kiểu cấp phép MIT máy móc và kiểu cấp phép BSD ngây ngô về "
-"chính trị.\n"
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "Du an nay tu choi cap phep kieu MIT vo y thuc va kieu BSD ngay tho ve chinh tri.\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr "KHÔNG CÓ BẤT KỲ BẢO HÀNH nào trong phạm vi luật cho phép.\n"
+msgstr "KHONG CO BAO HANH, trong pham vi phap luat cho phep.\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "Da sao chep {n} tep vao {dir}"

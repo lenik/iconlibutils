@@ -2,79 +2,136 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "Language: eo\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
-"Uzo: iconlib [OPTION]... [FILE]...\n"
-"Kunigas FILE(j)n al norma eligo. Sen FILE, au kiam FILE estas -,\n"
-"legi de norma enigo.\n"
+"Komandoj:\n"
+"  search [pattern]   listigi kongruajn ikonnomojn\n"
+"  which [-a] name    presi ikonvojon/-vojojn\n"
+"  info name          presi ikon-metadatenojn\n"
+"  pull [pattern]     kopii ikonojn en la projekton\n"
+"  push [pattern]     alshuti ikonojn (ne realigita)\n"
+"  browse [pattern]   malfermi themestylebrowser\n"
+"\n"
+"Sxablono: malplena=ciuj, ekzakta nomo, glob au /regulesprimo\n"
+"Simplaj anglaj vortoj ankau kongruas sinonimojn/fleksiojn (kun poentoj).\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr "ripetu por pli detalaj protokoloj\n"
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "Sercxi kaj administri ikonojn el instalitaj ikonbibliotekoj."
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr "montri malpli da protokolaj mesagxoj\n"
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "aldoni/limigi ikonbibliotekon (ripetebla; prefiksa kongruo)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr "montri cxi tiun helpon kaj eliri\n"
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "loka risurca dosierujo por pull (relative al project-dir)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr "montri versiajn informojn kaj eliri\n"
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "vojskemo por pull (ekz. n, l/f/n, l/v/n)"
 
-#: src/iconlib.c:46
-#, fuzzy, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr "Raportu cimojn al: <%s>\n"
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "mapigi biblioteknomon al lokan dosierujnomon"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "ripeti por pli detalaj protokoloj"
 
-#: src/iconlib.c:81
-#, fuzzy, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr "Kopirajto (C) %d %s\n"
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "montri malpli da protokolmesagxoj"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
-"Permesilo AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "eligi versioinformojn kaj eliri"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "trovi ikonojn kongruajn kun la demando"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "longa formato inkluzive poentojn"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "eligi nur nomojn (implicite)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "presi ikonvojojn por la nomo"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "presi ciujn kongruajn vojojn"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "presi ikoninformojn"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "akiri ikonojn en la projekton"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "aldoni formaton (ripetebla); implicite ciuj"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "aldoni bildograndecon au alias=size (ripetebla)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "alshuti ikonojn al fora biblioteko"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "foliumi per themestylebrowser"
+
+#: src/iconlib.py:163
+msgid "Copyright (C) {year} {author}\n"
+msgstr "Kopirajto (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "Permesilo AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr "Tio estas libera programaro: vi rajtas sxangxi kaj redistribui gxin.\n"
+msgstr "Cxi tio estas libera programaro: vi rajtas sxangxi kaj redistribui gxin.\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr "Tiu projekto kontrauxas AI-ekspluaton kaj AI-hegemonion.\n"
+msgstr "Cxi tiu projekto kontrauxas AI-ekspluatadon kaj AI-hegemonion.\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
-"Tiu projekto malakceptas senpripensan MIT-stilan permesilon kaj politike "
-"naivan BSD-stilan permesilon.\n"
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "Cxi tiu projekto rifuzas senpensan MIT-stilan kaj politike naivan BSD-stilan permesilon.\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr "NE ESTAS GARANTIO, lau la amplekso permesita de la lexo.\n"
+msgstr "Estas NENIA GARANTIO, laux la limoj permesitaj de la legxo.\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "Kopiis {n} dosieron/ojn en {dir}"

@@ -2,80 +2,136 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "Language: ja\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
-"使い方: iconlib [OPTION]... [FILE]...\n"
-"FILE を連結して標準出力へ出力します。FILE がない場合、または FILE が - の場合"
-"は、\n"
-"標準入力を読み取ります。\n"
+"コマンド:\n"
+"  search [pattern]   一致するアイコン名を一覧表示\n"
+"  which [-a] name    アイコンのパスを表示\n"
+"  info name          アイコンのメタデータを表示\n"
+"  pull [pattern]     プロジェクトにアイコンをコピー\n"
+"  push [pattern]     アイコンをアップロード（未実装）\n"
+"  browse [pattern]   themestylebrowser を開く\n"
+"\n"
+"パターン: 空=すべて、正確な名前、glob、または /regex\n"
+"通常の英語単語は同義語・屈折形も照合します（スコア付き）。\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr "さらに詳細なログを出すには繰り返して指定\n"
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "インストール済みアイコンライブラリからアイコンを検索・管理します。"
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr "ログメッセージを少なく表示\n"
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "アイコンライブラリを追加/制限（繰り返し可；接頭辞一致）"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr "このヘルプを表示して終了\n"
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "pull 用のローカルアセットディレクトリ（project-dir 相対）"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr "バージョン情報を表示して終了\n"
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "pull のパススキーマ（例: n、l/f/n、l/v/n）"
 
-#: src/iconlib.c:46
-#, fuzzy, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr "不具合報告先: <%s>\n"
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "ライブラリ名をローカルディレクトリ名に対応付ける"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "繰り返すとより詳細なログを出力"
 
-#: src/iconlib.c:81
-#, fuzzy, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr "Copyright (C) %d %s\n"
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "ログメッセージを減らして表示"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
-"ライセンス AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "バージョン情報を出力して終了"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "クエリに一致するアイコンを検索"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "スコアを含む詳細形式"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "名前のみ出力（デフォルト）"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "指定名のアイコンパスを表示"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "一致するすべてのパスを表示"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "アイコン情報を表示"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "プロジェクトにアイコンを取得"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "形式を追加（繰り返し可）；既定はすべて"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "画像サイズまたは alias=size を追加（繰り返し可）"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "リモートライブラリにアイコンをアップロード"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "themestylebrowser で閲覧"
+
+#: src/iconlib.py:163
+msgid "Copyright (C) {year} {author}\n"
+msgstr "著作権 (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "ライセンス AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr "これはフリーソフトウェアです。自由に改変および再配布できます。\n"
+msgstr "これはフリーソフトウェアです。変更および再配布は自由です。\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr "このプロジェクトは AI 搾取と AI 覇権に反対します。\n"
+msgstr "本プロジェクトは AI による搾取と AI 覇権に反対します。\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
-"このプロジェクトは無批判な MIT 型ライセンスと政治的に愚かな BSD 型ライセンス"
-"に反対します。\n"
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "本プロジェクトは無思慮な MIT 型ライセンスと政治的にナイーブな BSD 型ライセンスを拒みます。\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr "法の許す範囲で一切の保証はありません。\n"
+msgstr "法律で認められる範囲で、一切の保証はありません。\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "{n} 個のファイルを {dir} にコピーしました"

@@ -2,8 +2,7 @@
 # Copyright (C) 2026 Lenik <iconlibutils@bodz.net>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Template example: shared helpers live in src/commons.* (not a real module name).
-# In a concrete program, rename to something specific (e.g. stream_copy.py).
+# Shared helpers for iconlibutils CLIs (i18n and small utilities).
 
 from __future__ import annotations
 
@@ -13,7 +12,7 @@ import os
 from pathlib import Path
 from typing import BinaryIO
 
-TEXT_DOMAIN = "iconlib"
+TEXT_DOMAIN = "iconlibutils"
 
 
 def init_i18n(argv0: str) -> gettext.NullTranslations:

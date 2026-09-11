@@ -1,36 +1,72 @@
 # iconlibutils
 
-`iconlibutils` is a Python + Meson project template for small command-line apps.
-`iconlib` is one **example app** in this template; more apps can be added in the same repository.
+`iconlibutils` provides the **iconlib** CLI for searching and managing icons
+from installed icon libraries (tabler-icons, streamline-vectors, heroicons, …).
 
 ## Repository layout
 
-- `src/` - Python sources (`iconlib.py` example app and `commons.py` shared helpers)
-- `tests/` - Python unit tests (`unittest`)
-- `debian/` - Debian packaging metadata
-- `po/` - gettext message catalogs
-- `docs/` - AsciiDoc man page sources (`docs/*.adoc`)
-- `meson.build` - install rules, tests, and helper targets
+- `src/` — Python sources (`iconlib.py`, `findicon.py`, shared modules)
+- `tests/` — Python unit tests (`unittest`)
+- `debian/` — Debian packaging (including path-file postinst)
+- `po/` — gettext catalogs
+- `docs/` — AsciiDoc man page sources
+- `meson.build` — install rules and tests
 
-## Example app: `iconlib`
-
-`iconlib` is a cat-like utility:
+## Command: `iconlib`
 
 ```bash
-iconlib [OPTION]... [FILE]...
+iconlib [OPTIONS] COMMAND [ARGS...]
 ```
 
-- If no `FILE` is provided, it reads from `stdin`.
-- If a `FILE` is `-`, it reads from `stdin` at that position.
-- Output is written to `stdout`.
+### Global options
 
-Supported options:
+| Option | Meaning |
+|--------|---------|
+| `-l LIBRARY` | Select library (repeatable; unambiguous prefix OK) |
+| `-d DIR` / `--local-dir DIR` | Pull destination under project-dir (default `icons`) |
+| `-s SCHEMA` / `--schema SCHEMA` | Path recipe (default `n`): `l/f/n`, `v/m.e`, … |
+| `-m NAME=DIR` / `--map NAME=DIR` | Map library → local dirname |
+| `-v` / `-q` / `-h` / `--version` | Verbose, quiet, help, version |
 
-- `-v`, `--verbose`
-- `-q`, `--quiet`
-- `-h`, `--help`
-- `--version`
+### Commands
 
+- `search [-l/--long | -1/--names] [pattern]` — list matching icons (score
+  descending; `--long` includes score). Plain English queries expand
+  singular/plural and WordNet synonyms via `python3-pattern` (e.g. `cat` →
+  `kitty`).
+- `which [-a] <name>` — print preferred path (or all with `-a`)
+- `info <name>` — formats, sizes, variants, paths
+- `pull [-F FORMAT]... [-S SIZE]... [pattern]` — copy into the project
+- `push [pattern]` — not implemented yet
+- `browse [pattern]` — run `themestylebrowser` on libraries with `.themestyles`
+
+### Patterns
+
+- empty — all
+- `name` — exact
+- `glob` — wildcards
+- `/regex` — regular expression
+
+### Configuration
+
+Merged library registry (`TYPE NAME PATH`; `auto` walks image trees):
+
+- `/etc/iconlibutils/path` (seeded by package postinst)
+- `~/.config/iconlibutils/path`
+
+Project file `.iconlibrc` (walk cwd → root): same flags as globals; its
+directory is the project-dir. CLI overrides rc.
+
+### Schema tokens
+
+`o`/`orig`, `l`/`lib`, `f`/`fmt`, `n`/`name` (stem.ext), `m`/`stem`,
+`e`/`extension`, `s`/`size`, `v`/`variant` — combined with `/`.
+Default: `n` (flat `name.ext` under the local dir).
+
+Example: `-d assets -S medium=64 -s s/l/f/n` →
+`assets/medium/tabler-icons/png/foo.png`.
+
+Example: `-s l/v/n` → `tabler-icons/outline/foo.svg`.
 ## Build and test
 
 ### Build dependencies (Debian example)
@@ -40,8 +76,6 @@ sudo apt install meson ninja-build python3 gettext asciidoctor
 ```
 
 ### Configure and build
-
-Use the absolute build directory `/build`:
 
 ```bash
 meson setup /build
@@ -54,69 +88,30 @@ ninja -C /build
 meson test -C /build
 ```
 
-Meson runs `python3 -m unittest discover` against `tests/test_*.py`.
-
 ## i18n (gettext)
 
-`iconlib` uses gettext translations under `po/` (`*.po` + generated `.mo` files).
-
-Iconlibutils style recommends `po/LINGUAS` cover at least: **ar bn de es fr hi id it
-ja ko pt ru sv ta te th tr ur vi zh_CN zh_TW** (English is the msgid source;
-`zh-cn`/`zh-tw` map to `zh_CN`/`zh_TW`).
-
-- Installed runtime loads translations from system locale dir.
-- Dev runtime (`/build/iconlib`) prefers project-local translations from `/build/po` if present.
-
-### Sync translation catalogs
-
-Use `posync` to update catalogs from current source strings:
+`iconlib` uses gettext under `po/`. Sync catalogs:
 
 ```bash
 ninja -C /build posync
 ```
 
-`posync` will:
-
-- add missing messages into each language from `po/LINGUAS`
-- remove obsolete messages no longer used in source
-
-### Build translation files
-
-```bash
-ninja -C /build
-```
-
-### Quick locale testing
-
-Prefer `LANGUAGE=<lang>` for predictable gettext selection in dev shells:
-
-```bash
-LANGUAGE=ja /build/iconlib -h
-LANGUAGE=zh_CN /build/iconlib -h
-```
-
-`LANG=<lang>.<encoding>` may depend on whether that locale is generated on your system.
-
-## Install / symlink helpers
-
-Normal install:
+## Install
 
 ```bash
 meson install -C /build
 ```
 
-Debug symlink workflow (under configured prefix):
-
-```bash
-ninja -C /build install-symlinks
-ninja -C /build uninstall-symlinks
-```
+Debug symlinks: `ninja -C /build install-symlinks`.
 
 ## Debian package
 
 ```bash
 dpkg-buildpackage -us -uc
 ```
+
+Postinst writes managed entries into `/etc/iconlibutils/path` for known
+libraries present under `/usr/share/…`.
 
 ## License
 

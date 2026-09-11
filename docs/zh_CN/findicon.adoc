@@ -1,0 +1,63 @@
+= findicon(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+findicon - 将文件串联输出到标准输出
+
+== Synopsis
+
+*findicon* [_OPTION_]... [_FILE_]...
+
+== Description
+
+按顺序将每个 _FILE_ 复制到标准输出。
+若 _FILE_ 为单个短横线（*-*），则在该位置读取标准输入。
+若未给出任何 _FILE_，则读取标准输入一次。
+
+*findicon* 的设计精神类似 *cat*(1)：将输入串联后写到标准输出。
+
+== Options
+
+*-v, --verbose*::
+  在复制该输入之前，将每个文件名（对 *-* 则为 ``standard input``）打印到
+  标准错误。
+  重复可输出更详细的日志。
+
+*-q, --quiet*::
+  抑制 *--verbose* 会打印的消息。
+  若同时给出 *--verbose* 与 *--quiet*，以 *--quiet* 为准。
+
+*-h, --help*::
+  打印用法摘要并以成功状态退出。
+
+*--version*::
+  打印版本与许可证信息并以成功状态退出。
+
+== Exit status
+
+*0*::
+  成功。
+
+*1*::
+  发生错误（无效选项、不可读文件，或 I/O 错误）。
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+这是自由软件：你可以在 GNU Affero General Public License 的条款下自由修改并
+重新分发。
+在法律允许范围内，不提供任何担保。
+完整许可证文本见源码发行包中的 LICENSE 文件，其中包括补充条款：本项目反对
+AI 剥削与 AI 霸权，并拒绝无脑 MIT 式许可证和政治幼稚的 BSD 式许可证。

@@ -1,0 +1,173 @@
+= iconlib(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+iconlib - 설치된 아이콘 라이브러리에서 아이콘 검색 및 관리
+
+== Synopsis
+
+*iconlib* [_OPTION_]... _COMMAND_ [_ARGS_]...
+
+== Description
+
+*iconlib*은 설치된 아이콘 라이브러리(tabler-icons, streamline-vectors,
+heroicons 등)를 검색하고, 경로와 메타데이터를 출력하며, 프로젝트로 아이콘을
+복사하고, *.themestyles* 파일을 제공하는 라이브러리에 대해
+*themestylebrowser*(1)를 열 수 있습니다.
+
+라이브러리 루트는 다음에서 읽습니다(이후 항목이 이름으로 덮어씀):
+
+* */etc/iconlibutils/path*
+* *~/.config/iconlibutils/path*
+
+비어 있지 않고 주석이 아닌 각 줄은: *TYPE* *NAME* *PATH*.
+*TYPE* = *auto*만 지원됩니다. *PATH* 아래 트리를 이미지 파일에 대해 탐색합니다.
+
+현재 디렉터리에서 파일시스템 루트 쪽으로 올라가며 *.iconlibrc* 파일을 찾으면,
+그 파일이 있는 디렉터리가 *project-dir*입니다. *.iconlibrc*의 옵션은 아래
+전역 옵션과 같은 플래그를 사용합니다. 명령줄 플래그가 rc 파일보다 우선합니다.
+
+== Global options
+
+*-l* _LIBRARY_::
+  라이브러리를 제한하거나 선택합니다(반복 가능).
+  등록된 라이브러리 이름의 모호하지 않은 접두사를 허용합니다.
+
+*-d, --local-dir* _DIR_::
+  *pull*이 파일을 쓰는 *project-dir* 아래 디렉터리(기본값: *icons*).
+
+*-s, --schema* _SCHEMA_::
+  *pull*의 대상 경로 레시피(기본값: *n*).
+  */*로 이어지는 토큰:
+
+  * *o* / *orig* — 원래 상대 경로
+  * *l* / *lib* — 매핑된 라이브러리 디렉터리 이름
+  * *f* / *fmt* — 형식(*svg*, *png*, …)
+  * *n* / *name* — 파일 이름(*stem.ext*)
+  * *m* / *stem* — 확장자 없는 파일명 줄기
+  * *e* / *extension* — 점 없는 확장자
+  * *s* / *size* — 크기 토큰 또는 별칭 이름
+  * *v* / *variant* — 스타일/변형(*outline*, *filled*, …), 또는 *none*
+*-m, --map* _NAME_=_DIR_::
+  라이브러리 이름을 로컬 디렉터리 이름에 대응시킵니다(기본값: 이름과 동일).
+
+*-v, --verbose*::
+  표준 오류에 더 많은 로그를 출력합니다. 반복하면 더 자세해집니다.
+
+*-q, --quiet*::
+  정보성 메시지를 숨깁니다.
+
+*-h, --help*::
+  도움말을 표시하고 종료합니다.
+
+*--version*::
+  버전과 라이선스 정보를 출력하고 종료합니다.
+
+== Commands
+
+=== search
+
+*iconlib* *search* [*-l*|*--long* | *-1*|*--names*] [_pattern_]
+
+_pattern_과 일치하는 아이콘을 관련도 점수 높은 순으로 나열합니다.
+기본 출력은 이름만입니다.
+*--long*이면 탭으로 구분하여 *score*, 라이브러리, 이름, 샘플 경로, 형식을
+출력합니다.
+
+일반 영어 단어(glob이나 */regex*가 아님)는 *python3-pattern*을 통해
+단수/복수 굴절과 WordNet 동의어/관련 의미가 강화됩니다(예: *cat* 검색이
+*kitty*도 찾을 수 있음).
+glob, regex, 빈 패턴은 문자 그대로 일치합니다.
+
+=== which
+
+*iconlib* *which* [*-a*] _name_
+
+_name_의 선호 파일시스템 경로를 출력합니다.
+*-a*이면 일치하는 모든 경로를 출력합니다.
+
+=== info
+
+*iconlib* *info* _name_
+
+형식, 크기, 변형, 라이브러리, 자산 경로를 출력합니다.
+
+=== pull
+
+*iconlib* *pull* [*-F* _FORMAT_]... [*-S* _SIZE_]... [_pattern_]
+
+일치하는 아이콘 파일을 *--schema*에 따라 *project-dir*/*local-dir*로
+복사합니다.
+
+*-F, --format* _FORMAT_::
+  *svg* 또는 *png* 같은 확장자로 제한합니다(반복 가능; 기본값: 전체).
+
+*-S, --size* _SIZE_::
+  이미지 크기로 제한합니다. 형식: *16*, *16x16*, 또는 *medium=32x32*(별칭).
+
+=== push
+
+*iconlib* *push* [_pattern_]
+
+프로젝트 아이콘을 원격 라이브러리에 업로드하기 위해 예약되어 있습니다.
+아직 구현되지 않았습니다.
+
+=== browse
+
+*iconlib* *browse* [_pattern_]
+
+*.themestyles*를 포함하는 첫 번째 일치 라이브러리에서 *themestylebrowser*를
+실행합니다. 해당 파일이 없는 라이브러리는 경고와 함께 건너뜁니다.
+
+== Patterns
+
+* (empty):: 모든 아이콘
+* _name_:: 정확한 이름 일치
+* _glob_:: 셸 스타일 와일드카드(*?*)
+* /_regex_:: 아이콘 이름에 대한 정규식 일치
+
+== Files
+
+*.iconlibrc*::
+  프로젝트별 옵션(*-l*, *-d*, *-s*, *-m*, …).
+
+*/etc/iconlibutils/path*::
+  시스템 라이브러리 레지스트리(share 디렉터리가 있으면 패키지 postinst가
+  시드).
+
+*~/.config/iconlibutils/path*::
+  사용자 라이브러리 레지스트리.
+
+== Exit status
+
+*0*::
+  성공.
+
+*1*::
+  오류(찾지 못함, 잘못된 옵션, 또는 *push* 스텁).
+
+== See also
+
+*themestylebrowser*(1)
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+이것은 자유 소프트웨어입니다. GNU Affero General Public License 조건 하에
+변경하고 재배포할 수 있습니다.
+법이 허용하는 범위에서 어떠한 보증도 없습니다.
+전체 라이선스 본문(이 프로젝트가 AI 착취와 AI 패권에 반대하며 무분별한 MIT식
+및 정치적으로 안이한 BSD식 라이선스를 거부한다는 보충 조항 포함)은 소스
+배포의 LICENSE 파일을 참조하십시오.

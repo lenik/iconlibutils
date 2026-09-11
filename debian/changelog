@@ -1,5 +1,21 @@
 iconlibutils (0.0.1) unstable; urgency=medium
 
+  [ Lenik ]
   * Initial release
+
+  [ Lenik (谢继雷) ]
+  * Rewrite iconlib as multi-command icon library CLI
+    (search/which/info/pull/browse).
+  * Add path registries, .iconlibrc project config, and auto library
+    indexing.
+  * Seed /etc/iconlibutils/path from known icon packages in postinst.
+  * Enhance iconlib search with English inflection/synonyms via python3-
+    pattern (WordNet), ranked by score.
+  * Add schema tokens v/variant, m/stem, e/extension; default pull
+    schema is n.
+  * Fix gettext domain to iconlibutils; expand RPM %%files and mark
+    noarch.
+  * Rename commons.py to ilcommon.py; install localized man pages.
+  * Add gettext and L1 man translations; Architecture all.
 
  -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 17:21:59 +0800

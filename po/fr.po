@@ -2,81 +2,136 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
-"Utilisation : iconlib [OPTION]... [FILE]...\n"
-"Concatene les FILE(s) vers la sortie standard. Sans FILE, ou si FILE vaut "
-"-,\n"
-"lit l'entree standard.\n"
+"Commandes :\n"
+"  search [pattern]   lister les noms d'icones correspondants\n"
+"  which [-a] name    afficher le(s) chemin(s) de l'icone\n"
+"  info name          afficher les metadonnees de l'icone\n"
+"  pull [pattern]     copier les icones dans le projet\n"
+"  push [pattern]     telecharger des icones (non implemente)\n"
+"  browse [pattern]   ouvrir themestylebrowser\n"
+"\n"
+"Motif : vide=tous, nom exact, glob ou /regex\n"
+"Les mots anglais simples correspondent aussi aux synonymes/flexions (avec score).\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr "repeter pour obtenir des journaux plus verbeux\n"
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "Rechercher et gerer des icones depuis les bibliotheques installees."
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr "afficher moins de messages de journal\n"
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "ajouter/restreindre une bibliotheque d'icones (repetable; correspondance de prefixe)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr "afficher cette aide et quitter\n"
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "repertoire d'assets local pour pull (relatif a project-dir)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr "afficher les informations de version et quitter\n"
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "schema de chemin pour pull (p. ex. n, l/f/n, l/v/n)"
 
-#: src/iconlib.c:46
-#, fuzzy, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr "Signaler les bugs a : <%s>\n"
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "associer le nom de bibliotheque a un repertoire local"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "repeter pour des journaux plus detailles"
 
-#: src/iconlib.c:81
-#, fuzzy, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr "Copyright (C) %d %s\n"
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "afficher moins de messages de journal"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
-"Licence AGPL-3.0-or-later : <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "afficher les informations de version et quitter"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "trouver les icones correspondant a la requete"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "format long incluant le score"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "afficher uniquement les noms (par defaut)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "afficher les chemins d'icone pour le nom"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "afficher tous les chemins correspondants"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "afficher les informations de l'icone"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "recuperer des icones dans le projet"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "ajouter un format (repetable) ; par defaut : tous"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "ajouter une taille d'image ou alias=size (repetable)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "televerser des icones vers une bibliotheque distante"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "parcourir avec themestylebrowser"
+
+#: src/iconlib.py:163
+msgid "Copyright (C) {year} {author}\n"
+msgstr "Droits d'auteur (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "Licence AGPL-3.0-or-later : <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr "Ce logiciel est libre : vous pouvez le modifier et le redistribuer.\n"
+msgstr "Ceci est un logiciel libre : vous etes libre de le modifier et de le redistribuer.\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr ""
-"Ce projet s'oppose a l'exploitation par l'IA et a l'hegemonie de l'IA.\n"
+msgstr "Ce projet s'oppose a l'exploitation par l'IA et a l'hegemonie de l'IA.\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
-"Ce projet rejette les licences de type MIT sans reflexion et les licences de "
-"type BSD politiquement naives.\n"
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "Ce projet rejette les licences irreflexives de style MIT et politiquement naives de style BSD.\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr "AUCUNE GARANTIE n'est fournie, dans les limites permises par la loi.\n"
+msgstr "Il n'y a AUCUNE GARANTIE, dans la mesure permise par la loi.\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "{n} fichier(s) copie(s) dans {dir}"

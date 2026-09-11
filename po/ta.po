@@ -7,77 +7,141 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ta\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
+"கட்டளைகள்:\n"
+"  search [pattern]   பொருந்தும் சின்னம் பெயர்களை பட்டியலிடு\n"
+"  which [-a] name    சின்னம் பாதையை அச்சிடு\n"
+"  info name          சின்னம் மெட்டாடேட்டாவை அச்சிடு\n"
+"  pull [pattern]     திட்டத்திற்கு சின்னங்களை நகலெடு\n"
+"  push [pattern]     சின்னங்களை பதிவேற்று (செயல்படுத்தப்படவில்லை)\n"
+"  browse [pattern]   themestylebrowser திற\n"
+"\n"
+"வடிவம்: வெற்று=அனைத்தும், துல்லியமான பெயர், glob, அல்லது /regex\n"
+"சாதாரண ஆங்கில சொற்கள் ஒத்தசொல்/மாற்றங்களையும் பொருத்தும் (மதிப்பெண் உடன்).\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr ""
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "நிறுவப்பட்ட சின்னம் நூலகங்களில் இருந்து சின்னங்களைத் தேடி நிர்வகியுங்கள்."
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr ""
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "சின்னம் நூலகத்தைச் சேர்/கட்டுப்படுத்து (மீண்டும் செய்யலாம்; முன்னொட்டு பொருத்தம்)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr ""
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "pull-க்கான உள்ளூர் சொத்து அடைவு (project-dir தொடர்பானது)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr ""
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "pull பாதை திட்டம் (எ.கா. n, l/f/n, l/v/n)"
 
-#: src/iconlib.c:46
-#, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr ""
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "நூலகப் பெயரை உள்ளூர் அடைவுப் பெயருக்கு வரைபடமாக்கு"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "மேலும் விரிவான பதிவுகளுக்கு மீண்டும் செய்க"
 
-#: src/iconlib.c:81
-#, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr ""
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "குறைவான பதிவு செய்திகளைக் காட்டு"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "பதிப்புத் தகவலை வெளியிட்டு வெளியேறு"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "வினவலுக்குப் பொருந்தும் சின்னங்களைக் கண்டுபிடி"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "மதிப்பெண் உள்ளிட்ட நீண்ட வடிவம்"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "பெயர்கள் மட்டும் வெளியீடு (இயல்புநிலை)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "பெயருக்கான சின்னம் பாதைகளை அச்சிடு"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "பொருந்தும் அனைத்து பாதைகளையும் அச்சிடு"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "சின்னம் தகவலை அச்சிடு"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "திட்டத்திற்கு சின்னங்களைப் பெறு"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "வடிவத்தைச் சேர் (மீண்டும் செய்யலாம்); இயல்புநிலை அனைத்தும்"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "பட அளவு அல்லது alias=size சேர் (மீண்டும் செய்யலாம்)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "தொலை நூலகத்திற்கு சின்னங்களைப் பதிவேற்று"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "themestylebrowser மூலம் உலாவு"
+
+#: src/iconlib.py:163
+#, python-brace-format
+msgid "Copyright (C) {year} {author}\n"
+msgstr "பதிப்புரிமை (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "உரிமம் AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr ""
+msgstr "இது கட்டற்ற மென்பொருள்: மாற்றி மறுபகிர்வு செய்ய உங்களுக்கு உரிமை உண்டு.\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr ""
+msgstr "இந்தத் திட்டம் AI சுரண்டலுக்கும் AI மேலாதிக்கத்திற்கும் எதிரானது.\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "இந்தத் திட்டம் சிந்தனையற்ற MIT-பாணி உரிமத்தையும் அரசியல் ரீதியாக அப்பாவியான BSD-பாணி உரிமத்தையும் நிராகரிக்கிறது.\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr ""
+msgstr "சட்டம் அனுமதிக்கும் அளவில் எந்த உத்தரவாதமும் இல்லை.\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "{dir}-இல் {n} கோப்பு(கள்) நகலெடுக்கப்பட்டன"

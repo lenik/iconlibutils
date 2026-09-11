@@ -1,0 +1,186 @@
+= iconlib(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+iconlib - rechercher et gerer des icones depuis les bibliotheques d'icones installees
+
+== Synopsis
+
+*iconlib* [_OPTION_]... _COMMAND_ [_ARGS_]...
+
+== Description
+
+*iconlib* explore les bibliotheques d'icones installees (tabler-icons,
+streamline-vectors, heroicons et similaires), affiche les chemins et
+metadonnees, copie des icones dans un projet, et peut ouvrir
+*themestylebrowser*(1) pour les bibliotheques qui fournissent un fichier
+*.themestyles*.
+
+Les racines des bibliotheques sont lues depuis (les entrees ulterieures
+remplacent par nom) :
+
+* */etc/iconlibutils/path*
+* *~/.config/iconlibutils/path*
+
+Chaque ligne non vide et non commentaire est : *TYPE* *NAME* *PATH*.
+Seul *TYPE* = *auto* est pris en charge : l'arborescence sous *PATH* est
+parcourue a la recherche de fichiers image.
+
+Si un fichier *.iconlibrc* est trouve en remontant depuis le repertoire
+courant jusqu'a la racine du systeme de fichiers, le repertoire de ce fichier
+est le *project-dir*. Les options dans *.iconlibrc* utilisent les memes
+indicateurs que les options globales ci-dessous. Les options de la ligne de
+commande remplacent le fichier rc.
+
+== Global options
+
+*-l* _LIBRARY_::
+  Restreindre ou selectionner des bibliotheques (repetable).
+  Un prefixe non ambigu d'un nom de bibliotheque enregistre est accepte.
+
+*-d, --local-dir* _DIR_::
+  Repertoire sous *project-dir* ou *pull* ecrit les fichiers
+  (defaut : *icons*).
+
+*-s, --schema* _SCHEMA_::
+  Recette de chemin de destination pour *pull* (defaut : *n*).
+  Jetons joints par */* :
+
+  * *o* / *orig* — chemin relatif d'origine
+  * *l* / *lib* — nom de repertoire de bibliotheque mappe
+  * *f* / *fmt* — format (*svg*, *png*, …)
+  * *n* / *name* — nom de fichier (*stem.ext*)
+  * *m* / *stem* — racine du nom de fichier sans extension
+  * *e* / *extension* — extension sans le point
+  * *s* / *size* — jeton de taille ou nom d'alias
+  * *v* / *variant* — style/variante (*outline*, *filled*, …), ou *none*
+*-m, --map* _NAME_=_DIR_::
+  Associer un nom de bibliotheque a un nom de repertoire local
+  (defaut : identique au nom).
+
+*-v, --verbose*::
+  Plus de messages sur la sortie d'erreur. Repeter pour plus de details.
+
+*-q, --quiet*::
+  Supprimer les messages d'information.
+
+*-h, --help*::
+  Afficher l'aide et quitter.
+
+*--version*::
+  Afficher la version et les informations de licence, puis quitter.
+
+== Commands
+
+=== search
+
+*iconlib* *search* [*-l*|*--long* | *-1*|*--names*] [_pattern_]
+
+Lister les icones correspondant a _pattern_, ordonnees par score de pertinence
+(du plus eleve au plus bas).
+La sortie par defaut ne contient que les noms.
+Avec *--long*, afficher separes par des tabulations : *score*, bibliotheque,
+nom, chemin d'exemple et formats.
+
+Pour un mot anglais simple (ni glob ni */regex*), la correspondance est
+enrichie avec les flexions singulier/pluriel et les synonymes/sens proches
+WordNet via *python3-pattern* (par exemple, chercher *cat* peut aussi trouver
+*kitty*).
+Les motifs glob, regex et vides conservent une correspondance litterale.
+
+=== which
+
+*iconlib* *which* [*-a*] _name_
+
+Afficher le chemin de fichier privilegie pour _name_.
+Avec *-a*, afficher tous les chemins correspondants.
+
+=== info
+
+*iconlib* *info* _name_
+
+Afficher formats, tailles, variantes, bibliotheques et chemins des ressources.
+
+=== pull
+
+*iconlib* *pull* [*-F* _FORMAT_]... [*-S* _SIZE_]... [_pattern_]
+
+Copier les fichiers d'icone correspondants dans *project-dir*/*local-dir* selon
+*--schema*.
+
+*-F, --format* _FORMAT_::
+  Limiter aux extension(s) telles que *svg* ou *png*
+  (repetable ; defaut : toutes).
+
+*-S, --size* _SIZE_::
+  Limiter aux taille(s) d'image. Formes : *16*, *16x16*, ou *medium=32x32*
+  (alias).
+
+=== push
+
+*iconlib* *push* [_pattern_]
+
+Reserve au televersement d'icones du projet vers une bibliotheque distante.
+Pas encore implemente.
+
+=== browse
+
+*iconlib* *browse* [_pattern_]
+
+Lancer *themestylebrowser* sur la premiere bibliotheque correspondante qui
+contient *.themestyles*. Les bibliotheques sans ce fichier sont ignorees avec
+un avertissement.
+
+== Patterns
+
+* (empty):: toutes les icones
+* _name_:: correspondance exacte du nom
+* _glob_:: jokers de type shell (*?*)
+* /_regex_:: expression reguliere sur le nom de l'icone
+
+== Files
+
+*.iconlibrc*::
+  Options par projet (*-l*, *-d*, *-s*, *-m*, …).
+
+*/etc/iconlibutils/path*::
+  Registre systeme des bibliotheques (initialise par le postinst du paquet
+  lorsque les repertoires share existent).
+
+*~/.config/iconlibutils/path*::
+  Registre utilisateur des bibliotheques.
+
+== Exit status
+
+*0*::
+  Succes.
+
+*1*::
+  Erreur (introuvable, options invalides, ou esquisse de *push*).
+
+== See also
+
+*themestylebrowser*(1)
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+Ceci est un logiciel libre : vous etes libre de le modifier et de le
+redistribuer selon les termes de la GNU Affero General Public License.
+Il n'y a AUCUNE GARANTIE, dans la mesure permise par la loi.
+Voir le fichier LICENSE dans la distribution source pour le texte complet de
+la licence, y compris les termes supplementaires indiquant que ce projet
+s'oppose a l'exploitation par l'IA et a l'hegemonie de l'IA, et rejette les
+licences irreflexives de style MIT et politiquement naives de style BSD.

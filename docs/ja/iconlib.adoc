@@ -1,0 +1,179 @@
+= iconlib(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+iconlib - インストール済みアイコンライブラリからアイコンを検索・管理する
+
+== Synopsis
+
+*iconlib* [_OPTION_]... _COMMAND_ [_ARGS_]...
+
+== Description
+
+*iconlib* はインストール済みのアイコンライブラリ（tabler-icons、
+streamline-vectors、heroicons など）を検索し、パスとメタデータを表示し、
+プロジェクトへアイコンをコピーし、*.themestyles* ファイルを提供するライブラリ
+に対して *themestylebrowser*(1) を開くことができます。
+
+ライブラリのルートは次から読みます（後のエントリが名前で上書き）:
+
+* */etc/iconlibutils/path*
+* *~/.config/iconlibutils/path*
+
+空でなくコメントでもない各行は: *TYPE* *NAME* *PATH*。
+*TYPE* = *auto* のみがサポートされます。*PATH* 以下のツリーを画像ファイルに
+ついて走査します。
+
+カレントディレクトリからファイルシステムルートへ向かって *.iconlibrc* が
+見つかった場合、そのファイルのディレクトリが *project-dir* になります。
+*.iconlibrc* のオプションは下記のグローバルオプションと同じフラグを使います。
+コマンドラインのフラグが rc ファイルより優先されます。
+
+== Global options
+
+*-l* _LIBRARY_::
+  ライブラリを制限または選択します（繰り返し可）。
+  登録済みライブラリ名の曖昧でない接頭辞を受け付けます。
+
+*-d, --local-dir* _DIR_::
+  *pull* がファイルを書き込む *project-dir* 下のディレクトリ
+  （既定: *icons*）。
+
+*-s, --schema* _SCHEMA_::
+  *pull* の宛先パスのレシピ（既定: *n*）。
+  */* で結合されるトークン:
+
+  * *o* / *orig* — 元の相対パス
+  * *l* / *lib* — 対応付けたライブラリディレクトリ名
+  * *f* / *fmt* — 形式（*svg*、*png*、…）
+  * *n* / *name* — ファイル名（*stem.ext*）
+  * *m* / *stem* — 拡張子なしのファイル名ステム
+  * *e* / *extension* — ドットなしの拡張子
+  * *s* / *size* — サイズトークンまたは別名
+  * *v* / *variant* — スタイル／バリアント（*outline*、*filled*、…）、
+    または *none*
+*-m, --map* _NAME_=_DIR_::
+  ライブラリ名をローカルディレクトリ名に対応付けます
+  （既定: 名前と同じ）。
+
+*-v, --verbose*::
+  標準エラーへより多くのログを出します。繰り返すと詳細が増えます。
+
+*-q, --quiet*::
+  情報メッセージを抑制します。
+
+*-h, --help*::
+  ヘルプを表示して終了します。
+
+*--version*::
+  バージョンとライセンス情報を表示して終了します。
+
+== Commands
+
+=== search
+
+*iconlib* *search* [*-l*|*--long* | *-1*|*--names*] [_pattern_]
+
+_pattern_ に一致するアイコンを関連度スコアの高い順に一覧表示します。
+既定の出力は名前のみです。
+*--long* ではタブ区切りで *score*、ライブラリ、名前、サンプルパス、形式を
+表示します。
+
+通常の英語単語（glob でも */regex* でもない）では、*python3-pattern* 経由で
+単複の屈折と WordNet の同義語／関連義が照合に加わります（例: *cat* の検索で
+*kitty* も出ることがあります）。
+glob、regex、空のパターンは文字どおりの照合のままです。
+
+=== which
+
+*iconlib* *which* [*-a*] _name_
+
+_name_ の優先ファイルシステムパスを表示します。
+*-a* では一致するすべてのパスを表示します。
+
+=== info
+
+*iconlib* *info* _name_
+
+形式、サイズ、バリアント、ライブラリ、アセットパスを表示します。
+
+=== pull
+
+*iconlib* *pull* [*-F* _FORMAT_]... [*-S* _SIZE_]... [_pattern_]
+
+一致するアイコンファイルを *--schema* に従って
+*project-dir*/*local-dir* へコピーします。
+
+*-F, --format* _FORMAT_::
+  *svg* や *png* などの拡張子に制限します（繰り返し可；既定: すべて）。
+
+*-S, --size* _SIZE_::
+  画像サイズに制限します。形式: *16*、*16x16*、または *medium=32x32*
+  （別名）。
+
+=== push
+
+*iconlib* *push* [_pattern_]
+
+プロジェクトのアイコンをリモートライブラリへアップロードするための予約です。
+まだ実装されていません。
+
+=== browse
+
+*iconlib* *browse* [_pattern_]
+
+*.themestyles* を含む最初の一致ライブラリで *themestylebrowser* を実行します。
+そのファイルのないライブラリは警告付きでスキップされます。
+
+== Patterns
+
+* (empty):: すべてのアイコン
+* _name_:: 正確な名前一致
+* _glob_:: シェル風ワイルドカード（*?*)
+* /_regex_:: アイコン名に対する正規表現一致
+
+== Files
+
+*.iconlibrc*::
+  プロジェクト単位のオプション（*-l*、*-d*、*-s*、*-m*、…）。
+
+*/etc/iconlibutils/path*::
+  システムライブラリ登録（share ディレクトリがある場合、パッケージ postinst
+  が初期化）。
+
+*~/.config/iconlibutils/path*::
+  ユーザライブラリ登録。
+
+== Exit status
+
+*0*::
+  成功。
+
+*1*::
+  エラー（未検出、不正なオプション、または *push* スタブ）。
+
+== See also
+
+*themestylebrowser*(1)
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+これはフリーソフトウェアです。GNU Affero General Public License の条項の下で
+変更および再配布が自由です。
+法律で認められる範囲で、一切の保証はありません。
+完全なライセンス本文（本プロジェクトが AI による搾取と AI 覇権に反対し、
+無思慮な MIT 型および政治的にナイーブな BSD 型ライセンスを拒む旨の補足条項を
+含む）はソース配布内の LICENSE ファイルを参照してください。

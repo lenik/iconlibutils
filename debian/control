@@ -8,11 +8,15 @@ Homepage: https://github.com/lenik/iconlibutils
 Rules-Requires-Root: no
 
 Package: iconlibutils
-Architecture: any
-Depends: 
-    python3, 
+Architecture: all
+Depends:
+    python3,
+    python3-pattern,
     ${misc:Depends}
-Description: Meson-based CLI project template with example app
- iconlibutils is a template repository for small Python command-line utilities.
- It currently ships the iconlib example application and Debian packaging
- metadata, and includes Python unittest integration.
+Suggests: themestylebrowser
+Description: search and manage icons from installed icon libraries
+ iconlibutils provides the iconlib command to search, inspect, pull, and
+ browse icons from libraries such as tabler-icons, streamline-vectors, and
+ heroicons. Library search paths are configured in /etc/iconlibutils/path
+ and ~/.config/iconlibutils/path. Plain-English search uses Pattern/WordNet
+ for inflection and synonym expansion, ranked by score.

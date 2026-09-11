@@ -9,37 +9,141 @@ v{project-version}, {project-year}
 
 == Name
 
-iconlib - concatenate files to standard output
+iconlib - search and manage icons from installed icon libraries
 
 == Synopsis
 
-*iconlib* [_OPTION_]... [_FILE_]...
+*iconlib* [_OPTION_]... _COMMAND_ [_ARGS_]...
 
 == Description
 
-Copy each _FILE_ to standard output in order.
-If _FILE_ is a single dash (*-*), read standard input at that position.
-If no _FILE_ is given, read standard input once.
+*iconlib* searches installed icon libraries (tabler-icons, streamline-vectors,
+heroicons, and similar), prints paths and metadata, copies icons into a
+project, and can open *themestylebrowser*(1) for libraries that provide a
+*.themestyles* file.
 
-*iconlib* is similar in spirit to *cat*(1): it writes the concatenation of
-inputs to standard output.
+Library roots are read from (later entries override by name):
 
-== Options
+* */etc/iconlibutils/path*
+* *~/.config/iconlibutils/path*
+
+Each non-empty, non-comment line is: *TYPE* *NAME* *PATH*.
+Only *TYPE* = *auto* is supported: the tree under *PATH* is walked for image
+files.
+
+If a *.iconlibrc* file is found by walking from the current directory toward
+the filesystem root, that file's directory is the *project-dir*. Options in
+*.iconlibrc* use the same flags as the global options below. Command-line
+flags override the rc file.
+
+== Global options
+
+*-l* _LIBRARY_::
+  Restrict or select libraries (repeatable).
+  An unambiguous prefix of a registered library name is accepted.
+
+*-d, --local-dir* _DIR_::
+  Directory under *project-dir* where *pull* writes files (default: *icons*).
+
+*-s, --schema* _SCHEMA_::
+  Destination path recipe for *pull* (default: *n*).
+  Tokens joined by */*:
+
+  * *o* / *orig* — original relative path
+  * *l* / *lib* — mapped library dirname
+  * *f* / *fmt* — format (*svg*, *png*, …)
+  * *n* / *name* — filename (*stem.ext*)
+  * *m* / *stem* — filename stem without extension
+  * *e* / *extension* — extension without the dot
+  * *s* / *size* — size token or alias name
+  * *v* / *variant* — style/variant (*outline*, *filled*, …), or *none*
+*-m, --map* _NAME_=_DIR_::
+  Map a library name to a local directory name (default: same as name).
 
 *-v, --verbose*::
-  Print each file name (or ``standard input`` for *-*) to standard error
-  before copying that input.
-  Repeat for more verbose logging.
+  More logging to standard error. Repeat for more detail.
 
 *-q, --quiet*::
-  Suppress messages that would be printed by *--verbose*.
-  If both *--verbose* and *--quiet* are given, *--quiet* wins.
+  Suppress informational messages.
 
 *-h, --help*::
-  Print a usage summary and exit successfully.
+  Show help and exit.
 
 *--version*::
-  Print version and license information and exit successfully.
+  Print version and license information and exit.
+
+== Commands
+
+=== search
+
+*iconlib* *search* [*-l*|*--long* | *-1*|*--names*] [_pattern_]
+
+List icons matching _pattern_, ordered by relevance score (highest first).
+Default output is names only.
+With *--long*, print tab-separated *score*, library, name, sample path, and
+formats.
+
+For a plain English word (not a glob or */regex*), matching is enhanced with
+singular/plural inflection and WordNet synonyms/related senses via
+*python3-pattern* (for example, searching *cat* can also surface *kitty*).
+Glob, regex, and empty patterns keep literal matching.
+
+=== which
+
+*iconlib* *which* [*-a*] _name_
+
+Print the preferred filesystem path for _name_.
+With *-a*, print all matching paths.
+
+=== info
+
+*iconlib* *info* _name_
+
+Print formats, sizes, variants, libraries, and asset paths.
+
+=== pull
+
+*iconlib* *pull* [*-F* _FORMAT_]... [*-S* _SIZE_]... [_pattern_]
+
+Copy matching icon files into *project-dir*/*local-dir* using *--schema*.
+
+*-F, --format* _FORMAT_::
+  Limit to extension(s) such as *svg* or *png* (repeatable; default: all).
+
+*-S, --size* _SIZE_::
+  Limit to image size(s). Forms: *16*, *16x16*, or *medium=32x32* (alias).
+
+=== push
+
+*iconlib* *push* [_pattern_]
+
+Reserved for uploading project icons to a remote library.
+Not implemented yet.
+
+=== browse
+
+*iconlib* *browse* [_pattern_]
+
+Run *themestylebrowser* on the first matching library that contains
+*.themestyles*. Libraries without that file are skipped with a warning.
+
+== Patterns
+
+* (empty):: all icons
+* _name_:: exact name match
+* _glob_:: shell-style wildcards (*?*)
+* /_regex_:: regular expression match on the icon name
+
+== Files
+
+*.iconlibrc*::
+  Per-project options (*-l*, *-d*, *-s*, *-m*, …).
+
+*/etc/iconlibutils/path*::
+  System library registry (seeded by package postinst when share dirs exist).
+
+*~/.config/iconlibutils/path*::
+  User library registry.
 
 == Exit status
 
@@ -47,7 +151,11 @@ inputs to standard output.
   Success.
 
 *1*::
-  An error occurred (invalid options, unreadable file, or I/O error).
+  Error (not found, bad options, or *push* stub).
+
+== See also
+
+*themestylebrowser*(1)
 
 == Author
 

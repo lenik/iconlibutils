@@ -3,7 +3,7 @@ from __future__ import annotations
 import io
 import unittest
 
-from commons import copy_stream
+from ilcommon import copy_stream
 
 
 class FindiconTests(unittest.TestCase):

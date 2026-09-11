@@ -2,77 +2,136 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "Language: zh_CN\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
-"用法：iconlib [选项]... [文件]...\n"
-"将文件内容连接并输出到标准输出。若未提供文件，或文件为 -，\n"
-"则从标准输入读取。\n"
+"命令：\n"
+"  search [pattern]   列出匹配的图标名称\n"
+"  which [-a] name    打印图标路径\n"
+"  info name          打印图标元数据\n"
+"  pull [pattern]     将图标复制到项目中\n"
+"  push [pattern]     上传图标（未实现）\n"
+"  browse [pattern]   打开 themestylebrowser\n"
+"\n"
+"模式：空=全部、精确名称、glob 或 /正则\n"
+"普通英文词也会匹配同义词/屈折形式（带评分）。\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr "重复使用以输出更多详细日志\n"
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "从已安装的图标库搜索和管理图标。"
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr "显示更少的日志消息\n"
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "添加/限制图标库（可重复；前缀匹配）"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr "显示此帮助并退出\n"
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "pull 的本地资源目录（相对 project-dir）"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr "输出版本信息并退出\n"
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "pull 路径模式（例如 n、l/f/n、l/v/n）"
 
-#: src/iconlib.c:46
-#, fuzzy, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr "报告问题到：<%s>\n"
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "将库名映射为本地目录名"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "重复以输出更详细的日志"
 
-#: src/iconlib.c:81
-#, fuzzy, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr "版权所有 (C) %d %s\n"
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "显示更少的日志消息"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
-"许可证 AGPL-3.0-or-later：<https://www.gnu.org/licenses/agpl-3.0.html>\n"
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "输出版本信息并退出"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "查找与查询匹配的图标"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "包含评分的长格式"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "仅输出名称（默认）"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "打印该名称的图标路径"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "打印所有匹配路径"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "打印图标信息"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "将图标取回到项目"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "添加一种格式（可重复）；默认全部"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "添加图像尺寸或 alias=size（可重复）"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "将图标上传到远程库"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "使用 themestylebrowser 浏览"
+
+#: src/iconlib.py:163
+msgid "Copyright (C) {year} {author}\n"
+msgstr "版权所有 (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "许可证 AGPL-3.0-or-later：<https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "这是自由软件：你可以自由修改并重新分发。\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "本项目反对 AI 剥削与 AI 霸权。\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr "本项目反对无脑 MIT 式许可证和政治愚蠢 BSD 式许可证。\n"
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "本项目反对无脑 MIT 式许可证和政治幼稚的 BSD 式许可证。\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "在法律允许范围内，不提供任何担保。\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "已将 {n} 个文件复制到 {dir}"

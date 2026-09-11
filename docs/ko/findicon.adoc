@@ -1,0 +1,65 @@
+= findicon(1)
+Lenik <iconlibutils@bodz.net>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: iconlibutils
+:man-linkstyle: blue R <>
+:nofooter:
+
+== Name
+
+findicon - 파일을 표준 출력으로 이어 붙이기
+
+== Synopsis
+
+*findicon* [_OPTION_]... [_FILE_]...
+
+== Description
+
+각 _FILE_을 순서대로 표준 출력에 복사합니다.
+_FILE_이 단일 대시(*-*)이면 그 위치에서 표준 입력을 읽습니다.
+_FILE_이 없으면 표준 입력을 한 번 읽습니다.
+
+*findicon*은 정신적으로 *cat*(1)과 비슷합니다. 입력의 연결을 표준 출력에
+씁니다.
+
+== Options
+
+*-v, --verbose*::
+  해당 입력을 복사하기 전에 각 파일 이름(*-*이면 ``standard input``)을 표준
+  오류에 출력합니다.
+  반복하면 더 자세한 로그가 됩니다.
+
+*-q, --quiet*::
+  *--verbose*가 출력할 메시지를 숨깁니다.
+  *--verbose*와 *--quiet*가 모두 있으면 *--quiet*가 우선합니다.
+
+*-h, --help*::
+  사용법 요약을 출력하고 성공적으로 종료합니다.
+
+*--version*::
+  버전과 라이선스 정보를 출력하고 성공적으로 종료합니다.
+
+== Exit status
+
+*0*::
+  성공.
+
+*1*::
+  오류가 발생했습니다(잘못된 옵션, 읽을 수 없는 파일, 또는 I/O 오류).
+
+== Author
+
+Written by {project-author} <{project-email}>.
+
+== Copyright
+
+Copyright (C) {project-year}.
+License AGPL-3.0-or-later.
+이것은 자유 소프트웨어입니다. GNU Affero General Public License 조건 하에
+변경하고 재배포할 수 있습니다.
+법이 허용하는 범위에서 어떠한 보증도 없습니다.
+전체 라이선스 본문(이 프로젝트가 AI 착취와 AI 패권에 반대하며 무분별한 MIT식
+및 정치적으로 안이한 BSD식 라이선스를 거부한다는 보충 조항 포함)은 소스
+배포의 LICENSE 파일을 참조하십시오.

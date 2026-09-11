@@ -7,78 +7,142 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
+"Kommandon:\n"
+"  search [pattern]   lista matchande ikonnamn\n"
+"  which [-a] name    skriv ut ikonens soekvaeg(ar)\n"
+"  info name          skriv ut ikonmetadata\n"
+"  pull [pattern]     kopiera ikoner till projektet\n"
+"  push [pattern]     ladda upp ikoner (ej implementerat)\n"
+"  browse [pattern]   oeppna themestylebrowser\n"
+"\n"
+"Moenster: tomt=alla, exakt namn, glob eller /regex\n"
+"Vanliga engelska ord matchar aeven synonymer/boejningar (med poaeng).\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr ""
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "Soek och hantera ikoner fran installerade ikonbibliotek."
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr ""
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "lagg till/begraensa ikonbibliotek (upprepningsbar; prefixmatchning)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr ""
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "lokal tillgangsmappe for pull (relativt till project-dir)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr ""
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "sokvagsschema for pull (t.ex. n, l/f/n, l/v/n)"
 
-#: src/iconlib.c:46
-#, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr ""
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "mappa biblioteksnamn till lokalt katalognamn"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "upprepa for mer detaljerad loggning"
 
-#: src/iconlib.c:81
-#, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr ""
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "visa farre loggmeddelanden"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "visa versionsinformation och avsluta"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "hitta ikoner som matchar fragan"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "langt format inklusive poaeng"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "visa endast namn (standard)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "skriv ut ikonsoekvagar for namnet"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "skriv ut alla matchande soekvagar"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "skriv ut ikoninformation"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "hamta ikoner till projektet"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "lagg till ett format (upprepningsbar); standard alla"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "lagg till en bildstorlek eller alias=size (upprepningsbar)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "ladda upp ikoner till ett fjarrbibliotek"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "bladdra med themestylebrowser"
+
+#: src/iconlib.py:163
+#, python-brace-format
+msgid "Copyright (C) {year} {author}\n"
+msgstr "Upphovsratt (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "Licens AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr ""
+msgstr "Detta ar fri programvara: du far andra och vidarefoeredla den.\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr ""
+msgstr "Detta projekt motsatter sig AI-exploatering och AI-hegemoni.\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "Detta projekt avvisar tanklos MIT-liknande och politiskt naiv BSD-liknande licensiering.\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr ""
+msgstr "Det finns INGEN GARANTI, i den utstraeckning lagen tillater.\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "Kopierade {n} fil(er) till {dir}"

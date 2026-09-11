@@ -7,77 +7,141 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ur\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
+"احکامات:\n"
+"  search [pattern]   مماثل آئیکن ناموں کی فہرست\n"
+"  which [-a] name    آئیکن کا راستہ چھاپیں\n"
+"  info name          آئیکن میٹا ڈیٹا چھاپیں\n"
+"  pull [pattern]     پروجیکٹ میں آئیکن کاپی کریں\n"
+"  push [pattern]     آئیکن اپ لوڈ کریں (نافذ نہیں)\n"
+"  browse [pattern]   themestylebrowser کھولیں\n"
+"\n"
+"پیٹرن: خالی=سب، درست نام، glob، یا /regex\n"
+"سادہ انگریزی الفاظ مترادف/تصریف بھی ملاتے ہیں (اسکور کے ساتھ)۔\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr ""
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "نصب شدہ آئیکن لائبریریوں سے آئیکن تلاش اور منظم کریں۔"
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr ""
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "آئیکن لائبریری شامل/محدود کریں (دہرایا جا سکتا؛ سابقہ مماثلت)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr ""
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "pull کے لیے مقامی اثاثہ ڈائریکٹری (project-dir کے نسبت)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr ""
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "pull راستہ اسکیمہ (مثلاً n، l/f/n، l/v/n)"
 
-#: src/iconlib.c:46
-#, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr ""
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "لائبریری نام کو مقامی ڈائریکٹری نام سے منسلک کریں"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "زیادہ تفصیلی لاگ کے لیے دہرائیں"
 
-#: src/iconlib.c:81
-#, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr ""
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "کم لاگ پیغامات دکھائیں"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "ورژن معلومات دکھا کر باہر نکلیں"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "استفسار سے مماثل آئیکن تلاش کریں"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "اسکور سمیت طویل طرز"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "صرف نام دکھائیں (ڈیفالٹ)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "نام کے لیے آئیکن راستے چھاپیں"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "تمام مماثل راستے چھاپیں"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "آئیکن معلومات چھاپیں"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "پروجیکٹ میں آئیکن لائیں"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "ایک طرز شامل کریں (دہرایا جا سکتا)؛ ڈیفالٹ سب"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "تصویر کا سائز یا alias=size شامل کریں (دہرایا جا سکتا)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "دور دراز لائبریری میں آئیکن اپ لوڈ کریں"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "themestylebrowser سے براؤز کریں"
+
+#: src/iconlib.py:163
+#, python-brace-format
+msgid "Copyright (C) {year} {author}\n"
+msgstr "کاپی رائٹ (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "لائسنس AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr ""
+msgstr "یہ آزاد سافٹ ویئر ہے: آپ اسے تبدیل اور دوبارہ تقسیم کر سکتے ہیں۔\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr ""
+msgstr "یہ منصوبہ اے آئی استحصال اور اے آئی غلبے کی مخالفت کرتا ہے۔\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "یہ منصوبہ بے سوچے سمجھے MIT طرز لائسنسنگ اور سیاسی طور پر سادہ لوح BSD طرز لائسنسنگ مسترد کرتا ہے۔\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
-msgstr ""
+msgstr "قانون کی اجازت کی حد تک کوئی ضمانت نہیں۔\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "{dir} میں {n} فائل(یں) کاپی ہو گئیں"

@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+PATH_FILE=/etc/iconlibutils/path
+
+case "$1" in
+    remove)
+        ;;
+    purge)
+        rm -f "$PATH_FILE"
+        rmdir /etc/iconlibutils 2>/dev/null || true
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

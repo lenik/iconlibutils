@@ -2,78 +2,136 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 22:31+0800\n"
+"POT-Creation-Date: 2026-09-11 18:35+0800\n"
 "Language: th\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.c:32
+#: src/iconlib.py:31
 msgid ""
-"Usage: iconlib [OPTION]... [FILE]...\n"
-"Concatenate FILE(s) to standard output. With no FILE, or when FILE is -,\n"
-"read standard input.\n"
+"Commands:\n"
+"  search [pattern]   list matching icon names\n"
+"  which [-a] name    print icon path(s)\n"
+"  info name          print icon metadata\n"
+"  pull [pattern]     copy icons into the project\n"
+"  push [pattern]     upload icons (not implemented)\n"
+"  browse [pattern]   open themestylebrowser\n"
+"\n"
+"Pattern: empty=all, exact name, glob, or /regex\n"
+"Plain English words also match synonyms/inflections (scored).\n"
 msgstr ""
-"การใช้งาน: iconlib [OPTION]... [FILE]...\n"
-"ต่อเนื้อหาของ FILE ไปยังเอาต์พุตมาตรฐาน หากไม่มี FILE หรือ FILE เป็น -,\n"
-"จะอ่านจากอินพุตมาตรฐาน\n"
+"คำสั่ง:\n"
+"  search [pattern]   แสดงรายชื่อไอคอนที่ตรงกัน\n"
+"  which [-a] name    พิมพ์พาธของไอคอน\n"
+"  info name          พิมพ์เมทาดาทาของไอคอน\n"
+"  pull [pattern]     คัดลอกไอคอนเข้าโปรเจกต์\n"
+"  push [pattern]     อัปโหลดไอคอน (ยังไม่ทำ)\n"
+"  browse [pattern]   เปิด themestylebrowser\n"
+"\n"
+"รูปแบบ: ว่าง=ทั้งหมด ชื่อตรง glob หรือ /regex\n"
+"คำภาษาอังกฤษธรรมดายังจับคู่คำพ้อง/รูปผัน (มีคะแนน)\n"
 
-#: src/iconlib.c:38
-msgid "repeat for more verbose loggings\n"
-msgstr "ใส่ซ้ำเพื่อแสดงบันทึกแบบละเอียดมากขึ้น\n"
+#: src/iconlib.py:47
+msgid "Search and manage icons from installed icon libraries."
+msgstr "ค้นหาและจัดการไอคอนจากไลบรารีไอคอนที่ติดตั้งไว้"
 
-#: src/iconlib.c:40
-msgid "show less logging messages\n"
-msgstr "แสดงข้อความบันทึกให้น้อยลง\n"
+#: src/iconlib.py:57
+msgid "add/restrict icon library (repeatable; prefix match)"
+msgstr "เพิ่ม/จำกัดไลบรารีไอคอน (ทำซ้ำได้; จับคู่คำนำหน้า)"
 
-#: src/iconlib.c:42
-msgid "display this help and exit\n"
-msgstr "แสดงความช่วยเหลือนี้และออก\n"
+#: src/iconlib.py:64
+msgid "local assets directory for pull (relative to project-dir)"
+msgstr "ไดเรกทอรีสินทรัพย์ในเครื่องสำหรับ pull (สัมพัทธ์กับ project-dir)"
 
-#: src/iconlib.c:44
-msgid "output version information and exit\n"
-msgstr "แสดงข้อมูลเวอร์ชันและออก\n"
+#: src/iconlib.py:71
+msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
+msgstr "สคีมาพาธสำหรับ pull (เช่น n, l/f/n, l/v/n)"
 
-#: src/iconlib.c:46
-#, fuzzy, c-format
-msgid "Report bugs to: <%s>\n"
-msgstr "รายงานบั๊กไปที่: <%s>\n"
+#: src/iconlib.py:80
+msgid "map library name to local dirname"
+msgstr "จับคู่ชื่อไลบรารีกับชื่อไดเรกทอรีในเครื่อง"
 
-#: src/iconlib.c:54
-#, c-format
-msgid "hello, world!\n"
-msgstr ""
+#: src/iconlib.py:87
+msgid "repeat for more verbose loggings"
+msgstr "ทำซ้ำเพื่อบันทึกรายละเอียดมากขึ้น"
 
-#: src/iconlib.c:81
-#, fuzzy, c-format
-msgid "Copyright (C) %d %s\n"
-msgstr "ลิขสิทธิ์ (C) %d %s\n"
+#: src/iconlib.py:93
+msgid "show less logging messages"
+msgstr "แสดงข้อความบันทึกน้อยลง"
 
-#: src/iconlib.c:82
-msgid ""
-"License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
-msgstr ""
-"สัญญาอนุญาต AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+#: src/iconlib.py:98
+msgid "output version information and exit"
+msgstr "แสดงข้อมูลเวอร์ชันแล้วออก"
 
-#: src/iconlib.c:84
+#: src/iconlib.py:103
+msgid "find icons matching the query"
+msgstr "ค้นหาไอคอนที่ตรงกับคำค้น"
+
+#: src/iconlib.py:109
+msgid "long format including score"
+msgstr "รูปแบบยาวรวมคะแนน"
+
+#: src/iconlib.py:115
+msgid "output names only (default)"
+msgstr "แสดงเฉพาะชื่อ (ค่าเริ่มต้น)"
+
+#: src/iconlib.py:119
+msgid "print icon paths for the name"
+msgstr "พิมพ์พาธไอคอนสำหรับชื่อ"
+
+#: src/iconlib.py:124
+msgid "print all matching paths"
+msgstr "พิมพ์พาธที่ตรงกันทั้งหมด"
+
+#: src/iconlib.py:128
+msgid "print icon info"
+msgstr "พิมพ์ข้อมูลไอคอน"
+
+#: src/iconlib.py:131
+msgid "retrieve icons to the project"
+msgstr "ดึงไอคอนเข้าโปรเจกต์"
+
+#: src/iconlib.py:139
+msgid "add a format (repeatable); default all"
+msgstr "เพิ่มรูปแบบ (ทำซ้ำได้); ค่าเริ่มต้นทั้งหมด"
+
+#: src/iconlib.py:148
+msgid "add an image size or alias=size (repeatable)"
+msgstr "เพิ่มขนาดภาพหรือ alias=size (ทำซ้ำได้)"
+
+#: src/iconlib.py:152
+msgid "upload icons to a remote library"
+msgstr "อัปโหลดไอคอนไปยังไลบรารีระยะไกล"
+
+#: src/iconlib.py:155
+msgid "browse with themestylebrowser"
+msgstr "เรียกดูด้วย themestylebrowser"
+
+#: src/iconlib.py:163
+msgid "Copyright (C) {year} {author}\n"
+msgstr "ลิขสิทธิ์ (C) {year} {author}\n"
+
+#: src/iconlib.py:165
+msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+msgstr "สัญญาอนุญาต AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
+
+#: src/iconlib.py:167
 msgid "This is free software: you are free to change and redistribute it.\n"
-msgstr "นี่คือซอฟต์แวร์เสรี คุณมีสิทธิ์แก้ไขและแจกจ่ายต่อได้\n"
+msgstr "นี่เป็นซอฟต์แวร์เสรี: คุณมีสิทธิ์แก้ไขและแจกจ่ายต่อได้\n"
 
-#: src/iconlib.c:86
+#: src/iconlib.py:168
 msgid "This project opposes AI exploitation and AI hegemony.\n"
-msgstr "โครงการนี้คัดค้านการเอาเปรียบด้วย AI และอำนาจนำของ AI\n"
+msgstr "โครงการนี้คัดค้านการแสวงประโยชน์จาก AI และอำนาจครอบงำของ AI\n"
 
-#: src/iconlib.c:87
-msgid ""
-"This project rejects mindless MIT-style licensing and politically naive BSD-"
-"style licensing.\n"
-msgstr ""
-"โครงการนี้ปฏิเสธใบอนุญาตแบบ MIT ที่ไร้วิจารณญาณ และใบอนุญาตแบบ BSD ที่โง่เขลาทางการเมือง\n"
+#: src/iconlib.py:171
+msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
+msgstr "โครงการนี้ปฏิเสธการอนุญาตสิทธิ์แบบ MIT ที่ไร้ความคิดและการอนุญาตสิทธิ์แบบ BSD ที่ไร้เดียงสาทางการเมือง\n"
 
-#: src/iconlib.c:90
+#: src/iconlib.py:175
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "ไม่มีการรับประกันใด ๆ ตามขอบเขตที่กฎหมายอนุญาต\n"
 
-#: src/lib.c:49
-#, c-format
-msgid "%s: write error\n"
-msgstr ""
+#: src/iconlib.py:355
+#, python-brace-format
+msgid "Copied {n} file(s) into {dir}"
+msgstr "คัดลอก {n} ไฟล์ไปยัง {dir} แล้ว"
