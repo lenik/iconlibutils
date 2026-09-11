@@ -9,48 +9,22 @@ v{project-version}, {project-year}
 
 == Name
 
-findicon - Dateien an die Standardausgabe anhaengen
+findicon - shortcut for iconlib search
 
 == Synopsis
 
-*findicon* [_OPTION_]... [_FILE_]...
+*findicon* [_OPTION_]... [_pattern_]
 
 == Description
 
-Jede _FILE_ der Reihe nach auf die Standardausgabe kopieren.
-Ist _FILE_ ein einzelner Bindestrich (*-*), an dieser Stelle die
-Standardeingabe lesen.
-Wird keine _FILE_ angegeben, die Standardeingabe einmal lesen.
+*findicon* is a shortcut for *iconlib search*.
+All arguments are forwarded to that command.
 
-*findicon* ist im Geiste aehnlich wie *cat*(1): es schreibt die Verkettung der
-Eingaben auf die Standardausgabe.
+See *iconlib*(1) for details.
 
-== Options
+== See also
 
-*-v, --verbose*::
-  Jeden Dateinamen (oder ``standard input`` fuer *-*) vor dem Kopieren dieser
-  Eingabe auf die Standardfehlerausgabe schreiben.
-  Wiederholen fuer ausfuehrlichere Protokollierung.
-
-*-q, --quiet*::
-  Meldungen unterdruecken, die *--verbose* ausgeben wuerde.
-  Wenn sowohl *--verbose* als auch *--quiet* angegeben sind, gewinnt
-  *--quiet*.
-
-*-h, --help*::
-  Eine Nutzungsuebersicht ausgeben und erfolgreich beenden.
-
-*--version*::
-  Version und Lizenzinformationen ausgeben und erfolgreich beenden.
-
-== Exit status
-
-*0*::
-  Erfolg.
-
-*1*::
-  Ein Fehler ist aufgetreten (ungueltige Optionen, unlesbare Datei oder
-  E/A-Fehler).
+*iconlib*(1)
 
 == Author
 
@@ -60,10 +34,3 @@ Written by {project-author} <{project-email}>.
 
 Copyright (C) {project-year}.
 License AGPL-3.0-or-later.
-Dies ist freie Software: Sie duerfen sie aendern und unter den Bedingungen der
-GNU Affero General Public License weitergeben.
-Es besteht KEINE GEWAEHRLEISTUNG, soweit gesetzlich zulaessig.
-Siehe die Datei LICENSE in der Quellverteilung fuer den vollstaendigen
-Lizenztext, einschliesslich ergaenzender Bedingungen, dass dieses Projekt
-KI-Ausbeutung und KI-Hegemonie ablehnt sowie gedankenlose MIT-artige und
-politisch naive BSD-artige Lizenzierung zurueckweist.

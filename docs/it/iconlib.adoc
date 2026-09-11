@@ -25,7 +25,9 @@ forniscono un file *.themestyles*.
 Le radici delle librerie sono lette da (le voci successive sovrascrivono per
 nome):
 
-* */etc/iconlibutils/path*
+* NOTE: Primary discovery is now */usr/share/iconlibutils/library/<name>*; */etc/iconlibutils/path* is optional/legacy. See the English or zh_CN manual for details.
+
+*/etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
 
 Ogni riga non vuota e non di commento e: *TYPE* *NAME* *PATH*.

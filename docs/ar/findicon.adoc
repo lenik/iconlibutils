@@ -9,44 +9,22 @@ v{project-version}, {project-year}
 
 == Name
 
-findicon - وصل الملفات إلى الخرج القياسي
+findicon - shortcut for iconlib search
 
 == Synopsis
 
-*findicon* [_OPTION_]... [_FILE_]...
+*findicon* [_OPTION_]... [_pattern_]
 
 == Description
 
-نسخ كل _FILE_ إلى الخرج القياسي بالترتيب.
-إذا كان _FILE_ شرطة واحدة (*-*)، اقرأ الدخل القياسي في ذلك الموضع.
-إذا لم يُعطَ أي _FILE_، اقرأ الدخل القياسي مرة واحدة.
+*findicon* is a shortcut for *iconlib search*.
+All arguments are forwarded to that command.
 
-يشبه *findicon* روح *cat*(1): يكتب وصل المدخلات إلى الخرج القياسي.
+See *iconlib*(1) for details.
 
-== Options
+== See also
 
-*-v, --verbose*::
-  اطبع كل اسم ملف (أو ``standard input`` لـ *-*) إلى الخطأ القياسي قبل نسخ
-  ذلك الدخل.
-  كرّر لسجلات أكثر تفصيلاً.
-
-*-q, --quiet*::
-  كتم الرسائل التي يطبعها *--verbose*.
-  إذا أُعطي *--verbose* و *--quiet* معاً، يفوز *--quiet*.
-
-*-h, --help*::
-  اطبع ملخص الاستخدام واخرج بنجاح.
-
-*--version*::
-  اطبع معلومات الإصدار والترخيص واخرج بنجاح.
-
-== Exit status
-
-*0*::
-  نجاح.
-
-*1*::
-  حدث خطأ (خيارات غير صالحة، ملف غير قابل للقراءة، أو خطأ إدخال/إخراج).
+*iconlib*(1)
 
 == Author
 
@@ -56,9 +34,3 @@ Written by {project-author} <{project-email}>.
 
 Copyright (C) {project-year}.
 License AGPL-3.0-or-later.
-هذا برنامج حر: لك حرية تغييره وإعادة توزيعه بموجب شروط رخصة
-GNU Affero General Public License.
-لا توجد أي ضمانات، في الحدود التي يسمح بها القانون.
-راجع ملف LICENSE في توزيعة المصدر لنص الترخيص الكامل، بما في ذلك الشروط
-التكميلية التي تفيد أن هذا المشروع يعارض استغلال الذكاء الاصطناعي وهيمنته،
-ويرفض الترخيص الأعمى بأسلوب MIT والترخيص الساذج سياسياً بأسلوب BSD.

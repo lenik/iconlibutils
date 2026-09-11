@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from paths import Library
+from .paths import Library
 
 IMAGE_EXTS = {".svg", ".png", ".jpg", ".jpeg", ".webp"}
 
@@ -253,7 +253,7 @@ def search_groups(
     Plain English queries use inflection + WordNet expansion. Glob, regex,
     and empty patterns keep boolean matching (score 1.0 for hits, 0 for all).
     """
-    from semantic import (
+    from .semantic import (
         SCORE_THRESHOLD,
         expand_query_terms,
         is_plain_query,

@@ -9,47 +9,22 @@ v{project-version}, {project-year}
 
 == Name
 
-findicon - concatena file sullo standard output
+findicon - shortcut for iconlib search
 
 == Synopsis
 
-*findicon* [_OPTION_]... [_FILE_]...
+*findicon* [_OPTION_]... [_pattern_]
 
 == Description
 
-Copia ogni _FILE_ sullo standard output nell'ordine.
-Se _FILE_ e un singolo trattino (*-*), legge lo standard input in quella
-posizione.
-Se non e dato alcun _FILE_, legge lo standard input una sola volta.
+*findicon* is a shortcut for *iconlib search*.
+All arguments are forwarded to that command.
 
-*findicon* e simile nello spirito a *cat*(1): scrive la concatenazione degli
-input sullo standard output.
+See *iconlib*(1) for details.
 
-== Options
+== See also
 
-*-v, --verbose*::
-  Stampa ogni nome di file (o ``standard input`` per *-*) sullo standard
-  error prima di copiare quell'input.
-  Ripetere per registrazioni piu dettagliate.
-
-*-q, --quiet*::
-  Sopprime i messaggi che verrebbero stampati da *--verbose*.
-  Se sono dati sia *--verbose* sia *--quiet*, prevale *--quiet*.
-
-*-h, --help*::
-  Stampa un riepilogo d'uso ed esce con successo.
-
-*--version*::
-  Stampa versione e informazioni sulla licenza ed esce con successo.
-
-== Exit status
-
-*0*::
-  Successo.
-
-*1*::
-  Si e verificato un errore (opzioni non valide, file illeggibile, o errore
-  di I/O).
+*iconlib*(1)
 
 == Author
 
@@ -59,10 +34,3 @@ Written by {project-author} <{project-email}>.
 
 Copyright (C) {project-year}.
 License AGPL-3.0-or-later.
-Questo e software libero: sei libero di modificarlo e ridistribuirlo secondo i
-termini della GNU Affero General Public License.
-NON VI E ALCUNA GARANZIA, nei limiti consentiti dalla legge.
-Vedere il file LICENSE nella distribuzione sorgente per il testo completo della
-licenza, inclusi i termini supplementari che dichiarano che questo progetto si
-oppone allo sfruttamento dell'IA e all'egemonia dell'IA, e rifiuta le licenze
-sconsiderate stile MIT e politicamente ingenue stile BSD.

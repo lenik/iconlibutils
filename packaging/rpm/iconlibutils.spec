@@ -21,6 +21,7 @@ BuildArch:      noarch
 BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  gettext
 BuildRequires:  asciidoctor
 
@@ -28,14 +29,16 @@ Requires:       python3
 Requires:       python3-inflect
 Requires:       wordnet-base
 Suggests:       themestylebrowser
+Suggests:       python3-faiss
+Suggests:       python3-pillow
+Suggests:       librsvg2
 
 %description
 iconlibutils provides the iconlib command to search, inspect, pull, and
 browse icons from libraries such as tabler-icons, streamline-vectors, and
-heroicons. Library search paths are configured in /etc/iconlibutils/path
-and ~/.config/iconlibutils/path. Plain-English search uses offline WordNet
-(wordnet-base) and python3-inflect for inflection and synonym expansion,
-ranked by score.
+heroicons. findicon is a shortcut for iconlib search. Library discovery
+uses drop-in metadata under /usr/share/iconlibutils/library/. Plain-English
+search uses offline WordNet (wordnet-base) and python3-inflect.
 
 %prep
 %setup -q -n %{name}-%{srcversion}
@@ -56,14 +59,9 @@ meson install -C build --destdir=%{buildroot}
 
 %files
 %{_bindir}/iconlib
-%{_bindir}/iconlibutils
 %{_bindir}/findicon
-%{_bindir}/ilcommon.py
-%{_bindir}/paths.py
-%{_bindir}/rc.py
-%{_bindir}/autoindex.py
-%{_bindir}/schema.py
-%{_bindir}/semantic.py
+%{python3_sitelib}/iconlib/
+%{_datadir}/iconlibutils/
 %{_datadir}/bash-completion/completions/iconlib
 %{_datadir}/bash-completion/completions/findicon
 %{_mandir}/man1/iconlib.1*

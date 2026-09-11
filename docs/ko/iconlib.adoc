@@ -24,7 +24,9 @@ heroicons 등)를 검색하고, 경로와 메타데이터를 출력하며, 프�
 
 라이브러리 루트는 다음에서 읽습니다(이후 항목이 이름으로 덮어씀):
 
-* */etc/iconlibutils/path*
+* NOTE: Primary discovery is now */usr/share/iconlibutils/library/<name>*; */etc/iconlibutils/path* is optional/legacy. See the English or zh_CN manual for details.
+
+*/etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
 
 비어 있지 않고 주석이 아닌 각 줄은: *TYPE* *NAME* *PATH*.

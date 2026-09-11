@@ -1,3 +1,24 @@
+iconlibutils (0.0.2) unstable; urgency=medium
+
+  [ Lenik (谢继雷) ]
+  * Restructure sources into the iconlib Python package; stop installing
+    helper modules to bindir.
+  * Make findicon a shortcut for iconlib search; remove the iconlibutils
+    bindir alias.
+  * Extend iconlib index with -w/--web, -F/--faiss, -f/--force, -s/--
+    upscale, default -o .
+  * Add CLIP/FAISS indexer writing faiss.index, faiss.map, and
+    faiss.json.
+  * Require local CLIP model for FAISS index; print hfd download
+    instructions when missing.
+  * Query FAISS indexes during iconlib search when present for selected
+    libraries.
+  * Add bytesize-icons FAISS index/search integration test.
+  * Discover libraries from drop-in files
+    /usr/share/iconlibutils/library/<name> (not library.conf dirs).
+
+ -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 21:40:00 +0800
+
 iconlibutils (0.0.1) unstable; urgency=medium
 
   [ Lenik ]

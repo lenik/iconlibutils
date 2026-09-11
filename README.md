@@ -5,9 +5,10 @@ from installed icon libraries (tabler-icons, streamline-vectors, heroicons, …)
 
 ## Repository layout
 
-- `src/` — Python sources (`iconlib.py`, `findicon.py`, shared modules)
+- `src/iconlib/` — Python package (`cli`, `autoindex`, index helpers, …)
+- `src/findicon.py` — bindir shortcut to `iconlib search`
 - `tests/` — Python unit tests (`unittest`)
-- `debian/` — Debian packaging (including path-file postinst)
+- `debian/` — Debian packaging
 - `po/` — gettext catalogs
 - `docs/` — AsciiDoc man page sources
 - `meson.build` — install rules and tests
@@ -33,12 +34,20 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 - `search [-l/--long | -1/--names] [pattern]` — list matching icons (score
   descending; `--long` includes score). Plain English queries expand
   singular/plural and WordNet synonyms via `python3-inflect` + `wordnet-base`
-  (e.g. `cat` → `kitty`).
+  (e.g. `cat` → `kitty`). When a selected library has a FAISS index
+  (`faiss.index` next to the library / preview dir), CLIP text query results
+  are merged in. `findicon` is a shortcut for this command.
+- `libraries` / `ls` `[-l|--long | -1|--names]` — list discovered libraries
 - `which [-a] <name>` — print preferred path (or all with `-a`)
 - `info <name>` — formats, sizes, variants, paths
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — copy into the project
 - `push [pattern]` — not implemented yet
 - `browse [pattern]` — run `themestylebrowser` on libraries with `.themestyles`
+- `index [-w|--web] [-F|--faiss] [-f|--force] [-s|--upscale SIZE] [-o DIR]` —
+  web preview (default) and/or CLIP FAISS index (`faiss.index` /
+  `faiss.map` / `faiss.json`). FAISS needs a local CLIP checkout (see
+  `hfd openai/clip-vit-base-patch32 --local-dir ~/models/clip-vit-base-patch32`
+  with `HF_ENDPOINT=https://hf-mirror.com` if needed).
 
 ### Patterns
 
@@ -49,9 +58,19 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 
 ### Configuration
 
-Merged library registry (`TYPE NAME PATH`; `auto` walks image trees):
+Libraries are discovered by scanning drop-in metadata **files**:
 
-- `/etc/iconlibutils/path` (seeded by package postinst)
+- `/usr/share/iconlibutils/library/<name>`
+- `/usr/local/share/iconlibutils/library/<name>`
+- `~/.config/iconlibutils/library/<name>`
+
+Each `icons-<name>` package installs a file named `<name>` there (key=value:
+`name`, `type`, `path`, `title`, `license`, `homepage`, `description`).
+If `path` is omitted, `/usr/share/icons-<name>` is assumed.
+
+Optional legacy path files (`TYPE NAME PATH`) still override by name:
+
+- `/etc/iconlibutils/path`
 - `~/.config/iconlibutils/path`
 
 Project file `.iconlibrc` (walk cwd → root): same flags as globals; its
@@ -110,8 +129,9 @@ Debug symlinks: `ninja -C /build install-symlinks`.
 dpkg-buildpackage -us -uc
 ```
 
-Postinst writes managed entries into `/etc/iconlibutils/path` for known
-libraries present under `/usr/share/…`.
+Postinst ensures `/usr/share/iconlibutils/library` exists. Individual
+`icons-*` packages register themselves by installing
+`/usr/share/iconlibutils/library/<name>` (a file).
 
 ## License
 

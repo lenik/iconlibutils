@@ -26,7 +26,9 @@ metadonnees, copie des icones dans un projet, et peut ouvrir
 Les racines des bibliotheques sont lues depuis (les entrees ulterieures
 remplacent par nom) :
 
-* */etc/iconlibutils/path*
+* NOTE: Primary discovery is now */usr/share/iconlibutils/library/<name>*; */etc/iconlibutils/path* is optional/legacy. See the English or zh_CN manual for details.
+
+*/etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
 
 Chaque ligne non vide et non commentaire est : *TYPE* *NAME* *PATH*.

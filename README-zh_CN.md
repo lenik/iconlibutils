@@ -5,9 +5,10 @@
 
 ## 仓库结构
 
-- `src/` — Python 源码（`iconlib.py`、`findicon.py` 与共享模块）
+- `src/iconlib/` — Python 包（`cli`、`autoindex`、索引相关模块等）
+- `src/findicon.py` — `iconlib search` 的 bindir 快捷命令
 - `tests/` — 单元测试（`unittest`）
-- `debian/` — Debian 打包（含 path 文件的 postinst）
+- `debian/` — Debian 打包
 - `po/` — gettext 翻译
 - `docs/` — AsciiDoc man 页
 - `meson.build` — 安装与测试规则
@@ -33,11 +34,16 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 - `search [-l/--long | -1/--names] [pattern]` — 列出匹配图标（按 score
   降序；`--long` 含 score）。普通英文词会做单复数与 WordNet 同义词联想
  （依赖 `python3-inflect` + `wordnet-base`，例如 `cat` → `kitty`）。
+  `findicon` 是该命令的快捷方式。
+- `libraries` / `ls` `[-l|--long | -1|--names]` — 列出已发现的图库
 - `which [-a] <name>` — 打印首选路径（`-a` 打印全部）
 - `info <name>` — 格式、尺寸、变体与路径
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — 复制到项目
 - `push [pattern]` — 尚未实现
 - `browse [pattern]` — 对含 `.themestyles` 的库启动 `themestylebrowser`
+- `index [-w|--web] [-F|--faiss] [-f|--force] [-s|--upscale SIZE] [-o DIR]` —
+  生成网页预览（默认）和/或 CLIP FAISS 索引（`faiss.index` /
+  `faiss.map` / `faiss.json`）
 
 ### 匹配模式
 
@@ -48,9 +54,19 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 
 ### 配置
 
-合并的库注册表（`TYPE NAME PATH`；`auto` 会遍历图片树）：
+通过扫描 drop-in **文件** 发现图库：
 
-- `/etc/iconlibutils/path`（打包 postinst 写入）
+- `/usr/share/iconlibutils/library/<name>`
+- `/usr/local/share/iconlibutils/library/<name>`
+- `~/.config/iconlibutils/library/<name>`
+
+每个 `icons-<name>` 包安装名为 `<name>` 的文件（`key=value`：
+`name`、`type`、`path`、`title`、`license`、`homepage`、`description`）。
+若省略 `path`，默认 `/usr/share/icons-<name>`。
+
+可选的旧版 path 文件（按名称覆盖）：
+
+- `/etc/iconlibutils/path`
 - `~/.config/iconlibutils/path`
 
 项目文件 `.iconlibrc`（从 cwd 向上查找）：选项与全局相同；所在目录为
@@ -107,8 +123,8 @@ meson install -C /build
 dpkg-buildpackage -us -uc
 ```
 
-postinst 会在 `/usr/share/…` 存在时，把已知图标库写入
-`/etc/iconlibutils/path`。
+postinst 会确保 `/usr/share/iconlibutils/library` 存在。各 `icons-*`
+包通过安装 `/usr/share/iconlibutils/library/<name>`（文件）自注册。
 
 ## 许可证
 

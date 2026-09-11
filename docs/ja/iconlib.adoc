@@ -24,7 +24,9 @@ streamline-vectors、heroicons など）を検索し、パスとメタデータ�
 
 ライブラリのルートは次から読みます（後のエントリが名前で上書き）:
 
-* */etc/iconlibutils/path*
+* NOTE: Primary discovery is now */usr/share/iconlibutils/library/<name>*; */etc/iconlibutils/path* is optional/legacy. See the English or zh_CN manual for details.
+
+*/etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
 
 空でなくコメントでもない各行は: *TYPE* *NAME* *PATH*。

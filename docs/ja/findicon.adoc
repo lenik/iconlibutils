@@ -9,45 +9,22 @@ v{project-version}, {project-year}
 
 == Name
 
-findicon - ファイルを標準出力へ連結する
+findicon - shortcut for iconlib search
 
 == Synopsis
 
-*findicon* [_OPTION_]... [_FILE_]...
+*findicon* [_OPTION_]... [_pattern_]
 
 == Description
 
-各 _FILE_ を順に標準出力へコピーします。
-_FILE_ が単独のハイフン（*-*）の場合、その位置で標準入力を読みます。
-_FILE_ が与えられない場合、標準入力を一度だけ読みます。
+*findicon* is a shortcut for *iconlib search*.
+All arguments are forwarded to that command.
 
-*findicon* は精神的に *cat*(1) に似ており、入力の連結を標準出力へ書き出します。
+See *iconlib*(1) for details.
 
-== Options
+== See also
 
-*-v, --verbose*::
-  その入力をコピーする前に、各ファイル名（*-* の場合は ``standard input``）を
-  標準エラーへ表示します。
-  繰り返すとより詳細なログになります。
-
-*-q, --quiet*::
-  *--verbose* が表示するメッセージを抑制します。
-  *--verbose* と *--quiet* の両方がある場合、*--quiet* が優先されます。
-
-*-h, --help*::
-  用法の要約を表示して正常終了します。
-
-*--version*::
-  バージョンとライセンス情報を表示して正常終了します。
-
-== Exit status
-
-*0*::
-  成功。
-
-*1*::
-  エラーが発生しました（不正なオプション、読めないファイル、または I/O
-  エラー）。
+*iconlib*(1)
 
 == Author
 
@@ -57,9 +34,3 @@ Written by {project-author} <{project-email}>.
 
 Copyright (C) {project-year}.
 License AGPL-3.0-or-later.
-これはフリーソフトウェアです。GNU Affero General Public License の条項の下で
-変更および再配布が自由です。
-法律で認められる範囲で、一切の保証はありません。
-完全なライセンス本文（本プロジェクトが AI による搾取と AI 覇権に反対し、
-無思慮な MIT 型および政治的にナイーブな BSD 型ライセンスを拒む旨の補足条項を
-含む）はソース配布内の LICENSE ファイルを参照してください。

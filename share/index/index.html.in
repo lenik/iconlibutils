@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>@LIB_TITLE@ — icon preview</title>
+  <meta name="description" content="Preview index for @LIB_NAME@ (@LIB_COUNT@ icons)">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>@LIB_TITLE@</h1>
+      <p class="meta">
+        <span id="count">@LIB_COUNT@</span> icons
+        · <span>@LIB_LICENSE@</span>
+        · <a href="@LIB_HOMEPAGE@" rel="noopener" target="_blank">homepage</a>
+      </p>
+    </div>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Filter icons…" autocomplete="off" autofocus>
+      <label class="size">
+        Size
+        <input id="size" type="range" min="16" max="96" step="8" value="40">
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <p id="status" class="status" hidden></p>
+    <div id="grid" class="grid" style="--icon-size: 40px"></div>
+  </main>
+
+  <footer class="foot">
+    <span>Generated preview for <code>@LIB_NAME@</code></span>
+    <span id="shown"></span>
+  </footer>
+
+  <dialog id="dlg">
+    <form method="dialog" class="dlg-body">
+      <img id="dlg-img" alt="">
+      <div>
+        <h2 id="dlg-name"></h2>
+        <p id="dlg-path" class="path"></p>
+        <div class="dlg-actions">
+          <button type="button" id="copy-name">Copy name</button>
+          <button type="button" id="copy-path">Copy path</button>
+          <button value="close">Close</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    window.ICONLIB_PREVIEW = {
+      name: "@LIB_NAME@",
+      title: "@LIB_TITLE@",
+      license: "@LIB_LICENSE@",
+      homepage: "@LIB_HOMEPAGE@",
+      manifest: "icons.json"
+    };
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>

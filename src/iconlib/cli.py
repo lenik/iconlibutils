@@ -12,7 +12,8 @@ import sys
 from pathlib import Path
 from typing import TextIO
 
-from autoindex import (
+from .autoindex import (
+    IconGroup,
     filter_assets,
     filter_groups,
     index_libraries,
@@ -20,10 +21,13 @@ from autoindex import (
     prefer_asset,
     search_groups,
 )
-from ilcommon import init_i18n
-from paths import env_path_files, load_libraries, resolve_library_names
-from rc import load_rc
-from schema import expand_dest
+from .faissidx import find_faiss_dir, generate_faiss_index, query_libraries_faiss
+from .ilcommon import init_i18n
+from .indexgen import default_template_dir, generate_index
+from .paths import load_libraries, resolve_library_names
+from .rc import load_rc
+from .schema import expand_dest
+from .semantic import is_plain_query
 
 
 def usage_epilog() -> str:
@@ -32,9 +36,11 @@ def usage_epilog() -> str:
         "  search [pattern]   list matching icon names\n"
         "  which [-a] name    print icon path(s)\n"
         "  info name          print icon metadata\n"
+        "  libraries          list discovered icon libraries\n"
         "  pull [pattern]     copy icons into the project\n"
         "  push [pattern]     upload icons (not implemented)\n"
         "  browse [pattern]   open themestylebrowser\n"
+        "  index              generate web preview and/or FAISS index\n"
         "\n"
         "Pattern: empty=all, exact name, glob, or /regex\n"
         "Plain English words also match synonyms/inflections (scored).\n"
@@ -155,6 +161,110 @@ def build_parser() -> argparse.ArgumentParser:
     bp = sub.add_parser("browse", help=_("browse with themestylebrowser"))
     bp.add_argument("pattern", nargs="?", default="")
 
+    lp = sub.add_parser(
+        "libraries",
+        aliases=["ls"],
+        help=_("list discovered icon libraries"),
+    )
+    lp.add_argument(
+        "-l",
+        "--long",
+        action="store_true",
+        help=_("show path, title, license, homepage"),
+    )
+    lp.add_argument(
+        "-1",
+        "--names",
+        action="store_true",
+        help=_("print library names only"),
+    )
+
+    xp = sub.add_parser(
+        "index",
+        help=_("generate web preview and/or FAISS index"),
+    )
+    xp.add_argument(
+        "-w",
+        "--web",
+        action="store_true",
+        help=_("create web preview (default when neither -w nor -F is given)"),
+    )
+    xp.add_argument(
+        "-F",
+        "--faiss",
+        action="store_true",
+        help=_("create FAISS index (faiss.index / faiss.map / faiss.json)"),
+    )
+    xp.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help=_("overwrite existing outputs"),
+    )
+    xp.add_argument(
+        "-s",
+        "--upscale",
+        default="300x300",
+        metavar="SIZE",
+        help=_("FAISS canvas size before CLIP (default: 300x300)"),
+    )
+    xp.add_argument(
+        "-o",
+        "--outdir",
+        default=".",
+        metavar="DIR",
+        help=_("output directory (default: .)"),
+    )
+    xp.add_argument(
+        "--name",
+        dest="index_name",
+        metavar="NAME",
+        help=_("library id embedded in the web page (default: first -l or basename)"),
+    )
+    xp.add_argument(
+        "--title",
+        dest="index_title",
+        default="",
+        help=_("web preview display title"),
+    )
+    xp.add_argument(
+        "--license",
+        dest="index_license",
+        default="see-upstream",
+        help=_("license label shown in the web page"),
+    )
+    xp.add_argument(
+        "--homepage",
+        dest="index_homepage",
+        default="#",
+        help=_("homepage URL shown in the web page"),
+    )
+    xp.add_argument(
+        "--icons-root",
+        dest="icons_roots",
+        action="append",
+        default=[],
+        metavar="DIR",
+        help=_("icon root to scan (repeatable; default: selected library paths)"),
+    )
+    xp.add_argument(
+        "--icons-url-prefix",
+        default="..",
+        help=_("URL prefix for SVG hrefs in the web preview (default: ..)"),
+    )
+    xp.add_argument(
+        "--template",
+        dest="index_template",
+        metavar="DIR",
+        help=_("web template directory (default: /usr/share/iconlibutils/index)"),
+    )
+    xp.add_argument(
+        "--max-icons",
+        type=int,
+        default=0,
+        help=_("limit number of icons for web preview (0 = unlimited)"),
+    )
+
     return p
 
 
@@ -217,7 +327,7 @@ class Context:
         self.maps = merge_maps(self.rc.maps, args.maps or [])
         self.project_dir = self.rc.project_dir or Path.cwd()
 
-        self.registry = load_libraries(env_path_files())
+        self.registry = load_libraries()
         try:
             self.libs = resolve_library_names(
                 self.registry, self.lib_specs if self.lib_specs else None
@@ -241,8 +351,39 @@ class Context:
 
 def cmd_search(ctx: Context) -> int:
     long_fmt = bool(getattr(ctx.args, "long", False))
-    ranked = search_groups(ctx.groups, ctx.args.pattern, ctx.lib_names)
-    for score, g in ranked:
+    pattern = ctx.args.pattern
+    ranked = search_groups(ctx.groups, pattern, ctx.lib_names)
+    by_name: dict[str, tuple[float, object]] = {g.name: (score, g) for score, g in ranked}
+
+    # FAISS semantic query when selected libraries have an index.
+    if pattern and is_plain_query(pattern):
+        has_faiss = any(find_faiss_dir(lib.path, lib.meta_path) for lib in ctx.libs)
+        if has_faiss:
+            try:
+                faiss_hits = query_libraries_faiss(
+                    ctx.libs, pattern, verbose=ctx.verbose
+                )
+            except RuntimeError as e:
+                # Missing CLIP model — name search still works; warn once.
+                if ctx.verbose >= 0:
+                    print(f"iconlib: FAISS skipped:\n{e}", file=sys.stderr)
+                faiss_hits = []
+            for score, lib_name, icon_name in faiss_hits:
+                g = ctx.groups.get(icon_name)
+                if g is None:
+                    continue
+                assets = [a for a in g.assets if a.library == lib_name]
+                if not assets:
+                    assets = [a for a in g.assets if a.library in ctx.lib_names]
+                if not assets:
+                    continue
+                ng = IconGroup(name=icon_name, assets=assets)
+                prev = by_name.get(icon_name)
+                if prev is None or score > prev[0]:
+                    by_name[icon_name] = (score, ng)
+
+    results = sorted(by_name.values(), key=lambda x: (-x[0], x[1].name))
+    for score, g in results:
         if long_fmt:
             by_lib: dict[str, list] = {}
             for a in g.assets:
@@ -374,7 +515,7 @@ def cmd_browse(ctx: Context) -> int:
     pattern = ctx.args.pattern
     libs = list(ctx.libs)
     if pattern:
-        from autoindex import compile_pattern
+        from .autoindex import compile_pattern
 
         pred = compile_pattern(pattern)
         # Prefer matching library names; if none, libraries that contain matching icons
@@ -412,15 +553,132 @@ def cmd_browse(ctx: Context) -> int:
     return 1  # unreachable
 
 
+def cmd_libraries(args: argparse.Namespace) -> int:
+    """List discovered libraries without indexing icon trees."""
+    registry = load_libraries()
+    try:
+        libs = resolve_library_names(
+            registry, list(args.libraries) if args.libraries else None
+        )
+    except KeyError as e:
+        print(f"iconlib: {e}", file=sys.stderr)
+        return 1
+
+    if not libs:
+        if not getattr(args, "quiet", False):
+            print("iconlib: no libraries discovered", file=sys.stderr)
+        return 1
+
+    for lib in libs:
+        if getattr(args, "names", False):
+            print(lib.name)
+            continue
+        if getattr(args, "long", False):
+            title = lib.title or lib.name
+            license_ = lib.license or "-"
+            home = lib.homepage or "-"
+            print(f"{lib.name}\t{lib.path}\t{title}\t{license_}\t{home}")
+        else:
+            exists = "ok" if lib.path.is_dir() else "missing"
+            print(f"{lib.name}\t{lib.path}\t{exists}")
+    return 0
+
+
+def cmd_index(args: argparse.Namespace) -> int:
+    """Generate web preview and/or FAISS index; uses -l and/or --icons-root."""
+    do_web = bool(args.web)
+    do_faiss = bool(args.faiss)
+    if not do_web and not do_faiss:
+        do_web = True
+
+    roots = [Path(p).expanduser() for p in (args.icons_roots or [])]
+    name = args.index_name or ""
+    verbose = -1 if args.quiet else args.verbose
+    outdir = Path(args.outdir).expanduser()
+
+    if not roots:
+        try:
+            ctx = Context(args)
+        except SystemExit as e:
+            print(e, file=sys.stderr)
+            return 1
+        except ValueError as e:
+            print(f"iconlib: {e}", file=sys.stderr)
+            return 1
+        roots = [lib.path for lib in ctx.libs]
+        if not name and ctx.libs:
+            name = ctx.libs[0].name
+        verbose = ctx.verbose
+
+    if not roots:
+        print(
+            "iconlib: index requires -l LIBRARY and/or --icons-root DIR",
+            file=sys.stderr,
+        )
+        return 1
+    if not name:
+        name = roots[0].name
+
+    if do_web:
+        web_outs = [
+            outdir / "index.html",
+            outdir / "icons.json",
+            outdir / "style.css",
+            outdir / "app.js",
+        ]
+        if not args.force and any(p.exists() for p in web_outs):
+            print(
+                "iconlib: web preview outputs exist (use -f/--force to overwrite)",
+                file=sys.stderr,
+            )
+            return 1
+        template = (
+            Path(args.index_template) if args.index_template else default_template_dir()
+        )
+        try:
+            count = generate_index(
+                name=name,
+                title=args.index_title or name,
+                license_=args.index_license,
+                homepage=args.index_homepage,
+                outdir=outdir,
+                icons_roots=roots,
+                template=template,
+                icons_url_prefix=args.icons_url_prefix,
+                max_icons=args.max_icons,
+            )
+        except (FileNotFoundError, ValueError) as e:
+            print(f"iconlib: {e}", file=sys.stderr)
+            return 1
+        if verbose >= 0:
+            print(f"iconlib: wrote web preview for {name}: {count} icons → {outdir}")
+
+    if do_faiss:
+        try:
+            n = generate_faiss_index(
+                icons_roots=roots,
+                outdir=outdir,
+                upscale=args.upscale,
+                force=args.force,
+                verbose=verbose,
+            )
+        except (FileExistsError, FileNotFoundError, ValueError, RuntimeError) as e:
+            print(f"iconlib: {e}", file=sys.stderr)
+            return 1
+        if verbose >= 0:
+            print(f"iconlib: wrote FAISS index for {n} icons → {outdir}")
+
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv if argv is None else argv)
     init_i18n(argv[0])
 
     parser = build_parser()
+    cmds = {"search", "which", "info", "pull", "push", "browse", "index", "libraries", "ls"}
     # Pre-handle --version before required subcommand
-    if "--version" in argv[1:] and not any(
-        a in {"search", "which", "info", "pull", "push", "browse"} for a in argv[1:]
-    ):
+    if "--version" in argv[1:] and not any(a in cmds for a in argv[1:]):
         print_version(sys.stdout)
         return 0
 
@@ -431,6 +689,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.cmd:
         parser.print_help()
         return 0
+
+    if args.cmd == "index":
+        return cmd_index(args)
+    if args.cmd in ("libraries", "ls"):
+        return cmd_libraries(args)
 
     try:
         ctx = Context(args)

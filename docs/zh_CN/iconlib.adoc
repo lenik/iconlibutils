@@ -21,7 +21,17 @@ iconlib - 从已安装的图标库搜索和管理图标
 等），打印路径与元数据，将图标复制到项目中，并可对提供 *.themestyles* 文件的
 库打开 *themestylebrowser*(1)。
 
-库根路径从以下位置读取（后者按名称覆盖前者）：
+通过扫描 drop-in **文件** 发现图库（后者与旧版 path 文件按名称覆盖）：
+
+* */usr/share/iconlibutils/library/<name>*
+* */usr/local/share/iconlibutils/library/<name>*
+* *~/.config/iconlibutils/library/<name>*
+
+每个文件为 *key=value*（*name*、*type*、*path*、*title*、
+*license*、*homepage*、*description* 等）。各 *icons-<name>* 包安装名为
+*<name>* 的文件。省略 *path* 时默认为 */usr/share/icons-<name>*。
+
+可选的旧版注册表：
 
 * */etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
@@ -122,6 +132,30 @@ glob、正则与空模式仍使用字面匹配。
 对第一个包含 *.themestyles* 的匹配库运行 *themestylebrowser*。
 没有该文件的库会跳过并给出警告。
 
+=== index
+
+*iconlib* *index* [*-w*|*--web*] [*-F*|*--faiss*] [*-f*|*--force*]
+[*-s*|*--upscale* _SIZE_] [*-o*|*--outdir* _DIR_] …
+
+为选定库（*-l*）和/或 *--icons-root* 生成索引。
+
+*-w, --web*::
+  生成 HTML 预览（默认：未指定 *-w*/*-F* 时启用）。
+
+*-F, --faiss*::
+  生成 CLIP/FAISS 索引：*faiss.index*、*faiss.map*、*faiss.json*。
+  图标先放入白底画布（*--upscale*，默认 *300x300*，保持比例），再用
+  CLIP *224×224* 编码图像与文件名文本（文件名中的 *_*、*-* 等转为空格）。
+
+*-f, --force*::
+  覆盖已有输出。
+
+*-s, --upscale* _SIZE_::
+  FAISS 预处理画布尺寸（默认 *300x300*）。
+
+*-o, --outdir* _DIR_::
+  输出目录（默认 *.*）。
+
 == Patterns
 
 * (empty):: 全部图标
@@ -134,11 +168,17 @@ glob、正则与空模式仍使用字面匹配。
 *.iconlibrc*::
   每项目选项（*-l*、*-d*、*-s*、*-m* 等）。
 
+*/usr/share/iconlibutils/library/<name>*::
+  打包图库元数据文件（主要发现方式）。
+
+*~/.config/iconlibutils/library/<name>*::
+  用户级图库元数据覆盖文件。
+
 */etc/iconlibutils/path*::
-  系统库注册表（当 share 目录存在时由软件包 postinst 初始化）。
+  可选的旧版系统注册表（*TYPE NAME PATH*）。
 
 *~/.config/iconlibutils/path*::
-  用户库注册表。
+  可选的旧版用户注册表。
 
 == Exit status
 

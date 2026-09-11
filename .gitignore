@@ -108,6 +108,8 @@ debian/iconlibutils/
 debian/files
 depcomp
 dist/
+!tests/bytesize-icons/dist/
+!tests/bytesize-icons/dist/**
 install-sh
 itree.tex
 libauto

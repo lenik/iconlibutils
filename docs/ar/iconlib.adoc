@@ -24,7 +24,9 @@ streamline-vectors و heroicons وما شابهها)، ويطبع المسارا
 
 تُقرأ جذور المكتبات من (تتجاوز الإدخالات اللاحقة بالاسم):
 
-* */etc/iconlibutils/path*
+* NOTE: Primary discovery is now */usr/share/iconlibutils/library/<name>*; */etc/iconlibutils/path* is optional/legacy. See the English or zh_CN manual for details.
+
+*/etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
 
 كل سطر غير فارغ وغير تعليقي هو: *TYPE* *NAME* *PATH*.

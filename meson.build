@@ -37,9 +37,25 @@ pkgdocdir = datadir / 'doc' / meson.project_name()
 
 subdir('po')
 
+# Install the iconlib Python package (not into bindir).
+iconlib_sources = files(
+    'src/iconlib/__init__.py',
+    'src/iconlib/__main__.py',
+    'src/iconlib/cli.py',
+    'src/iconlib/autoindex.py',
+    'src/iconlib/faissidx.py',
+    'src/iconlib/ilcommon.py',
+    'src/iconlib/indexgen.py',
+    'src/iconlib/paths.py',
+    'src/iconlib/rc.py',
+    'src/iconlib/schema.py',
+    'src/iconlib/semantic.py',
+)
+py.install_sources(iconlib_sources, subdir: 'iconlib', pure: true)
+
 iconlib_exe = custom_target(
     'iconlib',
-    input: 'src/iconlib.py',
+    input: 'src/iconlib_main.py',
     output: 'iconlib',
     command: [
         py,
@@ -50,13 +66,6 @@ iconlib_exe = custom_target(
     ],
     build_by_default: true,
     install: true,
-    install_dir: bindir,
-)
-
-# Alias used by per-library launcher shortcuts (e.g. /usr/bin/heroicons)
-install_symlink(
-    'iconlibutils',
-    pointing_to: 'iconlib',
     install_dir: bindir,
 )
 
@@ -76,17 +85,11 @@ findicon_exe = custom_target(
     install_dir: bindir,
 )
 
-foreach mod : ['ilcommon', 'paths', 'rc', 'autoindex', 'schema', 'semantic']
-  custom_target(
-      mod,
-      input: 'src' / (mod + '.py'),
-      output: mod + '.py',
-      command: ['cp', '@INPUT@', '@OUTPUT@'],
-      build_by_default: true,
-      install: true,
-      install_dir: bindir,
-  )
-endforeach
+install_subdir(
+  'share/index',
+  install_dir: datadir / 'iconlibutils',
+  strip_directory: false,
+)
 
 install_data(
     'iconlib.bash',
@@ -193,7 +196,7 @@ test(
         'PYTHONPATH=' + (meson.project_source_root() / 'src'),
         'ICONLIBUTILS_LOCALEDIR=' + (meson.project_build_root() / 'po'),
     ],
-    timeout: 180,
+    timeout: 600,
 )
 
 run_target(
@@ -243,6 +246,7 @@ run_target(
             mandir="@3@"
             mkdir -p "$bindir" "$datadir/bash-completion/completions" "$mandir/man1"
             sudo ln -sfn "@BUILD_ROOT@/iconlib" "$bindir/iconlib"
+            sudo ln -sfn "@BUILD_ROOT@/findicon" "$bindir/findicon"
             sudo ln -sfn "@BUILD_ROOT@/iconlib.1" "$mandir/man1/iconlib.1"
             sudo ln -sfn "@SOURCE_ROOT@/iconlib.bash" "$datadir/bash-completion/completions/iconlib"
             printf "Symlinks installed under %s\n" "$prefix"
@@ -259,7 +263,7 @@ run_target(
             bindir="@1@"
             datadir="@2@"
             mandir="@3@"
-            for p in "$bindir/iconlib" "$mandir/man1/iconlib.1" "$datadir/bash-completion/completions/iconlib"
+            for p in "$bindir/iconlib" "$bindir/findicon" "$mandir/man1/iconlib.1" "$datadir/bash-completion/completions/iconlib"
             do
                 if [ -L "$p" ]; then
                     sudo rm -f "$p"

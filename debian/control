@@ -14,11 +14,12 @@ Depends:
     python3-inflect,
     wordnet-base,
     ${misc:Depends}
-Suggests: themestylebrowser
+Suggests: themestylebrowser, python3-faiss, python3-pil, librsvg2-bin
 Description: search and manage icons from installed icon libraries
  iconlibutils provides the iconlib command to search, inspect, pull, and
  browse icons from libraries such as tabler-icons, streamline-vectors, and
- heroicons. Library search paths are configured in /etc/iconlibutils/path
- and ~/.config/iconlibutils/path. Plain-English search uses offline WordNet
- (wordnet-base) and python3-inflect for inflection and synonym expansion,
- ranked by score.
+ heroicons. findicon is a shortcut for iconlib search. Library discovery
+ uses /usr/share/iconlibutils/library/*/library.conf (and optional legacy
+ path files). Plain-English search uses offline WordNet (wordnet-base) and
+ python3-inflect. Optional FAISS indexing (-F) needs python3-faiss,
+ python3-pil, librsvg2-bin, and CLIP via torch/transformers.

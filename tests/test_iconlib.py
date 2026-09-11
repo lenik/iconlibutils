@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from autoindex import (
+from iconlib.autoindex import (
     compile_pattern,
     filter_groups,
     index_libraries,
@@ -15,10 +15,10 @@ from autoindex import (
     prefer_asset,
     search_groups,
 )
-from paths import Library, load_libraries, resolve_library_names
-from rc import find_iconlibrc, load_rc, parse_rc_text
-from schema import expand_dest, parse_schema
-from semantic import (
+from iconlib.paths import Library, load_libraries, resolve_library_names
+from iconlib.rc import find_iconlibrc, load_rc, parse_rc_text
+from iconlib.schema import expand_dest, parse_schema
+from iconlib.semantic import (
     expand_query_terms,
     inflection_forms,
     is_plain_query,
@@ -27,7 +27,7 @@ from semantic import (
 
 
 class PathRegistryTests(unittest.TestCase):
-    def test_parse_and_merge(self) -> None:
+    def test_parse_and_merge_legacy_path_files(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             etc = Path(td) / "etc-path"
             user = Path(td) / "user-path"
@@ -37,10 +37,40 @@ class PathRegistryTests(unittest.TestCase):
                 encoding="utf-8",
             )
             user.write_text("auto old /tmp/new\nauto mdi /usr/share/mdi\n", encoding="utf-8")
-            libs = load_libraries([etc, user])
+            libs = load_libraries(library_dirs=[], path_files=[etc, user])
             self.assertEqual(libs["old"].path, Path("/tmp/new"))
             self.assertIn("tabler-icons", libs)
             self.assertIn("mdi", libs)
+
+    def test_library_dir_discovery(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "library"
+            root.mkdir(parents=True)
+            # Primary form: drop-in file named after the library
+            (root / "lucide").write_text(
+                "name=lucide\n"
+                "type=auto\n"
+                "path=/usr/share/icons-lucide\n"
+                "title=Lucide\n"
+                "license=ISC\n"
+                "homepage=https://lucide.dev/\n",
+                encoding="utf-8",
+            )
+            # Legacy dir form still supported
+            feather = root / "feather"
+            feather.mkdir()
+            (feather / "library.conf").write_text(
+                "path=/opt/feather\ntitle=Feather\n",
+                encoding="utf-8",
+            )
+            libs = load_libraries(library_dirs=[root], path_files=[])
+            self.assertEqual(set(libs), {"lucide", "feather"})
+            self.assertEqual(libs["lucide"].path, Path("/usr/share/icons-lucide"))
+            self.assertEqual(libs["lucide"].title, "Lucide")
+            self.assertEqual(libs["lucide"].license, "ISC")
+            self.assertEqual(libs["lucide"].meta_path, root / "lucide")
+            self.assertEqual(libs["feather"].name, "feather")
+            self.assertEqual(libs["feather"].path, Path("/opt/feather"))
 
     def test_prefix_resolve(self) -> None:
         reg = {
@@ -54,6 +84,37 @@ class PathRegistryTests(unittest.TestCase):
             resolve_library_names(reg, ["tabler"])
         got2 = resolve_library_names(reg, ["tabler-i"])
         self.assertEqual(got2[0].name, "tabler-icons")
+
+
+class LibrariesCommandTests(unittest.TestCase):
+    def test_libraries_lists_names(self) -> None:
+        import os
+        import subprocess
+        import sys
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "library"
+            root.mkdir(parents=True)
+            (root / "lucide").write_text(
+                "name=lucide\npath=/tmp/lucide-icons\ntitle=Lucide\n",
+                encoding="utf-8",
+            )
+            env = os.environ.copy()
+            env["ICONLIBUTILS_LIBRARY_DIRS"] = str(root)
+            env["ICONLIBUTILS_PATH_FILES"] = ""
+            env["PYTHONPATH"] = str(
+                Path(__file__).resolve().parents[1] / "src"
+            )
+            proc = subprocess.run(
+                [sys.executable, "-m", "iconlib", "libraries", "-1"],
+                cwd=str(Path(__file__).resolve().parents[1] / "src"),
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertEqual(proc.stdout.strip(), "lucide")
 
 
 class RcTests(unittest.TestCase):
@@ -130,7 +191,7 @@ class SchemaTests(unittest.TestCase):
         )
 
     def test_expand_with_alias(self) -> None:
-        from autoindex import IconAsset
+        from iconlib.autoindex import IconAsset
 
         asset = IconAsset(
             library="tabler-icons",
@@ -162,7 +223,7 @@ class SchemaTests(unittest.TestCase):
 
 class PullIntegrationTests(unittest.TestCase):
     def test_pull_via_main(self) -> None:
-        from iconlib import main
+        from iconlib.cli import main
 
         with tempfile.TemporaryDirectory() as td:
             td_path = Path(td)
@@ -239,6 +300,16 @@ class SemanticTests(unittest.TestCase):
                 self.skipTest("wordnet-base not available")
             self.assertIn("kitty", names)
             self.assertGreater(scores["kitty"], 45.0)
+
+
+class FaissHelperTests(unittest.TestCase):
+    def test_parse_upscale_and_filename(self) -> None:
+        from iconlib.faissidx import filename_to_text, parse_upscale
+
+        self.assertEqual(parse_upscale("300"), (300, 300))
+        self.assertEqual(parse_upscale("300x200"), (300, 200))
+        self.assertEqual(filename_to_text(Path("chess-queen_outline.svg")), "chess queen outline")
+        self.assertEqual(filename_to_text(Path("a/b/foo_bar-baz.png")), "foo bar baz")
 
 
 if __name__ == "__main__":

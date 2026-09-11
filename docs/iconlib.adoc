@@ -22,12 +22,24 @@ heroicons, and similar), prints paths and metadata, copies icons into a
 project, and can open *themestylebrowser*(1) for libraries that provide a
 *.themestyles* file.
 
-Library roots are read from (later entries override by name):
+Library roots are discovered by scanning drop-in metadata **files**
+(later directories and legacy path files override by name):
+
+* */usr/share/iconlibutils/library/<name>*
+* */usr/local/share/iconlibutils/library/<name>*
+* *~/.config/iconlibutils/library/<name>*
+
+Each file is *key=value* (*name*, *type*, *path*, *title*, *license*,
+*homepage*, *description*, …). Packaged *icons-<name>* packages install a
+file named *<name>* there. Default *path* when omitted is
+*/usr/share/icons-<name>*.
+
+Optional legacy registries (same override semantics):
 
 * */etc/iconlibutils/path*
 * *~/.config/iconlibutils/path*
 
-Each non-empty, non-comment line is: *TYPE* *NAME* *PATH*.
+Each legacy line is: *TYPE* *NAME* *PATH*.
 Only *TYPE* = *auto* is supported: the tree under *PATH* is walked for image
 files.
 
@@ -89,6 +101,19 @@ singular/plural inflection (*python3-inflect*) and offline WordNet
 also surface *kitty*).
 Glob, regex, and empty patterns keep literal matching.
 
+=== libraries
+
+*iconlib* *libraries* [*-l*|*--long* | *-1*|*--names*]
+
+List discovered icon libraries (alias: *ls*).
+Default columns: name, path, whether the path directory exists.
+With *--long*, also print title, license, and homepage.
+With *--names*, print names only.
+
+Discovery uses drop-in metadata files under
+*/usr/share/iconlibutils/library/<name>*
+(and user overlays); optional legacy */etc/iconlibutils/path* still applies.
+
 === which
 
 *iconlib* *which* [*-a*] _name_
@@ -128,6 +153,35 @@ Not implemented yet.
 Run *themestylebrowser* on the first matching library that contains
 *.themestyles*. Libraries without that file are skipped with a warning.
 
+=== index
+
+*iconlib* *index* [*-w*|*--web*] [*-F*|*--faiss*] [*-f*|*--force*]
+[*-s*|*--upscale* _SIZE_] [*-o*|*--outdir* _DIR_] …
+
+Build indexes for selected libraries (*-l*) and/or explicit
+*--icons-root* trees.
+
+*-w, --web*::
+  Write an HTML preview (*index.html*, *icons.json*, assets).
+  This is the default when neither *-w* nor *-F* is given.
+
+*-F, --faiss*::
+  Write a CLIP/FAISS index: *faiss.index*, *faiss.map* (*id* TAB *path*),
+  and *faiss.json* (*{id: path}*).
+  Each icon contributes an image vector and a filename-text vector.
+  Icons are fitted onto a white canvas (*--upscale*, default *300x300*,
+  aspect preserved), then embedded with CLIP at *224×224*.
+  Filename tokens (*_*, *-*, …) become spaces for the text embedding.
+
+*-f, --force*::
+  Overwrite existing outputs.
+
+*-s, --upscale* _SIZE_::
+  Canvas size for FAISS preprocessing (*N* or *NxN*; default *300x300*).
+
+*-o, --outdir* _DIR_::
+  Output directory (default: *.*).
+
 == Patterns
 
 * (empty):: all icons
@@ -140,11 +194,17 @@ Run *themestylebrowser* on the first matching library that contains
 *.iconlibrc*::
   Per-project options (*-l*, *-d*, *-s*, *-m*, …).
 
+*/usr/share/iconlibutils/library/<name>*::
+  Packaged library metadata file (primary discovery).
+
+*~/.config/iconlibutils/library/<name>*::
+  Per-user library metadata overlay file.
+
 */etc/iconlibutils/path*::
-  System library registry (seeded by package postinst when share dirs exist).
+  Optional legacy system registry (*TYPE NAME PATH*).
 
 *~/.config/iconlibutils/path*::
-  User library registry.
+  Optional legacy user registry.
 
 == Exit status
 
@@ -156,7 +216,7 @@ Run *themestylebrowser* on the first matching library that contains
 
 == See also
 
-*themestylebrowser*(1)
+*findicon*(1), *themestylebrowser*(1)
 
 == Author
 

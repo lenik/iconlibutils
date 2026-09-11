@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from autoindex import IconAsset
+from .autoindex import IconAsset
 
 SCHEMA_ALIASES = {
     "o": "orig",
