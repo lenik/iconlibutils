@@ -1,137 +1,305 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "Language: ko\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
 "명령:\n"
 "  search [pattern]   일치하는 아이콘 이름 나열\n"
 "  which [-a] name    아이콘 경로 출력\n"
 "  info name          아이콘 메타데이터 출력\n"
+"  libraries          발견된 아이콘 라이브러리 나열\n"
 "  pull [pattern]     프로젝트로 아이콘 복사\n"
-"  push [pattern]     아이콘 업로드 (미구현)\n"
+"  push [pattern]     업로드(미구현)\n"
 "  browse [pattern]   themestylebrowser 열기\n"
+"  index              웹 미리보기 및/또는 FAISS 인덱스 생성\n"
+"  delete name...     로컬 아이콘 파일 삭제\n"
+"  rename old new     로컬 아이콘 파일 이름 변경\n"
+"  copy from to       로컬 아이콘 파일 복사\n"
+"  ln [-sf] tgt name  로컬 아이콘 파일 링크\n"
+"  make [-s SIZE] [-F FMT] name...  로컬 변형 생성\n"
 "\n"
-"패턴: 비움=전체, 정확한 이름, glob, 또는 /regex\n"
-"일반 영어 단어도 동의어/굴절형을 맞춥니다(점수 포함).\n"
+"패턴: 빈 값=전체, 정확한 이름, glob, 또는 /정규식\n"
+"일반 영어 단어는 동의어/굴절형도 일치합니다(점수 포함).\n"
+"로컬 명령은 project-dir/local-dir(기본: icons/)에서 동작합니다.\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "설치된 아이콘 라이브러리에서 아이콘을 검색하고 관리합니다."
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "아이콘 라이브러리 추가/제한 (반복 가능; 접두사 일치)"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "pull용 로컬 자산 디렉터리(project-dir 기준 상대)"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "pull 경로 스키마(예: n, l/f/n, l/v/n)"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "라이브러리 이름을 로컬 디렉터리 이름에 대응"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "반복하면 더 자세한 로그 출력"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "로그 메시지를 줄여서 표시"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "버전 정보를 출력하고 종료"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "질의와 일치하는 아이콘 찾기"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "점수를 포함한 긴 형식"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "이름만 출력(기본값)"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "이름에 대한 아이콘 경로 출력"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "일치하는 모든 경로 출력"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "아이콘 정보 출력"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "프로젝트로 아이콘 가져오기"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "형식 추가(반복 가능); 기본값 전체"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "이미지 크기 또는 alias=size 추가(반복 가능)"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "원격 라이브러리에 아이콘 업로드"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "themestylebrowser로 탐색"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
+#, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "저작권 (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "라이선스 AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "이것은 자유 소프트웨어입니다. 변경하고 재배포할 수 있습니다.\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "이 프로젝트는 AI 착취와 AI 패권에 반대합니다.\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "이 프로젝트는 무분별한 MIT식 라이선스와 정치적으로 안이한 BSD식 라이선스를 거부합니다.\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "법이 허용하는 범위에서 어떠한 보증도 없습니다.\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "질의와 일치하는 아이콘 찾기"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "점수를 포함한 긴 형식"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "이름만 출력(기본값)"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "이름에 대한 아이콘 경로 출력"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "일치하는 모든 경로 출력"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "아이콘 정보 출력"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "프로젝트로 아이콘 가져오기"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "형식 추가(반복 가능); 기본값 전체"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "이미지 크기 또는 alias=size 추가(반복 가능)"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "{n}개 파일을 {dir}(으)로 복사했습니다"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "원격 라이브러리에 아이콘 업로드"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "themestylebrowser로 탐색"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "발견된 아이콘 라이브러리 나열"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "경로, 제목, 라이선스, 홈페이지 표시"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "라이브러리 이름만 출력"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "웹 미리보기 및/또는 FAISS 인덱스 생성"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "웹 미리보기 만들기(-w도 -F도 없을 때 기본)"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "FAISS 인덱스 만들기(faiss.index / faiss.map / faiss.json)"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "기존 출력 덮어쓰기"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "CLIP 전 FAISS 캔버스 크기(기본: 300x300)"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "출력 디렉터리(기본: .)"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "웹 페이지에 넣을 라이브러리 ID(기본: 첫 -l 또는 basename)"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "웹 미리보기 표시 제목"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "웹 페이지에 표시되는 라이선스 라벨"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "웹 페이지에 표시되는 홈페이지 URL"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "스캔할 아이콘 루트(반복 가능; 기본: 선택한 라이브러리 경로)"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "웹 미리보기의 SVG href URL 접두사(기본: ..)"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "웹 템플릿 디렉터리(기본: <pkgdatadir>/index)"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "웹 미리보기 아이콘 수 제한(0 = 무제한)"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "이름으로 로컬 아이콘 파일 삭제"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "로컬 자산 디렉터리에서 제거할 아이콘 이름"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "{dir} 아래에서 파일 {n}개 삭제함"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "로컬 아이콘 파일 이름 변경"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "기존 아이콘 이름"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "새 아이콘 이름"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "파일 {n}개를 이름 변경함: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "로컬 아이콘 파일을 새 이름으로 복사"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "로컬 파일 {n}개 복사함: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "로컬 아이콘 파일을 새 이름으로 링크"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "하드 링크 대신 심볼릭 링크 만들기"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "기존 대상 파일 제거"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "새 링크 이름"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "로컬 파일 {n}개 링크함: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "기존 아이콘의 로컬 크기/형식 변형 만들기"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "출력 크기 추가(반복 가능; 예: 64 또는 64x64)"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "출력 형식 추가(반복 가능; 예: png, webp)"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "확장할 로컬 아이콘 이름"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "로컬 변형 파일 {n}개 만듦"

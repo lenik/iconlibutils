@@ -1,137 +1,305 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "Language: zh_TW\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
 "命令：\n"
-"  search [pattern]   列出相符的圖示名稱\n"
+"  search [pattern]   列出符合的圖示名稱\n"
 "  which [-a] name    列印圖示路徑\n"
 "  info name          列印圖示中繼資料\n"
-"  pull [pattern]     將圖示複製到專案中\n"
-"  push [pattern]     上傳圖示（未實作）\n"
+"  libraries          列出已發現的圖示庫\n"
+"  pull [pattern]     將圖示複製到專案\n"
+"  push [pattern]     上傳圖示（尚未實作）\n"
 "  browse [pattern]   開啟 themestylebrowser\n"
+"  index              產生網頁預覽及/或 FAISS 索引\n"
+"  delete name...     刪除本機圖示檔\n"
+"  rename old new     本機圖示重新命名\n"
+"  copy from to       本機複製圖示\n"
+"  ln [-sf] tgt name  本機連結圖示\n"
+"  make [-s SIZE] [-F FMT] name...  產生本機變體\n"
 "\n"
-"模式：空=全部、精確名稱、glob 或 /正規表示式\n"
-"一般英文詞也會比對同義詞／屈折形（含分數）。\n"
+"模式：空=全部、精確名稱、萬用字元、或 /正規表示式\n"
+"一般英文詞也會比對同義詞/詞形變化（含分數）。\n"
+"本機命令作用於 project-dir/local-dir（預設 icons/）。\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "從已安裝的圖示庫搜尋與管理圖示。"
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "新增／限制圖示庫（可重複；前綴相符）"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "pull 的本機資源目錄（相對於 project-dir）"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "pull 路徑結構（例如 n、l/f/n、l/v/n）"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "將函式庫名稱對應到本機目錄名稱"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "重複以輸出更詳細的日誌"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "顯示較少的日誌訊息"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "輸出版本資訊並結束"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "尋找符合查詢的圖示"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "包含分數的長格式"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "僅輸出名稱（預設）"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "列印該名稱的圖示路徑"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "列印所有相符路徑"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "列印圖示資訊"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "將圖示取回專案"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "新增一種格式（可重複）；預設全部"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "新增影像尺寸或 alias=size（可重複）"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "將圖示上傳到遠端函式庫"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "使用 themestylebrowser 瀏覽"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
+#, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "版權所有 (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "授權條款 AGPL-3.0-or-later：<https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "這是自由軟體：你可以自由修改並重新散布。\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "本專案反對 AI 剝削與 AI 霸權。\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "本專案拒絕無腦 MIT 式授權與政治幼稚的 BSD 式授權。\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "在法律允許範圍內，不提供任何擔保。\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "尋找符合查詢的圖示"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "包含分數的長格式"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "僅輸出名稱（預設）"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "列印該名稱的圖示路徑"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "列印所有相符路徑"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "列印圖示資訊"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "將圖示取回專案"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "新增一種格式（可重複）；預設全部"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "新增影像尺寸或 alias=size（可重複）"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "已將 {n} 個檔案複製到 {dir}"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "將圖示上傳到遠端函式庫"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "使用 themestylebrowser 瀏覽"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "列出已發現的圖示庫"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "顯示路徑、標題、授權、首頁"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "僅列印庫名稱"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "產生網頁預覽及/或 FAISS 索引"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "建立網頁預覽（未指定 -w 或 -F 時的預設）"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "建立 FAISS 索引（faiss.index / faiss.map / faiss.json）"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "覆寫既有輸出"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "CLIP 之前的 FAISS 畫布尺寸（預設：300x300）"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "輸出目錄（預設：.）"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "嵌入網頁的庫識別（預設：首個 -l 或目錄名）"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "網頁預覽顯示標題"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "網頁中顯示的授權標籤"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "網頁中顯示的首頁 URL"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "要掃描的圖示根目錄（可重複；預設：所選庫路徑）"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "網頁預覽中 SVG href 的 URL 前綴（預設：..）"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "網頁範本目錄（預設：<pkgdatadir>/index）"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "限制網頁預覽的圖示數量（0 = 不限）"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "依名稱刪除本機圖示檔"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "要從本機資源目錄刪除的圖示名"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "已在 {dir} 下刪除 {n} 個檔案"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "重新命名本機圖示檔"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "既有圖示名"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "新圖示名"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "已將 {n} 個檔案重新命名：{old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "將本機圖示檔複製為新名稱"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "已複製 {n} 個本機檔案：{src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "以新名稱連結本機圖示檔"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "建立符號連結而非硬連結"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "刪除既有的目標檔"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "新連結名"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "已連結 {n} 個本機檔案：{target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "為既有圖示建立本機尺寸/格式變體"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "加入輸出尺寸（可重複；例如 64 或 64x64）"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "加入輸出格式（可重複；例如 png、webp）"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "要擴充的本機圖示名"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "已產生 {n} 個本機變體檔"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,132 +16,298 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
 "الأوامر:\n"
 "  search [pattern]   سرد أسماء الأيقونات المطابقة\n"
 "  which [-a] name    طباعة مسار/مسارات الأيقونة\n"
 "  info name          طباعة بيانات الأيقونة الوصفية\n"
+"  libraries          سرد مكتبات الأيقونات المكتشفة\n"
 "  pull [pattern]     نسخ الأيقونات إلى المشروع\n"
-"  push [pattern]     رفع الأيقونات (غير مُنفَّذ)\n"
+"  push [pattern]     رفع الأيقونات (غير منفّذ)\n"
 "  browse [pattern]   فتح themestylebrowser\n"
+"  index              إنشاء معاينة ويب و/أو فهرس FAISS\n"
+"  delete name...     حذف ملفات الأيقونات المحلية\n"
+"  rename old new     إعادة تسمية الملفات المحلية\n"
+"  copy from to       نسخ الملفات المحلية\n"
+"  ln [-sf] tgt name  ربط الملفات المحلية\n"
+"  make [-s SIZE] [-F FMT] name...  اشتقاق متغيرات محلية\n"
 "\n"
-"النمط: فارغ=الكل، اسم دقيق، glob، أو /تعبير_منتظم\n"
-"الكلمات الإنجليزية العادية تطابق أيضاً المرادفات/التصريف (مع درجة).\n"
+"النمط: فارغ=الكل، اسم دقيق، glob، أو /تعبير منتظم\n"
+"الكلمات الإنجليزية البسيطة تطابق أيضًا المرادفات/التصريف (مع درجة).\n"
+"الأوامر المحلية تعمل تحت project-dir/local-dir (الافتراضي: icons/).\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "البحث في مكتبات الأيقونات المثبتة وإدارتها."
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "إضافة/تقييد مكتبة أيقونات (قابل للتكرار؛ مطابقة بادئة)"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "دليل الأصول المحلي لـ pull (نسبي إلى project-dir)"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "مخطط مسار pull (مثل n، l/f/n، l/v/n)"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "ربط اسم المكتبة باسم دليل محلي"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "كرر لمزيد من رسائل السجل التفصيلية"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "إظهار رسائل سجل أقل"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "إخراج معلومات الإصدار والخروج"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "العثور على أيقونات تطابق الاستعلام"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "تنسيق طويل يتضمن الدرجة"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "إخراج الأسماء فقط (افتراضي)"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "طباعة مسارات الأيقونة للاسم"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "طباعة كل المسارات المطابقة"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "طباعة معلومات الأيقونة"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "جلب الأيقونات إلى المشروع"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "إضافة تنسيق (قابل للتكرار)؛ الافتراضي الكل"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "إضافة حجم صورة أو alias=size (قابل للتكرار)"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "رفع الأيقونات إلى مكتبة بعيدة"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "التصفح باستخدام themestylebrowser"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
 #, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "حقوق النشر (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "الترخيص AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "هذا برنامج حر: لك حرية تغييره وإعادة توزيعه.\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "يعارض هذا المشروع استغلال الذكاء الاصطناعي وهيمنته.\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "يرفض هذا المشروع الترخيص الأعمى بأسلوب MIT والترخيص الساذج سياسياً بأسلوب BSD.\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "لا توجد أي ضمانات، في الحدود التي يسمح بها القانون.\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "العثور على أيقونات تطابق الاستعلام"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "تنسيق طويل يتضمن الدرجة"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "إخراج الأسماء فقط (افتراضي)"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "طباعة مسارات الأيقونة للاسم"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "طباعة كل المسارات المطابقة"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "طباعة معلومات الأيقونة"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "جلب الأيقونات إلى المشروع"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "إضافة تنسيق (قابل للتكرار)؛ الافتراضي الكل"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "إضافة حجم صورة أو alias=size (قابل للتكرار)"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "تم نسخ {n} ملف/ملفات إلى {dir}"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "رفع الأيقونات إلى مكتبة بعيدة"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "التصفح باستخدام themestylebrowser"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "سرد مكتبات الأيقونات المكتشفة"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "إظهار المسار والعنوان والترخيص والصفحة الرئيسية"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "طباعة أسماء المكتبات فقط"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "إنشاء معاينة ويب و/أو فهرس FAISS"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "إنشاء معاينة ويب (الافتراضي إن لم يُعطَ -w ولا -F)"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "إنشاء فهرس FAISS (faiss.index / faiss.map / faiss.json)"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "الكتابة فوق المخرجات الموجودة"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "حجم لوحة FAISS قبل CLIP (الافتراضي: 300x300)"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "دليل الإخراج (الافتراضي: .)"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "معرّف المكتبة المضمّن في الصفحة (الافتراضي: أول -l أو اسم الأساس)"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "عنوان عرض معاينة الويب"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "تسمية الترخيص الظاهرة في الصفحة"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "رابط الصفحة الرئيسية الظاهر في الصفحة"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "جذر الأيقونات للمسح (قابل للتكرار؛ الافتراضي: مسارات المكتبات المحددة)"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "بادئة URL لروابط SVG في المعاينة (الافتراضي: ..)"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "دليل قوالب الويب (الافتراضي: <pkgdatadir>/index)"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "تقييد عدد الأيقونات في المعاينة (0 = بلا حد)"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "حذف ملفات الأيقونات المحلية بالاسم"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "اسم/أسماء الأيقونة لإزالتها من دليل الأصول المحلي"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "تم حذف {n} ملف/ملفات تحت {dir}"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "إعادة تسمية ملفات الأيقونات المحلية"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "اسم أيقونة موجود"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "اسم أيقونة جديد"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "تمت إعادة تسمية {n} ملف/ملفات: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "نسخ ملفات الأيقونات المحلية إلى اسم جديد"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "تم نسخ {n} ملف/ملفات محلية: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "ربط ملفات الأيقونات المحلية باسم جديد"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "إنشاء روابط رمزية بدل الروابط الصلبة"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "إزالة ملفات الوجهة الموجودة"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "اسم الرابط الجديد"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "تم ربط {n} ملف/ملفات محلية: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "إنشاء متغيرات محلية للحجم/التنسيق لأيقونات موجودة"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "إضافة حجم إخراج (قابل للتكرار؛ مثل 64 أو 64x64)"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "إضافة تنسيق إخراج (قابل للتكرار؛ مثل png وwebp)"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "اسم/أسماء الأيقونة المحلية للتوسيع"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "تم إنشاء {n} ملف/ملفات متغير محلي"

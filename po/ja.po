@@ -1,137 +1,305 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "Language: ja\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
 "コマンド:\n"
 "  search [pattern]   一致するアイコン名を一覧表示\n"
 "  which [-a] name    アイコンのパスを表示\n"
 "  info name          アイコンのメタデータを表示\n"
-"  pull [pattern]     プロジェクトにアイコンをコピー\n"
-"  push [pattern]     アイコンをアップロード（未実装）\n"
+"  libraries          検出したアイコンライブラリを一覧表示\n"
+"  pull [pattern]     プロジェクトへアイコンをコピー\n"
+"  push [pattern]     アップロード（未実装）\n"
 "  browse [pattern]   themestylebrowser を開く\n"
+"  index              Web プレビューおよび/または FAISS インデックスを生成\n"
+"  delete name...     ローカルのアイコンファイルを削除\n"
+"  rename old new     ローカルのアイコンファイルを改名\n"
+"  copy from to       ローカルのアイコンファイルをコピー\n"
+"  ln [-sf] tgt name  ローカルのアイコンファイルをリンク\n"
+"  make [-s SIZE] [-F FMT] name...  ローカル派生版を作成\n"
 "\n"
-"パターン: 空=すべて、正確な名前、glob、または /regex\n"
-"通常の英語単語は同義語・屈折形も照合します（スコア付き）。\n"
+"パターン: 空=すべて、正確な名前、glob、または /正規表現\n"
+"平易な英単語は同義語・屈折形にも一致します（スコア付き）。\n"
+"ローカルコマンドは project-dir/local-dir（既定: icons/）で動作します。\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "インストール済みアイコンライブラリからアイコンを検索・管理します。"
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "アイコンライブラリを追加/制限（繰り返し可；接頭辞一致）"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "pull 用のローカルアセットディレクトリ（project-dir 相対）"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "pull のパススキーマ（例: n、l/f/n、l/v/n）"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "ライブラリ名をローカルディレクトリ名に対応付ける"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "繰り返すとより詳細なログを出力"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "ログメッセージを減らして表示"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "バージョン情報を出力して終了"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "クエリに一致するアイコンを検索"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "スコアを含む詳細形式"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "名前のみ出力（デフォルト）"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "指定名のアイコンパスを表示"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "一致するすべてのパスを表示"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "アイコン情報を表示"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "プロジェクトにアイコンを取得"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "形式を追加（繰り返し可）；既定はすべて"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "画像サイズまたは alias=size を追加（繰り返し可）"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "リモートライブラリにアイコンをアップロード"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "themestylebrowser で閲覧"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
+#, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "著作権 (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "ライセンス AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "これはフリーソフトウェアです。変更および再配布は自由です。\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "本プロジェクトは AI による搾取と AI 覇権に反対します。\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "本プロジェクトは無思慮な MIT 型ライセンスと政治的にナイーブな BSD 型ライセンスを拒みます。\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "法律で認められる範囲で、一切の保証はありません。\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "クエリに一致するアイコンを検索"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "スコアを含む詳細形式"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "名前のみ出力（デフォルト）"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "指定名のアイコンパスを表示"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "一致するすべてのパスを表示"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "アイコン情報を表示"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "プロジェクトにアイコンを取得"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "形式を追加（繰り返し可）；既定はすべて"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "画像サイズまたは alias=size を追加（繰り返し可）"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "{n} 個のファイルを {dir} にコピーしました"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "リモートライブラリにアイコンをアップロード"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "themestylebrowser で閲覧"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "検出したアイコンライブラリを一覧表示"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "パス・タイトル・ライセンス・ホームページを表示"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "ライブラリ名のみを出力"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "Webプレビューおよび/またはFAISSインデックスを生成"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "Webプレビューを作成（-w も -F も無い場合の既定）"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "FAISSインデックスを作成（faiss.index / faiss.map / faiss.json）"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "既存の出力を上書き"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "CLIP前のFAISSキャンバスサイズ（既定: 300x300）"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "出力ディレクトリ（既定: .）"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "Webページに埋め込むライブラリID（既定: 最初の -l またはベース名）"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "Webプレビューの表示タイトル"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "Webページに表示するライセンス表記"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "Webページに表示するホームページURL"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "走査するアイコンルート（繰り返し可；既定: 選択ライブラリのパス）"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "WebプレビューのSVG href用URL接頭辞（既定: ..）"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "Webテンプレートディレクトリ（既定: <pkgdatadir>/index）"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "Webプレビューのアイコン数を制限（0 = 無制限）"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "名前でローカルのアイコンファイルを削除"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "ローカル資産ディレクトリから削除するアイコン名"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "{dir} 配下のファイルを {n} 個削除しました"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "ローカルのアイコンファイルを改名"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "既存のアイコン名"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "新しいアイコン名"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "{n} 個のファイルを改名しました: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "ローカルのアイコンファイルを新しい名前にコピー"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "ローカルファイルを {n} 個コピーしました: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "ローカルのアイコンファイルを新しい名前でリンク"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "ハードリンクではなくシンボリックリンクを作成"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "既存の宛先ファイルを削除"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "新しいリンク名"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "ローカルファイルを {n} 個リンクしました: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "既存アイコンのローカルサイズ/形式バリアントを作成"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "出力サイズを追加（繰り返し可；例: 64 または 64x64）"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "出力形式を追加（繰り返し可；例: png, webp）"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "展開するローカルアイコン名"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "ローカル派生ファイルを {n} 個作成しました"

@@ -1,137 +1,305 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "Language: vi\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
-"Lenh:\n"
-"  search [pattern]   liet ke ten bieu tuong khop\n"
-"  which [-a] name    in duong dan bieu tuong\n"
-"  info name          in metadata bieu tuong\n"
-"  pull [pattern]     sao chep bieu tuong vao du an\n"
-"  push [pattern]     tai len bieu tuong (chua thuc hien)\n"
-"  browse [pattern]   mo themestylebrowser\n"
+"Lệnh:\n"
+"  search [pattern]   liệt kê tên biểu tượng khớp\n"
+"  which [-a] name    in đường dẫn biểu tượng\n"
+"  info name          in siêu dữ liệu biểu tượng\n"
+"  libraries          liệt kê thư viện biểu tượng đã tìm thấy\n"
+"  pull [pattern]     sao chép biểu tượng vào dự án\n"
+"  push [pattern]     tải lên (chưa triển khai)\n"
+"  browse [pattern]   mở themestylebrowser\n"
+"  index              tạo xem trước web và/hoặc chỉ mục FAISS\n"
+"  delete name...     xóa tệp biểu tượng cục bộ\n"
+"  rename old new     đổi tên tệp biểu tượng cục bộ\n"
+"  copy from to       sao chép tệp biểu tượng cục bộ\n"
+"  ln [-sf] tgt name  liên kết tệp biểu tượng cục bộ\n"
+"  make [-s SIZE] [-F FMT] name...  tạo biến thể cục bộ\n"
 "\n"
-"Mau: trong=tat ca, ten chinh xac, glob, hoac /regex\n"
-"Tu tieng Anh thuong cung khop dong nghia/bien the (co diem).\n"
+"Mẫu: trống=tất cả, tên chính xác, glob, hoặc /regex\n"
+"Từ tiếng Anh đơn giản cũng khớp từ đồng nghĩa/biến cách (có điểm).\n"
+"Lệnh cục bộ hoạt động dưới project-dir/local-dir (mặc định: icons/).\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "Tim va quan ly bieu tuong tu cac thu vien bieu tuong da cai."
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "them/gioi han thu vien bieu tuong (lap lai duoc; khop tien to)"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "thu muc tai nguyen cuc bo cho pull (tuong doi voi project-dir)"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "schema duong dan pull (vd. n, l/f/n, l/v/n)"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "anh xa ten thu vien sang ten thu muc cuc bo"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "lap lai de ghi nhat ky chi tiet hon"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "hien it thong bao nhat ky hon"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "in thong tin phien ban va thoat"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "tim bieu tuong khop voi truy van"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "dinh dang dai gom diem so"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "chi in ten (mac dinh)"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "in duong dan bieu tuong cho ten"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "in tat ca duong dan khop"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "in thong tin bieu tuong"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "lay bieu tuong vao du an"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "them dinh dang (lap lai duoc); mac dinh tat ca"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "them kich thuoc anh hoac alias=size (lap lai duoc)"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "tai len bieu tuong len thu vien tu xa"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "duyet voi themestylebrowser"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
+#, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "Ban quyen (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "Giay phep AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "Day la phan mem tu do: ban duoc phep sua doi va phan phoi lai.\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "Du an nay phan doi boc lot AI va ba quyen AI.\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "Du an nay tu choi cap phep kieu MIT vo y thuc va kieu BSD ngay tho ve chinh tri.\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "KHONG CO BAO HANH, trong pham vi phap luat cho phep.\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "tim bieu tuong khop voi truy van"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "dinh dang dai gom diem so"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "chi in ten (mac dinh)"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "in duong dan bieu tuong cho ten"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "in tat ca duong dan khop"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "in thong tin bieu tuong"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "lay bieu tuong vao du an"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "them dinh dang (lap lai duoc); mac dinh tat ca"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "them kich thuoc anh hoac alias=size (lap lai duoc)"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "Da sao chep {n} tep vao {dir}"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "tai len bieu tuong len thu vien tu xa"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "duyet voi themestylebrowser"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "liệt kê thư viện biểu tượng đã tìm thấy"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "hiện đường dẫn, tiêu đề, giấy phép, trang chủ"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "chỉ in tên thư viện"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "tạo xem trước web và/hoặc chỉ mục FAISS"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "tạo xem trước web (mặc định khi không có -w cũng không -F)"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "tạo chỉ mục FAISS (faiss.index / faiss.map / faiss.json)"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "ghi đè đầu ra hiện có"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "kích thước canvas FAISS trước CLIP (mặc định: 300x300)"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "thư mục đầu ra (mặc định: .)"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "id thư viện nhúng trong trang (mặc định: -l đầu hoặc basename)"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "tiêu đề hiển thị xem trước web"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "nhãn giấy phép hiện trên trang"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "URL trang chủ hiện trên trang"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "thư mục gốc biểu tượng cần quét (lặp lại được; mặc định: đường dẫn thư viện đã chọn)"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "tiền tố URL cho href SVG trong xem trước (mặc định: ..)"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "thư mục mẫu web (mặc định: <pkgdatadir>/index)"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "giới hạn số biểu tượng xem trước web (0 = không giới hạn)"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "xóa tệp biểu tượng cục bộ theo tên"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "tên biểu tượng cần xóa khỏi thư mục tài nguyên cục bộ"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "Đã xóa {n} tệp dưới {dir}"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "đổi tên tệp biểu tượng cục bộ"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "tên biểu tượng hiện có"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "tên biểu tượng mới"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "Đã đổi tên {n} tệp: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "sao chép tệp biểu tượng cục bộ sang tên mới"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "Đã sao chép {n} tệp cục bộ: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "liên kết tệp biểu tượng cục bộ dưới tên mới"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "tạo liên kết tượng trưng thay vì liên kết cứng"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "xóa tệp đích hiện có"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "tên liên kết mới"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "Đã liên kết {n} tệp cục bộ: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "tạo biến thể kích thước/định dạng cục bộ từ biểu tượng có sẵn"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "thêm kích thước đầu ra (lặp lại được; vd. 64 hoặc 64x64)"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "thêm định dạng đầu ra (lặp lại được; vd. png, webp)"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "tên biểu tượng cục bộ cần mở rộng"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "Đã tạo {n} tệp biến thể cục bộ"

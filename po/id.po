@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,132 +16,298 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
 "Perintah:\n"
 "  search [pattern]   daftar nama ikon yang cocok\n"
 "  which [-a] name    cetak jalur ikon\n"
 "  info name          cetak metadata ikon\n"
+"  libraries          daftar pustaka ikon yang ditemukan\n"
 "  pull [pattern]     salin ikon ke proyek\n"
 "  push [pattern]     unggah ikon (belum diimplementasikan)\n"
 "  browse [pattern]   buka themestylebrowser\n"
+"  index              buat pratampil web dan/atau indeks FAISS\n"
+"  delete name...     hapus berkas ikon lokal\n"
+"  rename old new     ganti nama berkas ikon lokal\n"
+"  copy from to       salin berkas ikon lokal\n"
+"  ln [-sf] tgt name  tautkan berkas ikon lokal\n"
+"  make [-s SIZE] [-F FMT] name...  turunkan varian lokal\n"
 "\n"
 "Pola: kosong=semua, nama tepat, glob, atau /regex\n"
-"Kata bahasa Inggris biasa juga mencocokkan sinonim/infleksi (dengan skor).\n"
+"Kata Inggris biasa juga mencocokkan sinonim/infleksi (ber skor).\n"
+"Perintah lokal beroperasi di project-dir/local-dir (bawaan: icons/).\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "Cari dan kelola ikon dari pustaka ikon yang terpasang."
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "tambah/batasi pustaka ikon (dapat diulang; cocok awalan)"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "direktori aset lokal untuk pull (relatif terhadap project-dir)"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "skema jalur pull (mis. n, l/f/n, l/v/n)"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "petakan nama pustaka ke nama direktori lokal"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "ulang untuk pencatatan yang lebih rinci"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "tampilkan lebih sedikit pesan pencatatan"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "tampilkan informasi versi lalu keluar"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "temukan ikon yang cocok dengan kueri"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "format panjang termasuk skor"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "tampilkan hanya nama (bawaan)"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "cetak jalur ikon untuk nama tersebut"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "cetak semua jalur yang cocok"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "cetak info ikon"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "ambil ikon ke dalam proyek"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "tambah format (dapat diulang); bawaan semua"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "tambah ukuran gambar atau alias=size (dapat diulang)"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "unggah ikon ke pustaka jarak jauh"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "jelajahi dengan themestylebrowser"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
 #, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "Hak cipta (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "Lisensi AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "Ini adalah perangkat lunak bebas: Anda bebas mengubah dan mendistribusikannya ulang.\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "Proyek ini menentang eksploitasi AI dan hegemoni AI.\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "Proyek ini menolak perizinan gaya MIT yang tanpa pikir dan gaya BSD yang naif secara politik.\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "TIDAK ADA JAMINAN, sejauh diizinkan oleh hukum.\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "temukan ikon yang cocok dengan kueri"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "format panjang termasuk skor"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "tampilkan hanya nama (bawaan)"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "cetak jalur ikon untuk nama tersebut"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "cetak semua jalur yang cocok"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "cetak info ikon"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "ambil ikon ke dalam proyek"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "tambah format (dapat diulang); bawaan semua"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "tambah ukuran gambar atau alias=size (dapat diulang)"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "Menyalin {n} berkas ke {dir}"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "unggah ikon ke pustaka jarak jauh"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "jelajahi dengan themestylebrowser"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "daftar pustaka ikon yang ditemukan"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "tampilkan jalur, judul, lisensi, beranda"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "cetak hanya nama pustaka"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "buat pratampil web dan/atau indeks FAISS"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "buat pratampil web (bawaan jika bukan -w maupun -F)"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "buat indeks FAISS (faiss.index / faiss.map / faiss.json)"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "timpa keluaran yang ada"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "ukuran kanvas FAISS sebelum CLIP (bawaan: 300x300)"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "direktori keluaran (bawaan: .)"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "id pustaka tertanam di halaman (bawaan: -l pertama atau basename)"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "judul tampilan pratampil web"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "label lisensi yang ditampilkan di halaman"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "URL beranda yang ditampilkan di halaman"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "akar ikon untuk dipindai (dapat diulang; bawaan: jalur pustaka terpilih)"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "awalan URL untuk href SVG di pratampil (bawaan: ..)"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "direktori templat web (bawaan: <pkgdatadir>/index)"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "batasi jumlah ikon pratampil web (0 = tak terbatas)"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "hapus berkas ikon lokal menurut nama"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "nama ikon yang akan dihapus dari direktori aset lokal"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "Menghapus {n} berkas di bawah {dir}"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "ganti nama berkas ikon lokal"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "nama ikon yang ada"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "nama ikon baru"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "Mengganti nama {n} berkas: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "salin berkas ikon lokal ke nama baru"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "Menyalin {n} berkas lokal: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "tautkan berkas ikon lokal dengan nama baru"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "buat tautan simbolik, bukan tautan keras"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "hapus berkas tujuan yang ada"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "nama tautan baru"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "Menautkan {n} berkas lokal: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "buat varian ukuran/format lokal dari ikon yang ada"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "tambahkan ukuran keluaran (dapat diulang; mis. 64 atau 64x64)"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "tambahkan format keluaran (dapat diulang; mis. png, webp)"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "nama ikon lokal yang akan diperluas"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "Membuat {n} berkas varian lokal"

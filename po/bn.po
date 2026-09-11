@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iconlibutils 3b1f339-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "PO-Revision-Date: 2026-04-24 22:31+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,132 +16,298 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
-"কমান্ডসমূহ:\n"
-"  search [pattern]   মিলে যাওয়া আইকন নাম তালিকা\n"
+"কমান্ড:\n"
+"  search [pattern]   মিল থাকা আইকনের নাম তালিকা\n"
 "  which [-a] name    আইকনের পথ মুদ্রণ\n"
-"  info name          আইকন মেটাডেটা মুদ্রণ\n"
-"  pull [pattern]     প্রকল্পে আইকন অনুলিপি\n"
-"  push [pattern]     আইকন আপলোড (বাস্তবায়িত নয়)\n"
+"  info name          আইকনের মেটাডেটা মুদ্রণ\n"
+"  libraries          আবিষ্কৃত আইকন লাইব্রেরি তালিকা\n"
+"  pull [pattern]     প্রকল্পে আইকন কপি\n"
+"  push [pattern]     আপলোড (অবাস্তবায়িত)\n"
 "  browse [pattern]   themestylebrowser খুলুন\n"
+"  index              ওয়েব প্রিভিউ এবং/অথবা FAISS সূচক তৈরি\n"
+"  delete name...     স্থানীয় আইকন ফাইল মুছুন\n"
+"  rename old new     স্থানীয় আইকন পুনঃনামকরণ\n"
+"  copy from to       স্থানীয় আইকন কপি\n"
+"  ln [-sf] tgt name  স্থানীয় আইকন লিঙ্ক\n"
+"  make [-s SIZE] [-F FMT] name...  স্থানীয় রূপ তৈরি\n"
 "\n"
-"প্যাটার্ন: খালি=সব, সঠিক নাম, glob, বা /regex\n"
-"সাধারণ ইংরেজি শব্দ প্রতিশব্দ/রূপভেদও মিলায় (স্কোরসহ)।\n"
+"প্যাটার্ন: খালি=সব, সঠিক নাম, glob, বা /রেজেক্স\n"
+"সাধারণ ইংরেজি শব্দ সমার্থক/রূপও মিলবে (স্কোরসহ)।\n"
+"স্থানীয় কমান্ড project-dir/local-dir (ডিফল্ট: icons/) এ কাজ করে।\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "ইনস্টল করা আইকন লাইব্রেরি থেকে আইকন অনুসন্ধান ও পরিচালনা।"
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "আইকন লাইব্রেরি যোগ/সীমাবদ্ধ করুন (পুনরাবৃত্তিযোগ্য; উপসর্গ মিল)"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "pull-এর জন্য স্থানীয় অ্যাসেট ডিরেক্টরি (project-dir আপেক্ষিক)"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "pull পথ স্কিমা (যেমন n, l/f/n, l/v/n)"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "লাইব্রেরি নামকে স্থানীয় ডিরেক্টরি নামে ম্যাপ করুন"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "আরও বিস্তারিত লগের জন্য পুনরাবৃত্তি করুন"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "কম লগ বার্তা দেখান"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "সংস্করণ তথ্য আউটপুট করে প্রস্থান"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "প্রশ্নের সাথে মিলে যাওয়া আইকন খুঁজুন"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "স্কোরসহ দীর্ঘ বিন্যাস"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "শুধু নাম আউটপুট (ডিফল্ট)"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "নামের জন্য আইকন পথ মুদ্রণ"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "সব মিলে যাওয়া পথ মুদ্রণ"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "আইকন তথ্য মুদ্রণ"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "প্রকল্পে আইকন আনুন"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "একটি বিন্যাস যোগ করুন (পুনরাবৃত্তিযোগ্য); ডিফল্ট সব"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "ছবির আকার বা alias=size যোগ করুন (পুনরাবৃত্তিযোগ্য)"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "দূরবর্তী লাইব্রেরিতে আইকন আপলোড"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "themestylebrowser দিয়ে ব্রাউজ"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
 #, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "কপিরাইট (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "লাইসেন্স AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "এটি মুক্ত সফটওয়্যার: আপনি এটি পরিবর্তন ও পুনর্বণ্টন করতে পারেন।\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "এই প্রকল্প এআই শোষণ ও এআই আধিপত্যের বিরোধিতা করে।\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "এই প্রকল্প নির্বোধ MIT-শৈলীর লাইসেন্সিং এবং রাজনৈতিকভাবে নিষ্পাপ BSD-শৈলীর লাইসেন্সিং প্রত্যাখ্যান করে।\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "আইন অনুমোদিত সীমায় কোনো ওয়ারেন্টি নেই।\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "প্রশ্নের সাথে মিলে যাওয়া আইকন খুঁজুন"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "স্কোরসহ দীর্ঘ বিন্যাস"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "শুধু নাম আউটপুট (ডিফল্ট)"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "নামের জন্য আইকন পথ মুদ্রণ"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "সব মিলে যাওয়া পথ মুদ্রণ"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "আইকন তথ্য মুদ্রণ"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "প্রকল্পে আইকন আনুন"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "একটি বিন্যাস যোগ করুন (পুনরাবৃত্তিযোগ্য); ডিফল্ট সব"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "ছবির আকার বা alias=size যোগ করুন (পুনরাবৃত্তিযোগ্য)"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "{dir}-এ {n}টি ফাইল অনুলিপি করা হয়েছে"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "দূরবর্তী লাইব্রেরিতে আইকন আপলোড"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "themestylebrowser দিয়ে ব্রাউজ"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "আবিষ্কৃত আইকন লাইব্রেরি তালিকা"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "পথ, শিরোনাম, লাইসেন্স, হোমপেজ দেখান"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "শুধু লাইব্রেরির নাম মুদ্রণ"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "ওয়েব প্রিভিউ এবং/অথবা FAISS সূচক তৈরি"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "ওয়েব প্রিভিউ তৈরি (-w বা -F না থাকলে ডিফল্ট)"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "FAISS সূচক তৈরি (faiss.index / faiss.map / faiss.json)"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "বিদ্যমান আউটপুট ওভাররাইট"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "CLIP-এর আগে FAISS ক্যানভাস আকার (ডিফল্ট: 300x300)"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "আউটপুট ডিরেক্টরি (ডিফল্ট: .)"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "ওয়েব পৃষ্ঠায় এম্বেড লাইব্রেরি আইডি (ডিফল্ট: প্রথম -l বা basename)"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "ওয়েব প্রিভিউ প্রদর্শন শিরোনাম"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "ওয়েব পৃষ্ঠায় দেখানো লাইসেন্স লেবেল"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "ওয়েব পৃষ্ঠায় দেখানো হোমপেজ URL"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "স্ক্যান করার আইকন রুট (পুনরাবৃত্তিযোগ্য; ডিফল্ট: নির্বাচিত লাইব্রেরি পথ)"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "ওয়েব প্রিভিউতে SVG href-এর URL উপসর্গ (ডিফল্ট: ..)"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "ওয়েব টেমপ্লেট ডিরেক্টরি (ডিফল্ট: <pkgdatadir>/index)"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "ওয়েব প্রিভিউয়ের আইকন সংখ্যা সীমিত (0 = সীমাহীন)"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "নাম অনুসারে স্থানীয় আইকন ফাইল মুছুন"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "স্থানীয় অ্যাসেট ডিরেক্টরি থেকে সরাতে আইকনের নাম"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "{dir}-এর নিচে {n}টি ফাইল মুছেছে"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "স্থানীয় আইকন ফাইল পুনঃনামকরণ"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "বিদ্যমান আইকনের নাম"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "নতুন আইকনের নাম"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "{n}টি ফাইল পুনঃনামকরণ: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "স্থানীয় আইকন ফাইল নতুন নামে কপি"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "{n}টি স্থানীয় ফাইল কপি: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "নতুন নামে স্থানীয় আইকন ফাইল লিঙ্ক"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "হার্ড লিঙ্কের পরিবর্তে সিম্বলিক লিঙ্ক তৈরি"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "বিদ্যমান গন্তব্য ফাইল সরান"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "নতুন লিঙ্কের নাম"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "{n}টি স্থানীয় ফাইল লিঙ্ক: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "বিদ্যমান আইকনের স্থানীয় আকার/বিন্যাস রূপ তৈরি"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "একটি আউটপুট আকার যোগ (পুনরাবৃত্তিযোগ্য; যেমন 64 বা 64x64)"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "একটি আউটপুট বিন্যাস যোগ (পুনরাবৃত্তিযোগ্য; যেমন png, webp)"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "প্রসারিত করতে স্থানীয় আইকনের নাম"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "{n}টি স্থানীয় ভ্যারিয়েন্ট ফাইল তৈরি"

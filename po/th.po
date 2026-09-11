@@ -1,137 +1,305 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: iconlib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 18:35+0800\n"
+"POT-Creation-Date: 2026-09-11 22:28+0800\n"
 "Language: th\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/iconlib.py:31
+#: src/iconlib/cmd/main.py:48
 msgid ""
 "Commands:\n"
 "  search [pattern]   list matching icon names\n"
 "  which [-a] name    print icon path(s)\n"
 "  info name          print icon metadata\n"
+"  libraries          list discovered icon libraries\n"
 "  pull [pattern]     copy icons into the project\n"
 "  push [pattern]     upload icons (not implemented)\n"
 "  browse [pattern]   open themestylebrowser\n"
+"  index              generate web preview and/or FAISS index\n"
+"  delete name...     remove local icon files\n"
+"  rename old new     rename local icon files\n"
+"  copy from to       copy local icon files\n"
+"  ln [-sf] tgt name  link local icon files\n"
+"  make [-s SIZE] [-F FMT] name...  derive local variants\n"
 "\n"
 "Pattern: empty=all, exact name, glob, or /regex\n"
 "Plain English words also match synonyms/inflections (scored).\n"
+"Local commands operate under project-dir/local-dir (default: icons/).\n"
 msgstr ""
 "คำสั่ง:\n"
 "  search [pattern]   แสดงรายชื่อไอคอนที่ตรงกัน\n"
 "  which [-a] name    พิมพ์พาธของไอคอน\n"
 "  info name          พิมพ์เมทาดาทาของไอคอน\n"
+"  libraries          แสดงไลบรารีไอคอนที่พบ\n"
 "  pull [pattern]     คัดลอกไอคอนเข้าโปรเจกต์\n"
-"  push [pattern]     อัปโหลดไอคอน (ยังไม่ทำ)\n"
+"  push [pattern]     อัปโหลด (ยังไม่ทำ)\n"
 "  browse [pattern]   เปิด themestylebrowser\n"
+"  index              สร้างพรีวิวเว็บและ/หรือดัชนี FAISS\n"
+"  delete name...     ลบไฟล์ไอคอนในเครื่อง\n"
+"  rename old new     เปลี่ยนชื่อไฟล์ไอคอนในเครื่อง\n"
+"  copy from to       คัดลอกไฟล์ไอคอนในเครื่อง\n"
+"  ln [-sf] tgt name  ลิงก์ไฟล์ไอคอนในเครื่อง\n"
+"  make [-s SIZE] [-F FMT] name...  สร้างรูปแบบย่อยในเครื่อง\n"
 "\n"
-"รูปแบบ: ว่าง=ทั้งหมด ชื่อตรง glob หรือ /regex\n"
+"รูปแบบ: ว่าง=ทั้งหมด, ชื่อตรง, glob, หรือ /regex\n"
 "คำภาษาอังกฤษธรรมดายังจับคู่คำพ้อง/รูปผัน (มีคะแนน)\n"
+"คำสั่งในเครื่องทำงานภายใต้ project-dir/local-dir (ค่าเริ่มต้น: icons/)\n"
 
-#: src/iconlib.py:47
+#: src/iconlib/cmd/main.py:72
 msgid "Search and manage icons from installed icon libraries."
 msgstr "ค้นหาและจัดการไอคอนจากไลบรารีไอคอนที่ติดตั้งไว้"
 
-#: src/iconlib.py:57
+#: src/iconlib/cmd/main.py:82
 msgid "add/restrict icon library (repeatable; prefix match)"
 msgstr "เพิ่ม/จำกัดไลบรารีไอคอน (ทำซ้ำได้; จับคู่คำนำหน้า)"
 
-#: src/iconlib.py:64
+#: src/iconlib/cmd/main.py:89
 msgid "local assets directory for pull (relative to project-dir)"
 msgstr "ไดเรกทอรีสินทรัพย์ในเครื่องสำหรับ pull (สัมพัทธ์กับ project-dir)"
 
-#: src/iconlib.py:71
+#: src/iconlib/cmd/main.py:96
 msgid "pull path schema (e.g. n, l/f/n, l/v/n)"
 msgstr "สคีมาพาธสำหรับ pull (เช่น n, l/f/n, l/v/n)"
 
-#: src/iconlib.py:80
+#: src/iconlib/cmd/main.py:105
 msgid "map library name to local dirname"
 msgstr "จับคู่ชื่อไลบรารีกับชื่อไดเรกทอรีในเครื่อง"
 
-#: src/iconlib.py:87
+#: src/iconlib/cmd/main.py:112
 msgid "repeat for more verbose loggings"
 msgstr "ทำซ้ำเพื่อบันทึกรายละเอียดมากขึ้น"
 
-#: src/iconlib.py:93
+#: src/iconlib/cmd/main.py:118
 msgid "show less logging messages"
 msgstr "แสดงข้อความบันทึกน้อยลง"
 
-#: src/iconlib.py:98
+#: src/iconlib/cmd/main.py:123
 msgid "output version information and exit"
 msgstr "แสดงข้อมูลเวอร์ชันแล้วออก"
 
-#: src/iconlib.py:103
-msgid "find icons matching the query"
-msgstr "ค้นหาไอคอนที่ตรงกับคำค้น"
-
-#: src/iconlib.py:109
-msgid "long format including score"
-msgstr "รูปแบบยาวรวมคะแนน"
-
-#: src/iconlib.py:115
-msgid "output names only (default)"
-msgstr "แสดงเฉพาะชื่อ (ค่าเริ่มต้น)"
-
-#: src/iconlib.py:119
-msgid "print icon paths for the name"
-msgstr "พิมพ์พาธไอคอนสำหรับชื่อ"
-
-#: src/iconlib.py:124
-msgid "print all matching paths"
-msgstr "พิมพ์พาธที่ตรงกันทั้งหมด"
-
-#: src/iconlib.py:128
-msgid "print icon info"
-msgstr "พิมพ์ข้อมูลไอคอน"
-
-#: src/iconlib.py:131
-msgid "retrieve icons to the project"
-msgstr "ดึงไอคอนเข้าโปรเจกต์"
-
-#: src/iconlib.py:139
-msgid "add a format (repeatable); default all"
-msgstr "เพิ่มรูปแบบ (ทำซ้ำได้); ค่าเริ่มต้นทั้งหมด"
-
-#: src/iconlib.py:148
-msgid "add an image size or alias=size (repeatable)"
-msgstr "เพิ่มขนาดภาพหรือ alias=size (ทำซ้ำได้)"
-
-#: src/iconlib.py:152
-msgid "upload icons to a remote library"
-msgstr "อัปโหลดไอคอนไปยังไลบรารีระยะไกล"
-
-#: src/iconlib.py:155
-msgid "browse with themestylebrowser"
-msgstr "เรียกดูด้วย themestylebrowser"
-
-#: src/iconlib.py:163
+#: src/iconlib/cmd/main.py:136
+#, python-brace-format
 msgid "Copyright (C) {year} {author}\n"
 msgstr "ลิขสิทธิ์ (C) {year} {author}\n"
 
-#: src/iconlib.py:165
+#: src/iconlib/cmd/main.py:138
 msgid "License AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 msgstr "สัญญาอนุญาต AGPL-3.0-or-later: <https://www.gnu.org/licenses/agpl-3.0.html>\n"
 
-#: src/iconlib.py:167
+#: src/iconlib/cmd/main.py:140
 msgid "This is free software: you are free to change and redistribute it.\n"
 msgstr "นี่เป็นซอฟต์แวร์เสรี: คุณมีสิทธิ์แก้ไขและแจกจ่ายต่อได้\n"
 
-#: src/iconlib.py:168
+#: src/iconlib/cmd/main.py:141
 msgid "This project opposes AI exploitation and AI hegemony.\n"
 msgstr "โครงการนี้คัดค้านการแสวงประโยชน์จาก AI และอำนาจครอบงำของ AI\n"
 
-#: src/iconlib.py:171
+#: src/iconlib/cmd/main.py:144
 msgid "This project rejects mindless MIT-style licensing and politically naive BSD-style licensing.\n"
 msgstr "โครงการนี้ปฏิเสธการอนุญาตสิทธิ์แบบ MIT ที่ไร้ความคิดและการอนุญาตสิทธิ์แบบ BSD ที่ไร้เดียงสาทางการเมือง\n"
 
-#: src/iconlib.py:175
+#: src/iconlib/cmd/main.py:148
 msgid "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr "ไม่มีการรับประกันใด ๆ ตามขอบเขตที่กฎหมายอนุญาต\n"
 
-#: src/iconlib.py:355
+#: src/iconlib/cmd/search.py:13
+msgid "find icons matching the query"
+msgstr "ค้นหาไอคอนที่ตรงกับคำค้น"
+
+#: src/iconlib/cmd/search.py:19
+msgid "long format including score"
+msgstr "รูปแบบยาวรวมคะแนน"
+
+#: src/iconlib/cmd/search.py:25
+msgid "output names only (default)"
+msgstr "แสดงเฉพาะชื่อ (ค่าเริ่มต้น)"
+
+#: src/iconlib/cmd/which.py:16
+msgid "print icon paths for the name"
+msgstr "พิมพ์พาธไอคอนสำหรับชื่อ"
+
+#: src/iconlib/cmd/which.py:21
+msgid "print all matching paths"
+msgstr "พิมพ์พาธที่ตรงกันทั้งหมด"
+
+#: src/iconlib/cmd/info.py:16
+msgid "print icon info"
+msgstr "พิมพ์ข้อมูลไอคอน"
+
+#: src/iconlib/cmd/pull.py:109
+msgid "retrieve icons to the project"
+msgstr "ดึงไอคอนเข้าโปรเจกต์"
+
+#: src/iconlib/cmd/pull.py:117
+msgid "add a format (repeatable); default all"
+msgstr "เพิ่มรูปแบบ (ทำซ้ำได้); ค่าเริ่มต้นทั้งหมด"
+
+#: src/iconlib/cmd/pull.py:126
+msgid "add an image size or alias=size (repeatable)"
+msgstr "เพิ่มขนาดภาพหรือ alias=size (ทำซ้ำได้)"
+
+#: src/iconlib/cmd/pull.py:177
 #, python-brace-format
 msgid "Copied {n} file(s) into {dir}"
 msgstr "คัดลอก {n} ไฟล์ไปยัง {dir} แล้ว"
+
+#: src/iconlib/cmd/push.py:13
+msgid "upload icons to a remote library"
+msgstr "อัปโหลดไอคอนไปยังไลบรารีระยะไกล"
+
+#: src/iconlib/cmd/browse.py:18
+msgid "browse with themestylebrowser"
+msgstr "เรียกดูด้วย themestylebrowser"
+
+#: src/iconlib/cmd/libraries.py:18
+msgid "list discovered icon libraries"
+msgstr "แสดงไลบรารีไอคอนที่พบ"
+
+#: src/iconlib/cmd/libraries.py:24
+msgid "show path, title, license, homepage"
+msgstr "แสดงพาธ ชื่อเรื่อง สัญญาอนุญาต และโฮมเพจ"
+
+#: src/iconlib/cmd/libraries.py:30
+msgid "print library names only"
+msgstr "พิมพ์เฉพาะชื่อไลบรารี"
+
+#: src/iconlib/cmd/index.py:115
+msgid "generate web preview and/or FAISS index"
+msgstr "สร้างพรีวิวเว็บและ/หรือดัชนี FAISS"
+
+#: src/iconlib/cmd/index.py:121
+msgid "create web preview (default when neither -w nor -F is given)"
+msgstr "สร้างพรีวิวเว็บ (ค่าเริ่มต้นเมื่อไม่มีทั้ง -w และ -F)"
+
+#: src/iconlib/cmd/index.py:127
+msgid "create FAISS index (faiss.index / faiss.map / faiss.json)"
+msgstr "สร้างดัชนี FAISS (faiss.index / faiss.map / faiss.json)"
+
+#: src/iconlib/cmd/index.py:133
+msgid "overwrite existing outputs"
+msgstr "เขียนทับเอาต์พุตที่มีอยู่"
+
+#: src/iconlib/cmd/index.py:140
+msgid "FAISS canvas size before CLIP (default: 300x300)"
+msgstr "ขนาดผ้าใบ FAISS ก่อน CLIP (ค่าเริ่มต้น: 300x300)"
+
+#: src/iconlib/cmd/index.py:147
+msgid "output directory (default: .)"
+msgstr "ไดเรกทอรีเอาต์พุต (ค่าเริ่มต้น: .)"
+
+#: src/iconlib/cmd/index.py:153
+msgid "library id embedded in the web page (default: first -l or basename)"
+msgstr "รหัสไลบรารีฝังในหน้าเว็บ (ค่าเริ่มต้น: -l แรกหรือ basename)"
+
+#: src/iconlib/cmd/index.py:159
+msgid "web preview display title"
+msgstr "ชื่อที่แสดงของพรีวิวเว็บ"
+
+#: src/iconlib/cmd/index.py:165
+msgid "license label shown in the web page"
+msgstr "ป้ายสัญญาอนุญาตที่แสดงในหน้าเว็บ"
+
+#: src/iconlib/cmd/index.py:171
+msgid "homepage URL shown in the web page"
+msgstr "URL โฮมเพจที่แสดงในหน้าเว็บ"
+
+#: src/iconlib/cmd/index.py:179
+msgid "icon root to scan (repeatable; default: selected library paths)"
+msgstr "รูทไอคอนที่จะสแกน (ซ้ำได้; ค่าเริ่มต้น: พาธไลบรารีที่เลือก)"
+
+#: src/iconlib/cmd/index.py:184
+msgid "URL prefix for SVG hrefs in the web preview (default: ..)"
+msgstr "คำนำหน้า URL สำหรับ href ของ SVG ในพรีวิว (ค่าเริ่มต้น: ..)"
+
+#: src/iconlib/cmd/index.py:190
+msgid "web template directory (default: <pkgdatadir>/index)"
+msgstr "ไดเรกทอรีเทมเพลตเว็บ (ค่าเริ่มต้น: <pkgdatadir>/index)"
+
+#: src/iconlib/cmd/index.py:196
+msgid "limit number of icons for web preview (0 = unlimited)"
+msgstr "จำกัดจำนวนไอคอนในพรีวิวเว็บ (0 = ไม่จำกัด)"
+
+#: src/iconlib/cmd/delete.py:15
+msgid "delete local icon files by name"
+msgstr "ลบไฟล์ไอคอนในเครื่องตามชื่อ"
+
+#: src/iconlib/cmd/delete.py:20
+msgid "icon name(s) to remove from the local assets directory"
+msgstr "ชื่อไอคอนที่จะลบออกจากไดเรกทอรีสินทรัพย์ในเครื่อง"
+
+#: src/iconlib/cmd/delete.py:51
+#, python-brace-format
+msgid "Deleted {n} file(s) under {dir}"
+msgstr "ลบ {n} ไฟล์ภายใต้ {dir} แล้ว"
+
+#: src/iconlib/cmd/rename.py:15
+msgid "rename local icon files"
+msgstr "เปลี่ยนชื่อไฟล์ไอคอนในเครื่อง"
+
+#: src/iconlib/cmd/rename.py:16 src/iconlib/cmd/copy.py:17
+#: src/iconlib/cmd/ln.py:29
+msgid "existing icon name"
+msgstr "ชื่อไอคอนที่มีอยู่"
+
+#: src/iconlib/cmd/rename.py:17 src/iconlib/cmd/copy.py:18
+msgid "new icon name"
+msgstr "ชื่อไอคอนใหม่"
+
+#: src/iconlib/cmd/rename.py:57
+#, python-brace-format
+msgid "Renamed {n} file(s) {old} → {new}"
+msgstr "เปลี่ยนชื่อ {n} ไฟล์แล้ว: {old} → {new}"
+
+#: src/iconlib/cmd/copy.py:16
+msgid "copy local icon files to a new name"
+msgstr "คัดลอกไฟล์ไอคอนในเครื่องไปยังชื่อใหม่"
+
+#: src/iconlib/cmd/copy.py:59
+#, python-brace-format
+msgid "Copied {n} local file(s) {src} → {dst}"
+msgstr "คัดลอก {n} ไฟล์ในเครื่องแล้ว: {src} → {dst}"
+
+#: src/iconlib/cmd/ln.py:16
+msgid "link local icon files under a new name"
+msgstr "ลิงก์ไฟล์ไอคอนในเครื่องภายใต้ชื่อใหม่"
+
+#: src/iconlib/cmd/ln.py:21
+msgid "make symbolic links instead of hard links"
+msgstr "สร้างลิงก์สัญลักษณ์แทนฮาร์ดลิงก์"
+
+#: src/iconlib/cmd/ln.py:27
+msgid "remove existing destination files"
+msgstr "ลบไฟล์ปลายทางที่มีอยู่"
+
+#: src/iconlib/cmd/ln.py:30
+msgid "new link name"
+msgstr "ชื่อลิงก์ใหม่"
+
+#: src/iconlib/cmd/ln.py:81
+#, python-brace-format
+msgid "Linked {n} local file(s) {target} → {link}"
+msgstr "ลิงก์ {n} ไฟล์ในเครื่องแล้ว: {target} → {link}"
+
+#: src/iconlib/cmd/make.py:25
+msgid "create local size/format variants of existing icons"
+msgstr "สร้างรูปแบบขนาด/ฟอร์แมตในเครื่องจากไอคอนที่มีอยู่"
+
+#: src/iconlib/cmd/make.py:34
+msgid "add an output size (repeatable; e.g. 64 or 64x64)"
+msgstr "เพิ่มขนาดเอาต์พุต (ซ้ำได้; เช่น 64 หรือ 64x64)"
+
+#: src/iconlib/cmd/make.py:43
+msgid "add an output format (repeatable; e.g. png, webp)"
+msgstr "เพิ่มฟอร์แมตเอาต์พุต (ซ้ำได้; เช่น png, webp)"
+
+#: src/iconlib/cmd/make.py:49
+msgid "local icon name(s) to expand"
+msgstr "ชื่อไอคอนในเครื่องที่จะขยาย"
+
+#: src/iconlib/cmd/make.py:166
+#, python-brace-format
+msgid "Made {n} local variant file(s)"
+msgstr "สร้าง {n} ไฟล์รูปแบบย่อยในเครื่องแล้ว"
