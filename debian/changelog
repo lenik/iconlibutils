@@ -16,8 +16,9 @@ iconlibutils (0.0.2) unstable; urgency=medium
   * Add bytesize-icons FAISS index/search integration test.
   * Discover libraries from drop-in files
     /usr/share/iconlibutils/library/<name> (not library.conf dirs).
+  * Fix RPM %%files python sitelib path for noarch packaging.
 
- -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 21:40:00 +0800
+ -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 21:45:00 +0800
 
 iconlibutils (0.0.1) unstable; urgency=medium
 

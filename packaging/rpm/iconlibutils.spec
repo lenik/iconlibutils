@@ -22,6 +22,7 @@ BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  asciidoctor
 
@@ -60,7 +61,7 @@ meson install -C build --destdir=%{buildroot}
 %files
 %{_bindir}/iconlib
 %{_bindir}/findicon
-%{python3_sitelib}/iconlib/
+/usr/lib/python3*/site-packages/iconlib/
 %{_datadir}/iconlibutils/
 %{_datadir}/bash-completion/completions/iconlib
 %{_datadir}/bash-completion/completions/findicon
