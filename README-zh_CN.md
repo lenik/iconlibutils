@@ -5,9 +5,10 @@
 
 ## 仓库结构
 
-- `src/iconlib/` — Python 包（`cli`、`autoindex`、索引相关模块等）
-- `src/findicon.py` — `iconlib search` 的 bindir 快捷命令
-- `tests/` — 单元测试（`unittest`）
+- `src/iconlib/` — Python 包（`cmd/`、索引相关模块等）
+- `iconlib.in` — meson 替换的 bash 启动器 → `src/iconlib_main.py`
+- `findicon.sh` — `iconlib search` 的 bindir 快捷命令
+- `tests/` — 单元测试（`unittest`；三个 meson 测试目标）
 - `debian/` — Debian 打包
 - `po/` — gettext 翻译
 - `docs/` — AsciiDoc man 页
@@ -44,6 +45,11 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 - `index [-w|--web] [-F|--faiss] [-f|--force] [-s|--upscale SIZE] [-o DIR]` —
   生成网页预览（默认）和/或 CLIP FAISS 索引（`faiss.index` /
   `faiss.map` / `faiss.json`）
+- `delete <name>...` — 删除本地图标文件（含各 variant/size/format）
+- `rename <old> <new>` — 本地改名
+- `copy <from> <to>` — 本地复制
+- `ln [-sf] <target> <name>` — 本地硬链接或符号链接
+- `make [-s SIZE]... [-F FMT]... <name>...` — 生成本地尺寸/格式变体
 
 ### 匹配模式
 
@@ -56,8 +62,7 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 
 通过扫描 drop-in **文件** 发现图库：
 
-- `/usr/share/iconlibutils/library/<name>`
-- `/usr/local/share/iconlibutils/library/<name>`
+- `<install-prefix /usr>/share/iconlibutils/library/<name>`
 - `~/.config/iconlibutils/library/<name>`
 
 每个 `icons-<name>` 包安装名为 `<name>` 的文件（`key=value`：

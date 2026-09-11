@@ -4,9 +4,10 @@
 
 """English semantic helpers for icon search (inflection + offline WordNet).
 
-Uses python3-inflect for singular/plural and Debian wordnet-base files under
-/usr/share/wordnet (no network). Pattern/NLTK are avoided because they can
-block forever offline (e.g. during debuild).
+Uses python3-inflect for singular/plural and Debian wordnet-base files
+(default: system wordnet dir; override via ICONLIBUTILS_WORDNET_DIR or Meson
+``_config``). Pattern/NLTK are avoided because they can block forever offline
+(e.g. during debuild).
 """
 
 from __future__ import annotations
@@ -15,42 +16,53 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
+from .site import get_wordnet_dir
+
 _TOKEN_SPLIT = re.compile(r"[-_\s]+")
 SCORE_THRESHOLD = 50.0
 
-WORDNET_DIR = Path("/usr/share/wordnet")
+_inflect_engine = None
+_inflect_tried = False
 
-_HAS_INFLECT = False
-try:
-    import inflect as _inflect_mod
 
-    _inflect_engine = _inflect_mod.engine()
-    _HAS_INFLECT = True
+def _get_inflect():
+    """Load python3-inflect on first use (import is slow)."""
+    global _inflect_engine, _inflect_tried
+    if _inflect_tried:
+        return _inflect_engine
+    _inflect_tried = True
+    try:
+        import inflect as _inflect_mod
 
-    def singularize(word: str) -> str:
-        s = _inflect_engine.singular_noun(word)
+        _inflect_engine = _inflect_mod.engine()
+    except Exception:  # noqa: BLE001
+        _inflect_engine = None
+    return _inflect_engine
+
+
+def singularize(word: str) -> str:
+    eng = _get_inflect()
+    if eng is not None:
+        s = eng.singular_noun(word)
         return s if s else word
+    if word.endswith("ies") and len(word) > 3:
+        return word[:-3] + "y"
+    if word.endswith("ses") and len(word) > 3:
+        return word[:-2]
+    if word.endswith("s") and not word.endswith("ss") and len(word) > 1:
+        return word[:-1]
+    return word
 
-    def pluralize(word: str) -> str:
-        return _inflect_engine.plural(word)
 
-except Exception:  # noqa: BLE001
-
-    def singularize(word: str) -> str:
-        if word.endswith("ies") and len(word) > 3:
-            return word[:-3] + "y"
-        if word.endswith("ses") and len(word) > 3:
-            return word[:-2]
-        if word.endswith("s") and not word.endswith("ss") and len(word) > 1:
-            return word[:-1]
-        return word
-
-    def pluralize(word: str) -> str:
-        if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
-            return word[:-1] + "ies"
-        if word.endswith(("s", "x", "z", "ch", "sh")):
-            return word + "es"
-        return word + "s"
+def pluralize(word: str) -> str:
+    eng = _get_inflect()
+    if eng is not None:
+        return eng.plural(word)
+    if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
+        return word[:-1] + "ies"
+    if word.endswith(("s", "x", "z", "ch", "sh")):
+        return word + "es"
+    return word + "s"
 
 
 def tokenize(text: str) -> list[str]:
@@ -91,8 +103,8 @@ def inflection_forms(word: str) -> frozenset[str]:
 class _WordNetNoun:
     """Minimal offline noun WordNet over Debian wordnet-base files."""
 
-    def __init__(self, root: Path = WORDNET_DIR) -> None:
-        self.root = root
+    def __init__(self, root: Path | None = None) -> None:
+        self.root = root if root is not None else get_wordnet_dir()
         self._index: dict[str, list[str]] | None = None
         self._data: dict[str, tuple[list[str], list[str]]] | None = None
 

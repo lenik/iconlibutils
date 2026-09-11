@@ -23,6 +23,13 @@ def init_i18n(argv0: str) -> gettext.NullTranslations:
         build_po = Path(argv0).resolve().parent / "po"
         if build_po.is_dir():
             localedir = str(build_po)
+    if not localedir:
+        try:
+            from .site import get_localedir
+
+            localedir = str(get_localedir())
+        except Exception:
+            localedir = None
 
     trans = gettext.translation(TEXT_DOMAIN, localedir=localedir, fallback=True)
     trans.install()

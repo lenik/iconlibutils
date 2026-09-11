@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright (C) 2026 Lenik <iconlibutils@bodz.net>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -6,14 +5,10 @@
 
 Primary discovery (drop-in files)::
 
-    /usr/share/iconlibutils/library/<name>
+    <pkgdatadir>/library/<name>
 
-Each file is key=value metadata (same format as the former library.conf).
-Packaged sources ship as ``library.iconlib`` and meson renames on install.
-
-Legacy directory form still accepted::
-
-    /usr/share/iconlibutils/library/<name>/library.conf
+Each file is key=value metadata. Packaged sources ship as
+``library.iconlib`` and meson renames on install to ``<name>``.
 
 Optional legacy path registries (``TYPE NAME PATH``) remain supported.
 """
@@ -23,6 +18,8 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from .site import default_icon_datadir, get_pkgdatadir
 
 
 @dataclass(frozen=True)
@@ -37,12 +34,6 @@ class Library:
     meta_path: Path | None = field(default=None, compare=False)
 
 
-DEFAULT_LIBRARY_DIRS = (
-    Path("/usr/share/iconlibutils/library"),
-    Path("/usr/local/share/iconlibutils/library"),
-    Path.home() / ".config" / "iconlibutils" / "library",
-)
-
 DEFAULT_PATH_FILES = (
     Path("/etc/iconlibutils/path"),
     Path.home() / ".config" / "iconlibutils" / "path",
@@ -50,6 +41,13 @@ DEFAULT_PATH_FILES = (
 
 # Skip obvious non-metadata files in the library drop-in dir.
 _SKIP_SUFFIXES = {".md", ".txt", ".html", ".css", ".js", ".json", ".png", ".svg"}
+
+
+def default_library_dirs() -> tuple[Path, ...]:
+    return (
+        get_pkgdatadir() / "library",
+        Path.home() / ".config" / "iconlibutils" / "library",
+    )
 
 
 def parse_library_conf(path: Path) -> dict[str, str]:
@@ -76,7 +74,7 @@ def library_from_data(
     name = data.get("name") or default_name
     lib_path = data.get("path") or data.get("datadir")
     if not lib_path:
-        lib_path = f"/usr/share/icons-{name}"
+        lib_path = str(default_icon_datadir(name))
     typ = data.get("type") or "auto"
     return Library(
         type=typ,
@@ -109,20 +107,6 @@ def library_from_meta_file(meta_file: Path) -> Library | None:
     return library_from_data(data, default_name=default_name, meta_path=meta_file)
 
 
-def library_from_meta_dir(meta_dir: Path) -> Library | None:
-    """Legacy: load from ``.../library/<name>/library.conf``."""
-    conf = meta_dir / "library.conf"
-    if not conf.is_file():
-        # also accept library.iconlib inside the dir
-        alt = meta_dir / "library.iconlib"
-        if alt.is_file():
-            conf = alt
-        else:
-            return None
-    data = parse_library_conf(conf)
-    return library_from_data(data, default_name=meta_dir.name, meta_path=conf)
-
-
 def scan_library_dir(root: Path) -> list[Library]:
     if not root.is_dir():
         return []
@@ -130,12 +114,9 @@ def scan_library_dir(root: Path) -> list[Library]:
     for child in sorted(root.iterdir()):
         if child.name.startswith("."):
             continue
-        if child.is_file():
-            lib = library_from_meta_file(child)
-        elif child.is_dir():
-            lib = library_from_meta_dir(child)
-        else:
+        if not child.is_file():
             continue
+        lib = library_from_meta_file(child)
         if lib is not None:
             libs.append(lib)
     return libs
@@ -164,7 +145,7 @@ def env_library_dirs() -> list[Path]:
     raw = os.environ.get("ICONLIBUTILS_LIBRARY_DIRS")
     if raw:
         return [Path(p) for p in raw.split(os.pathsep) if p]
-    return list(DEFAULT_LIBRARY_DIRS)
+    return list(default_library_dirs())
 
 
 def env_path_files() -> list[Path]:
@@ -184,7 +165,7 @@ def load_libraries(
     """Discover libraries; later sources override earlier ones by name.
 
     Order:
-      1. system/user ``library/*`` drop-in files (and legacy dirs)
+      1. system/user ``library/<name>`` drop-in files
       2. optional legacy path files
       3. ``extra``
     """

@@ -23,8 +23,7 @@ iconlib - 从已安装的图标库搜索和管理图标
 
 通过扫描 drop-in **文件** 发现图库（后者与旧版 path 文件按名称覆盖）：
 
-* */usr/share/iconlibutils/library/<name>*
-* */usr/local/share/iconlibutils/library/<name>*
+* *<install-prefix /usr>/share/iconlibutils/library/<name>*
 * *~/.config/iconlibutils/library/<name>*
 
 每个文件为 *key=value*（*name*、*type*、*path*、*title*、

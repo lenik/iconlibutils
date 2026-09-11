@@ -1,8 +1,8 @@
 # Copyright (C) 2026 Lenik <iconlibutils@bodz.net>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-from __future__ import annotations
+"""iconlib command modules."""
 
-from .cmd import main
+from .main import main
 
-raise SystemExit(main())
+__all__ = ["main"]

@@ -35,8 +35,13 @@ def _faiss_ready() -> bool:
 class BytesizeFaissTests(unittest.TestCase):
     @unittest.skipUnless(_faiss_ready(), "CLIP/FAISS deps or local model missing")
     def test_index_and_search_camera(self) -> None:
-        from iconlib.cli import main
+        from iconlib.cmd import main
 
+        print(
+            "iconlib: FAISS test running — loading CLIP and indexing "
+            "(this can take a while)...",
+            flush=True,
+        )
         self.assertTrue((BYTESIZE_ICONS / "camera.svg").is_file())
         with tempfile.TemporaryDirectory() as td:
             td_path = Path(td)

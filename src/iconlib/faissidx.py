@@ -7,9 +7,7 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 IMAGE_EXTS = {".svg", ".png", ".jpg", ".jpeg", ".webp"}
@@ -108,41 +106,16 @@ def filename_to_text(path: Path) -> str:
     return text or stem
 
 
-def _rasterize_svg(path: Path, out_png: Path, size: tuple[int, int]) -> None:
-    w, h = size
-    # Render larger then fit on white canvas; rsvg keeps aspect with zoom.
-    cmd = [
-        "rsvg-convert",
-        f"--width={w}",
-        f"--height={h}",
-        "--keep-aspect-ratio",
-        "--background-color=white",
-        "-o",
-        str(out_png),
-        str(path),
-    ]
-    subprocess.run(cmd, check=True, capture_output=True)
-
-
 def load_icon_rgb(path: Path, canvas_size: tuple[int, int]):
     """Load icon onto a white RGB canvas, preserving aspect ratio."""
     from PIL import Image
 
+    from .svgconv import svg_to_pil
+
     w, h = canvas_size
     suffix = path.suffix.lower()
     if suffix == ".svg":
-        with tempfile.TemporaryDirectory() as td:
-            png = Path(td) / "icon.png"
-            try:
-                _rasterize_svg(path, png, canvas_size)
-            except FileNotFoundError as e:
-                raise RuntimeError(
-                    "rsvg-convert not found; install librsvg2-bin for SVG FAISS indexing"
-                ) from e
-            except subprocess.CalledProcessError as e:
-                err = (e.stderr or b"").decode("utf-8", "replace").strip()
-                raise RuntimeError(f"SVG rasterize failed for {path}: {err}") from e
-            img = Image.open(png).convert("RGBA")
+        img = svg_to_pil(path, width=w, height=h, background_color="white")
     else:
         img = Image.open(path).convert("RGBA")
 
@@ -164,6 +137,10 @@ def _require_deps():
         import PIL  # noqa: F401
     except ImportError:
         missing.append("PIL (python3-pil)")
+    try:
+        import cairosvg  # noqa: F401
+    except ImportError:
+        missing.append("cairosvg (python3-cairosvg)")
     try:
         import torch  # noqa: F401
         from transformers import CLIPModel, CLIPProcessor  # noqa: F401
@@ -269,6 +246,13 @@ def generate_faiss_index(
     paths = iter_icon_files(icons_roots)
     if not paths:
         raise ValueError("no icon images found under the given roots")
+
+    if verbose >= 0:
+        print(
+            f"iconlib: FAISS indexing {len(paths)} icons "
+            "(loading CLIP; this can take a while)...",
+            flush=True,
+        )
 
     encoder = ClipEncoder()
     vectors: list = []

@@ -5,9 +5,10 @@ from installed icon libraries (tabler-icons, streamline-vectors, heroicons, …)
 
 ## Repository layout
 
-- `src/iconlib/` — Python package (`cli`, `autoindex`, index helpers, …)
-- `src/findicon.py` — bindir shortcut to `iconlib search`
-- `tests/` — Python unit tests (`unittest`)
+- `src/iconlib/` — Python package (`cmd/`, index helpers, …)
+- `iconlib.in` — meson-substituted bash launcher → `src/iconlib_main.py`
+- `findicon.sh` — bindir shortcut to `iconlib search`
+- `tests/` — Python unit tests (`unittest`; three meson test targets)
 - `debian/` — Debian packaging
 - `po/` — gettext catalogs
 - `docs/` — AsciiDoc man page sources
@@ -48,6 +49,11 @@ iconlib [OPTIONS] COMMAND [ARGS...]
   `faiss.map` / `faiss.json`). FAISS needs a local CLIP checkout (see
   `hfd openai/clip-vit-base-patch32 --local-dir ~/models/clip-vit-base-patch32`
   with `HF_ENDPOINT=https://hf-mirror.com` if needed).
+- `delete <name>...` — remove local icon files (all variants/sizes/formats)
+- `rename <old> <new>` — rename local icon files
+- `copy <from> <to>` — copy local icon files
+- `ln [-sf] <target> <name>` — hard-link or symlink local icon files
+- `make [-s SIZE]... [-F FMT]... <name>...` — derive local size/format variants
 
 ### Patterns
 
@@ -60,8 +66,7 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 
 Libraries are discovered by scanning drop-in metadata **files**:
 
-- `/usr/share/iconlibutils/library/<name>`
-- `/usr/local/share/iconlibutils/library/<name>`
+- `<install-prefix /usr>/share/iconlibutils/library/<name>`
 - `~/.config/iconlibutils/library/<name>`
 
 Each `icons-<name>` package installs a file named `<name>` there (key=value:

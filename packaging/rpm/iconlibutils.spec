@@ -28,18 +28,19 @@ BuildRequires:  asciidoctor
 
 Requires:       python3
 Requires:       python3-inflect
+Requires:       python3-cairosvg
 Requires:       wordnet-base
 Suggests:       themestylebrowser
 Suggests:       python3-faiss
 Suggests:       python3-pillow
-Suggests:       librsvg2
 
 %description
 iconlibutils provides the iconlib command to search, inspect, pull, and
 browse icons from libraries such as tabler-icons, streamline-vectors, and
 heroicons. findicon is a shortcut for iconlib search. Library discovery
-uses drop-in metadata under /usr/share/iconlibutils/library/. Plain-English
-search uses offline WordNet (wordnet-base) and python3-inflect.
+uses drop-in metadata under %{_datadir}/iconlibutils/library/. Plain-English
+search uses offline WordNet (wordnet-base) and python3-inflect; FAISS
+indexes enrich results when present.
 
 %prep
 %setup -q -n %{name}-%{srcversion}

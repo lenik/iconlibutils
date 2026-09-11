@@ -1,0 +1,17 @@
+#!/bin/bash
+# Generated from iconlib.in by meson — do not edit.
+set -euo pipefail
+
+PYTHON=@PYTHON@
+ICONLIB_MAIN=@ICONLIB_MAIN@
+PYTHONPATH_EXTRA=@PYTHONPATH_EXTRA@
+LOCALEDIR=@LOCALEDIR@
+
+if [ -n "${PYTHONPATH_EXTRA}" ]; then
+  export PYTHONPATH="${PYTHONPATH_EXTRA}${PYTHONPATH:+:${PYTHONPATH}}"
+fi
+if [ -n "${LOCALEDIR}" ]; then
+  export ICONLIBUTILS_LOCALEDIR="${LOCALEDIR}"
+fi
+
+exec "${PYTHON}" "${ICONLIB_MAIN}" "$@"

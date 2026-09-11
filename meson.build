@@ -37,52 +37,105 @@ pkgdocdir = datadir / 'doc' / meson.project_name()
 
 subdir('po')
 
+pkgdatadir = datadir / 'iconlibutils'
+
+# Meson-substituted package config (version + install paths).
+py_conf = configuration_data()
+py_conf.set('VERSION', meson.project_version())
+py_conf.set('PKGDATADIR', pkgdatadir)
+py_conf.set('DATADIR', datadir)
+py_conf.set('LOCALEDIR', localedir)
+py_conf.set('WORDNET_DIR', '/usr/share/wordnet')
+iconlib_config_py = configure_file(
+  input: '_config.py.in',
+  output: '_config.py',
+  configuration: py_conf,
+)
+install_data(
+  iconlib_config_py,
+  install_dir: py.get_install_dir() / 'iconlib',
+)
+
 # Install the iconlib Python package (not into bindir).
-iconlib_sources = files(
-    'src/iconlib/__init__.py',
-    'src/iconlib/__main__.py',
-    'src/iconlib/cli.py',
-    'src/iconlib/autoindex.py',
-    'src/iconlib/faissidx.py',
-    'src/iconlib/ilcommon.py',
-    'src/iconlib/indexgen.py',
-    'src/iconlib/paths.py',
-    'src/iconlib/rc.py',
-    'src/iconlib/schema.py',
-    'src/iconlib/semantic.py',
-)
-py.install_sources(iconlib_sources, subdir: 'iconlib', pure: true)
-
-iconlib_exe = custom_target(
-    'iconlib',
-    input: 'src/iconlib_main.py',
-    output: 'iconlib',
-    command: [
-        py,
-        '-c',
-        'import os, shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2]); os.chmod(sys.argv[2], 0o755)',
-        '@INPUT@',
-        '@OUTPUT@',
-    ],
-    build_by_default: true,
-    install: true,
-    install_dir: bindir,
+install_subdir(
+  'src/iconlib',
+  install_dir: py.get_install_dir(),
+  exclude_directories: ['__pycache__'],
 )
 
-findicon_exe = custom_target(
-    'findicon',
-    input: 'src/findicon.py',
-    output: 'findicon',
-    command: [
-        py,
-        '-c',
-        'import os, shutil, sys; shutil.copyfile(sys.argv[1], sys.argv[2]); os.chmod(sys.argv[2], 0o755)',
-        '@INPUT@',
-        '@OUTPUT@',
-    ],
-    build_by_default: true,
-    install: true,
-    install_dir: bindir,
+# Python entry invoked by the bash launcher.
+install_data(
+  'src/iconlib_main.py',
+  install_dir: pkgdatadir,
+  install_mode: 'rwxr-xr-x',
+)
+
+# Build-tree launcher: source paths + PYTHONPATH so ./build/iconlib works.
+conf_local = configuration_data()
+conf_local.set_quoted('PYTHON', '/usr/bin/python3')
+conf_local.set_quoted(
+  'ICONLIB_MAIN',
+  meson.project_source_root() / 'src' / 'iconlib_main.py',
+)
+conf_local.set_quoted(
+  'PYTHONPATH_EXTRA',
+  meson.project_source_root() / 'src',
+)
+conf_local.set_quoted('LOCALEDIR', meson.project_build_root() / 'po')
+iconlib_local_cfg = configure_file(
+  input: 'iconlib.in',
+  output: 'iconlib.local.in',
+  configuration: conf_local,
+)
+custom_target(
+  'iconlib',
+  input: iconlib_local_cfg,
+  output: 'iconlib',
+  command: [
+    'sh',
+    '-c',
+    'cp -f "$1" "$2" && chmod 755 "$2"',
+    'sh',
+    '@INPUT@',
+    '@OUTPUT@',
+  ],
+  build_by_default: true,
+)
+
+# Installed launcher: prefix paths; site-packages already on sys.path.
+conf_inst = configuration_data()
+conf_inst.set_quoted('PYTHON', '/usr/bin/python3')
+conf_inst.set_quoted('ICONLIB_MAIN', pkgdatadir / 'iconlib_main.py')
+conf_inst.set_quoted('PYTHONPATH_EXTRA', '')
+conf_inst.set_quoted('LOCALEDIR', localedir)
+iconlib_installed = configure_file(
+  input: 'iconlib.in',
+  output: 'iconlib.install',
+  configuration: conf_inst,
+)
+install_data(
+  iconlib_installed,
+  install_dir: bindir,
+  rename: 'iconlib',
+  install_mode: 'rwxr-xr-x',
+)
+
+# Stage and install findicon as the final bindir name (avoid install rename).
+custom_target(
+  'findicon',
+  input: 'findicon.sh',
+  output: 'findicon',
+  command: [
+    'sh',
+    '-c',
+    'cp -f "$1" "$2" && chmod 755 "$2"',
+    'sh',
+    '@INPUT@',
+    '@OUTPUT@',
+  ],
+  build_by_default: true,
+  install: true,
+  install_dir: bindir,
 )
 
 install_subdir(
@@ -188,15 +241,52 @@ meson.add_install_script(
     '''.format(meson.project_build_root(), mandir),
 )
 
+test_env = [
+  'PYTHONPATH=' + (meson.project_source_root() / 'src'),
+  'ICONLIBUTILS_LOCALEDIR=' + (meson.project_build_root() / 'po'),
+]
+
 test(
-    'python-unit',
-    py,
-    args: ['-m', 'unittest', 'discover', '-s', (meson.project_source_root() / 'tests'), '-p', 'test_*.py'],
-    env: [
-        'PYTHONPATH=' + (meson.project_source_root() / 'src'),
-        'ICONLIBUTILS_LOCALEDIR=' + (meson.project_build_root() / 'po'),
-    ],
-    timeout: 600,
+  'python-unit-iconlib',
+  py,
+  args: [
+    '-m',
+    'unittest',
+    'tests.test_iconlib',
+    '-v',
+  ],
+  workdir: meson.project_source_root(),
+  env: test_env,
+  timeout: 120,
+)
+
+test(
+  'python-unit-findicon',
+  py,
+  args: [
+    '-m',
+    'unittest',
+    'tests.test_findicon',
+    '-v',
+  ],
+  workdir: meson.project_source_root(),
+  env: test_env,
+  timeout: 60,
+)
+
+test(
+  'python-unit-faiss',
+  py,
+  args: [
+    '-m',
+    'unittest',
+    'tests.test_bytesize_faiss',
+    '-v',
+  ],
+  workdir: meson.project_source_root(),
+  env: test_env,
+  timeout: 600,
+  is_parallel: false,
 )
 
 run_target(

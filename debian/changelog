@@ -1,6 +1,34 @@
+iconlibutils (0.0.3) unstable; urgency=medium
+
+  * Restructure CLI into iconlib.cmd/<command>.py (ZL001; README length
+    exempt); fold pull schema and web index helpers into their commands.
+  * Drop legacy library/<name>/library.conf directory discovery.
+  * Remove scripts/ from the tree and rewrite history to purge them.
+  * Use /usr/bin/python3 shebang on bindir wrappers so a venv env
+    python3 cannot hide the system iconlib package.
+  * Add local helpers: delete, rename, copy, ln, and make (-s/-F
+    variants).
+  * Replace findicon.py with findicon.sh; add meson-substituted
+    iconlib.in bash launcher.
+  * Document install-prefix paths (drop /usr/local from docs and
+    defaults).
+  * Split meson tests into iconlib, findicon, and faiss targets; print
+    FAISS progress.
+  * Refresh gettext catalogs for new CLI strings and local commands.
+  * Prefer cairosvg over rsvg for SVG rasterization; depend on python3-
+    cairosvg.
+  * Meson-substitute package version and pkgdatadir/datadir/localedir
+    into iconlib._config.
+  * Keep WordNet/semantic search as the baseline when FAISS indexes are
+    absent.
+  * Defer inflect and search imports so iconlib -h starts quickly.
+  * Point the bash launcher at Meson LOCALEDIR so rebuilt translations
+    are visible before install.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Fri, 11 Sep 2026 22:16:26 +0800
+
 iconlibutils (0.0.2) unstable; urgency=medium
 
-  [ Lenik (谢继雷) ]
   * Restructure sources into the iconlib Python package; stop installing
     helper modules to bindir.
   * Make findicon a shortcut for iconlib search; remove the iconlibutils
@@ -18,14 +46,10 @@ iconlibutils (0.0.2) unstable; urgency=medium
     /usr/share/iconlibutils/library/<name> (not library.conf dirs).
   * Fix RPM %%files python sitelib path for noarch packaging.
 
- -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 21:45:00 +0800
+ -- Lenik (谢继雷) <lenik@bodz.net>  Fri, 11 Sep 2026 21:45:00 +0800
 
 iconlibutils (0.0.1) unstable; urgency=medium
 
-  [ Lenik ]
-  * Initial release
-
-  [ Lenik (谢继雷) ]
   * Rewrite iconlib as multi-command icon library CLI
     (search/which/info/pull/browse).
   * Add path registries, .iconlibrc project config, and auto library
@@ -44,4 +68,4 @@ iconlibutils (0.0.1) unstable; urgency=medium
   * Use offline wordnet-base + python3-inflect for search (avoid pattern
     hang in debuild).
 
- -- Lenik <pub.lenik@bodz.net>  Fri, 11 Sep 2026 17:21:59 +0800
+ -- Lenik (谢继雷) <lenik@bodz.net>  Fri, 11 Sep 2026 17:21:59 +0800

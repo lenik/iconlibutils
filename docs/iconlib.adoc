@@ -25,8 +25,7 @@ project, and can open *themestylebrowser*(1) for libraries that provide a
 Library roots are discovered by scanning drop-in metadata **files**
 (later directories and legacy path files override by name):
 
-* */usr/share/iconlibutils/library/<name>*
-* */usr/local/share/iconlibutils/library/<name>*
+* *<install-prefix /usr>/share/iconlibutils/library/<name>*
 * *~/.config/iconlibutils/library/<name>*
 
 Each file is *key=value* (*name*, *type*, *path*, *title*, *license*,
@@ -181,6 +180,43 @@ Build indexes for selected libraries (*-l*) and/or explicit
 
 *-o, --outdir* _DIR_::
   Output directory (default: *.*).
+
+=== delete
+
+*iconlib* *delete* _name_...
+
+Remove all local assets under *project-dir*/*local-dir* whose filename stem
+matches _name_ (every variant / size / format).
+
+=== rename
+
+*iconlib* *rename* _old_ _new_
+
+Rename all local files for _old_ to _new_, preserving directory layout and
+extensions.
+
+=== copy
+
+*iconlib* *copy* _from_ _to_
+
+Copy all local files for _from_ to a new stem _to_.
+
+=== ln
+
+*iconlib* *ln* [*-s*] [*-f*] _target_ _name_
+
+Create hard links (default) or symbolic links (*-s*) for every local file of
+_target_ under the new stem _name_. *-f* replaces existing destinations.
+
+=== make
+
+*iconlib* *make* [*-s*|*--size* _SIZE_]... [*-F*|*--format* _FMT_]... _name_...
+
+Derive additional local variants from an existing icon (preferring SVG
+sources). At least one *-s* or *-F* is required.
+Size/format directory segments in the path are rewritten when present;
+otherwise a size directory is appended and/or the file extension is changed.
+Rasterization uses *cairosvg* and *PIL*.
 
 == Patterns
 

@@ -17,7 +17,7 @@ from iconlib.autoindex import (
 )
 from iconlib.paths import Library, load_libraries, resolve_library_names
 from iconlib.rc import find_iconlibrc, load_rc, parse_rc_text
-from iconlib.schema import expand_dest, parse_schema
+from iconlib.cmd.pull import expand_dest, parse_schema
 from iconlib.semantic import (
     expand_query_terms,
     inflection_forms,
@@ -42,11 +42,10 @@ class PathRegistryTests(unittest.TestCase):
             self.assertIn("tabler-icons", libs)
             self.assertIn("mdi", libs)
 
-    def test_library_dir_discovery(self) -> None:
+    def test_library_file_discovery(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = Path(td) / "library"
             root.mkdir(parents=True)
-            # Primary form: drop-in file named after the library
             (root / "lucide").write_text(
                 "name=lucide\n"
                 "type=auto\n"
@@ -56,10 +55,7 @@ class PathRegistryTests(unittest.TestCase):
                 "homepage=https://lucide.dev/\n",
                 encoding="utf-8",
             )
-            # Legacy dir form still supported
-            feather = root / "feather"
-            feather.mkdir()
-            (feather / "library.conf").write_text(
+            (root / "feather").write_text(
                 "path=/opt/feather\ntitle=Feather\n",
                 encoding="utf-8",
             )
@@ -71,6 +67,19 @@ class PathRegistryTests(unittest.TestCase):
             self.assertEqual(libs["lucide"].meta_path, root / "lucide")
             self.assertEqual(libs["feather"].name, "feather")
             self.assertEqual(libs["feather"].path, Path("/opt/feather"))
+
+    def test_library_dir_ignored(self) -> None:
+        """Directory form …/library/<name>/ is not discovered."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "library"
+            lucide = root / "lucide"
+            lucide.mkdir(parents=True)
+            (lucide / "library.conf").write_text(
+                "name=lucide\npath=/usr/share/icons-lucide\n",
+                encoding="utf-8",
+            )
+            libs = load_libraries(library_dirs=[root], path_files=[])
+            self.assertEqual(libs, {})
 
     def test_prefix_resolve(self) -> None:
         reg = {
@@ -223,7 +232,7 @@ class SchemaTests(unittest.TestCase):
 
 class PullIntegrationTests(unittest.TestCase):
     def test_pull_via_main(self) -> None:
-        from iconlib.cli import main
+        from iconlib.cmd import main
 
         with tempfile.TemporaryDirectory() as td:
             td_path = Path(td)
@@ -261,6 +270,69 @@ class PullIntegrationTests(unittest.TestCase):
                 os.environ.update(old)
 
 
+class LocalCommandsTests(unittest.TestCase):
+    def _project(self, td: Path) -> Path:
+        project = td / "proj"
+        icons = project / "icons"
+        (icons / "svg").mkdir(parents=True)
+        (icons / "svg" / "star.svg").write_text("<svg id='a'/>", encoding="utf-8")
+        (icons / "png").mkdir(parents=True)
+        (icons / "png" / "star.png").write_bytes(b"\x89PNG\r\n")
+        (project / ".iconlibrc").write_text("-d icons\n", encoding="utf-8")
+        return project
+
+    def test_delete_rename_copy_ln(self) -> None:
+        from iconlib.cmd import main
+
+        with tempfile.TemporaryDirectory() as td:
+            project = self._project(Path(td))
+            cwd = Path.cwd()
+            os.chdir(project)
+            try:
+                self.assertEqual(main(["iconlib", "copy", "star", "moon"]), 0)
+                self.assertTrue((project / "icons" / "svg" / "moon.svg").is_file())
+                self.assertTrue((project / "icons" / "png" / "moon.png").is_file())
+
+                self.assertEqual(main(["iconlib", "ln", "-s", "moon", "luna"]), 0)
+                luna = project / "icons" / "svg" / "luna.svg"
+                self.assertTrue(luna.is_symlink())
+
+                self.assertEqual(main(["iconlib", "rename", "moon", "comet"]), 0)
+                self.assertFalse((project / "icons" / "svg" / "moon.svg").exists())
+                self.assertTrue((project / "icons" / "svg" / "comet.svg").is_file())
+
+                self.assertEqual(main(["iconlib", "delete", "star"]), 0)
+                self.assertFalse((project / "icons" / "svg" / "star.svg").exists())
+                self.assertFalse((project / "icons" / "png" / "star.png").exists())
+            finally:
+                os.chdir(cwd)
+
+    def test_make_png_size(self) -> None:
+        from iconlib.cmd import main
+
+        with tempfile.TemporaryDirectory() as td:
+            project = Path(td) / "proj"
+            icons = project / "icons"
+            icons.mkdir(parents=True)
+            # Minimal valid SVG for cairosvg
+            (icons / "dot.svg").write_text(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+                '<rect width="10" height="10" fill="black"/></svg>',
+                encoding="utf-8",
+            )
+            (project / ".iconlibrc").write_text("-d icons\n", encoding="utf-8")
+            cwd = Path.cwd()
+            os.chdir(project)
+            try:
+                rc = main(["iconlib", "make", "-F", "png", "-s", "16", "dot"])
+                self.assertEqual(rc, 0)
+                out = project / "icons" / "16x16" / "dot.png"
+                self.assertTrue(out.is_file())
+                self.assertGreater(out.stat().st_size, 0)
+            finally:
+                os.chdir(cwd)
+
+
 class SemanticTests(unittest.TestCase):
     def test_plain_query_detection(self) -> None:
         self.assertTrue(is_plain_query("cat"))
@@ -295,8 +367,9 @@ class SemanticTests(unittest.TestCase):
             scores = {g.name: s for s, g in ranked}
             self.assertGreater(scores["cat"], scores.get("dog", 0))
             self.assertNotIn("chess-queen", names)
-            from pathlib import Path as _P
-            if not (_P("/usr/share/wordnet/index.noun").is_file()):
+            from iconlib.site import get_wordnet_dir
+
+            if not (get_wordnet_dir() / "index.noun").is_file():
                 self.skipTest("wordnet-base not available")
             self.assertIn("kitty", names)
             self.assertGreater(scores["kitty"], 45.0)
