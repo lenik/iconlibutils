@@ -19,30 +19,154 @@ FAISS_JSON = "faiss.json"
 
 _FILENAME_SEP_RE = re.compile(r"[_\-./\\+|]+")
 
+_WEIGHT_NAMES = ("model.safetensors", "pytorch_model.bin")
+
+
+def _hf_hub_cache_dir() -> Path:
+    """Return the Hugging Face hub cache root (respects HF_* env vars)."""
+    import os
+
+    for key in ("HF_HUB_CACHE", "HUGGINGFACE_HUB_CACHE"):
+        raw = os.environ.get(key, "").strip()
+        if raw:
+            return Path(raw).expanduser()
+    hf_home = os.environ.get("HF_HOME", "").strip()
+    if hf_home:
+        return Path(hf_home).expanduser() / "hub"
+    return Path.home() / ".cache" / "huggingface" / "hub"
+
+
+def _looks_like_clip_dir(path: Path) -> bool:
+    if not (path / "config.json").is_file():
+        return False
+    return any((path / name).is_file() for name in _WEIGHT_NAMES)
+
+
+def _clip_from_hf_cli() -> Path | None:
+    """Locate CLIP via ``hf cache ls`` when huggingface_hub is unavailable."""
+    import json as _json
+    import shutil
+    import subprocess
+
+    hf = shutil.which("hf")
+    if not hf:
+        return None
+    try:
+        proc = subprocess.run(
+            [
+                hf,
+                "cache",
+                "ls",
+                "--revisions",
+                "--format",
+                "json",
+                "--filter",
+                f"name={CLIP_MODEL_ID}",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0 or not proc.stdout.strip():
+        return None
+    try:
+        entries = _json.loads(proc.stdout)
+    except _json.JSONDecodeError:
+        return None
+    if not isinstance(entries, list):
+        return None
+    # Prefer newest revision; field names vary slightly across hf versions.
+    def _mtime(entry: dict) -> float:
+        for key in ("last_modified", "modified", "lastModified"):
+            val = entry.get(key)
+            if isinstance(val, (int, float)):
+                return float(val)
+        return 0.0
+
+    for entry in sorted(entries, key=_mtime, reverse=True):
+        if not isinstance(entry, dict):
+            continue
+        for key in ("snapshot_path", "snapshotPath", "path"):
+            raw = entry.get(key)
+            if not raw:
+                continue
+            path = Path(str(raw))
+            if _looks_like_clip_dir(path):
+                return path
+    return None
+
+
+def _clip_from_hf_hub() -> Path | None:
+    """Locate a cached snapshot of CLIP_MODEL_ID via huggingface_hub, hf CLI, or cache layout."""
+    # Prefer the official API when available.
+    try:
+        from huggingface_hub import snapshot_download
+
+        snap = snapshot_download(CLIP_MODEL_ID, local_files_only=True)
+        path = Path(snap)
+        if _looks_like_clip_dir(path):
+            return path
+    except Exception:
+        pass
+
+    try:
+        from huggingface_hub import scan_cache_dir
+
+        cache = scan_cache_dir()
+        for repo in cache.repos:
+            if repo.repo_id != CLIP_MODEL_ID:
+                continue
+            # Prefer the most recently modified revision.
+            revisions = sorted(
+                repo.revisions,
+                key=lambda r: getattr(r, "last_modified", 0) or 0,
+                reverse=True,
+            )
+            for rev in revisions:
+                path = Path(rev.snapshot_path)
+                if _looks_like_clip_dir(path):
+                    return path
+    except Exception:
+        pass
+
+    found = _clip_from_hf_cli()
+    if found is not None:
+        return found
+
+    # Fallback: walk the standard hub cache directory layout.
+    repo_dir = _hf_hub_cache_dir() / ("models--" + CLIP_MODEL_ID.replace("/", "--"))
+    snaps = repo_dir / "snapshots"
+    if snaps.is_dir():
+        for snap in sorted(snaps.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+            if snap.is_dir() and _looks_like_clip_dir(snap):
+                return snap
+    return None
+
 
 def clip_download_help() -> str:
-    """User-facing instructions to fetch the CLIP weights with hfd."""
-    home_model = Path.home() / "models" / "clip-vit-base-patch32"
+    """User-facing instructions to fetch the CLIP weights into the HF hub cache."""
+    cache = _hf_hub_cache_dir()
     return (
         "CLIP model not available for FAISS indexing/search.\n"
         "\n"
-        "Download it first with hfd (Hugging Face Downloader), using the China\n"
-        "mirror if needed (see ~/.bashrc.d/llm.sh):\n"
+        f"Expected hub id: {CLIP_MODEL_ID}\n"
+        f"Hub cache: {cache}\n"
+        "\n"
+        "Download with the Hugging Face CLI (uses the default hub cache):\n"
+        "\n"
+        f"  hf download {CLIP_MODEL_ID}\n"
+        "\n"
+        "China mirror (optional):\n"
         "\n"
         "  export HF_ENDPOINT=https://hf-mirror.com\n"
-        f"  mkdir -p {home_model.parent}\n"
-        f"  hfd {CLIP_MODEL_ID} --local-dir {home_model}\n"
+        f"  hf download {CLIP_MODEL_ID}\n"
         "\n"
         "Or point ICONLIB_CLIP_MODEL at an existing local checkout:\n"
         "\n"
-        f"  export ICONLIB_CLIP_MODEL={home_model}\n"
-        "\n"
-        "hfd usage:\n"
-        "  hfd <REPO_ID> [--local-dir DIR] [--exclude PATTERN...] [-x N] [-j N]\n"
-        "  hfd --help\n"
-        "\n"
-        f"Example:\n"
-        f"  hfd {CLIP_MODEL_ID} --local-dir {home_model} -x 4 -j 4\n"
+        "  export ICONLIB_CLIP_MODEL=/path/to/clip-vit-base-patch32\n"
     )
 
 
@@ -51,27 +175,16 @@ def local_clip_model() -> Path | None:
     import os
 
     env = os.environ.get("ICONLIB_CLIP_MODEL", "").strip()
-    candidates: list[Path] = []
     if env:
-        candidates.append(Path(env).expanduser())
-    home = Path.home()
-    candidates.extend(
-        [
-            home / "models" / "clip-vit-base-patch32",
-            home / "models" / "openai" / "clip-vit-base-patch32",
-        ]
-    )
-    for p in candidates:
-        if (p / "config.json").is_file() and (
-            (p / "pytorch_model.bin").is_file()
-            or (p / "model.safetensors").is_file()
-        ):
-            return p
-    return None
+        path = Path(env).expanduser()
+        if _looks_like_clip_dir(path):
+            return path
+        return None
+    return _clip_from_hf_hub()
 
 
 def require_clip_model() -> Path:
-    """Require a local CLIP model; raise RuntimeError with hfd help if missing."""
+    """Require a local CLIP model; raise RuntimeError with download help if missing."""
     found = local_clip_model()
     if found is not None:
         return found
@@ -80,7 +193,7 @@ def require_clip_model() -> Path:
 
 def resolve_clip_model() -> str:
     """
-    Prefer a local CLIP checkout (e.g. via ``hfd``).
+    Resolve a local CLIP directory via ICONLIB_CLIP_MODEL or the HF hub cache.
 
     Raises RuntimeError with download instructions when no local model exists
     (hub id alone is not enough — weights must be downloaded first).

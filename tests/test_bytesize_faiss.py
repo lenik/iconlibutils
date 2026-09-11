@@ -130,14 +130,15 @@ class BytesizeFaissTests(unittest.TestCase):
         from iconlib.faissidx import clip_download_help, local_clip_model, require_clip_model
 
         help_text = clip_download_help()
-        self.assertIn("hfd", help_text)
+        self.assertIn("hf download", help_text)
         self.assertIn("openai/clip-vit-base-patch32", help_text)
         self.assertIn("HF_ENDPOINT", help_text)
+        self.assertIn("ICONLIB_CLIP_MODEL", help_text)
 
         if local_clip_model() is None:
             with self.assertRaises(RuntimeError) as ctx:
                 require_clip_model()
-            self.assertIn("hfd", str(ctx.exception))
+            self.assertIn("hf download", str(ctx.exception))
 
 
 if __name__ == "__main__":

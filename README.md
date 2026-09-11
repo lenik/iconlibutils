@@ -46,9 +46,10 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 - `browse [pattern]` — run `themestylebrowser` on libraries with `.themestyles`
 - `index [-w|--web] [-F|--faiss] [-f|--force] [-s|--upscale SIZE] [-o DIR]` —
   web preview (default) and/or CLIP FAISS index (`faiss.index` /
-  `faiss.map` / `faiss.json`). FAISS needs a local CLIP checkout (see
-  `hfd openai/clip-vit-base-patch32 --local-dir ~/models/clip-vit-base-patch32`
-  with `HF_ENDPOINT=https://hf-mirror.com` if needed).
+  `faiss.map` / `faiss.json`). FAISS needs CLIP weights in the Hugging Face
+  hub cache (`hf download openai/clip-vit-base-patch32`; optional
+  `HF_ENDPOINT=https://hf-mirror.com`), or `ICONLIB_CLIP_MODEL` pointing at
+  an existing local checkout.
 - `delete <name>...` — remove local icon files (all variants/sizes/formats)
 - `rename <old> <new>` — rename local icon files
 - `copy <from> <to>` — copy local icon files
