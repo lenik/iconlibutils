@@ -501,20 +501,48 @@ class JinaClipEncoder:
         return arr
 
     def encode_image(self, image) -> "np.ndarray":
-        torch = self.torch
-        with torch.no_grad():
-            feats = self.model.encode_image([image], truncate_dim=None)
-            if hasattr(feats, "detach"):
-                feats = feats.detach().cpu().float().numpy()
-        return self._normalize(feats)
+        return self.encode_images([image])[0]
 
     def encode_text(self, text: str) -> "np.ndarray":
+        return self.encode_texts([text])[0]
+
+    def encode_images(
+        self, images: list, *, batch_size: int = 32
+    ) -> list["np.ndarray"]:
         torch = self.torch
+        if not images:
+            return []
         with torch.no_grad():
-            feats = self.model.encode_text([text], truncate_dim=None)
+            feats = self.model.encode_image(
+                images, batch_size=batch_size, truncate_dim=None
+            )
             if hasattr(feats, "detach"):
                 feats = feats.detach().cpu().float().numpy()
-        return self._normalize(feats)
+        import numpy as np
+
+        arr = np.asarray(feats, dtype=np.float32)
+        if arr.ndim == 1:
+            arr = arr.reshape(1, -1)
+        return [self._normalize(row) for row in arr]
+
+    def encode_texts(
+        self, texts: list[str], *, batch_size: int = 64
+    ) -> list["np.ndarray"]:
+        torch = self.torch
+        if not texts:
+            return []
+        with torch.no_grad():
+            feats = self.model.encode_text(
+                texts, batch_size=batch_size, truncate_dim=None
+            )
+            if hasattr(feats, "detach"):
+                feats = feats.detach().cpu().float().numpy()
+        import numpy as np
+
+        arr = np.asarray(feats, dtype=np.float32)
+        if arr.ndim == 1:
+            arr = arr.reshape(1, -1)
+        return [self._normalize(row) for row in arr]
 
 
 def _make_encoder(kind: str | ClipEncoder | JinaClipEncoder | None, basename: str):
@@ -817,32 +845,76 @@ def generate_faiss_index(
     rel_paths: list[str] = []
     en_texts: list[str] = []
 
-    for path in paths:
-        try:
-            image = load_icon_rgb(path, canvas_size)
-            img_vec = enc.encode_image(image)
-            text = filename_to_text(path)
-            txt_vec = enc.encode_text(text)
-        except Exception as e:
-            if verbose >= 0:
-                print(f"iconlib: skip {path}: {e}", flush=True)
+    # Batched path for Jina (text batching is a large win); OpenAI CLIP stays 1-by-1.
+    batch_n = 32 if isinstance(enc, JinaClipEncoder) else 1
+    for start in range(0, len(paths), batch_n):
+        chunk = paths[start : start + batch_n]
+        images: list = []
+        kept: list[Path] = []
+        texts: list[str] = []
+        rels: list[str] = []
+        for path in chunk:
+            try:
+                images.append(load_icon_rgb(path, canvas_size))
+                texts.append(filename_to_text(path))
+            except Exception as e:
+                if verbose >= 0:
+                    print(f"iconlib: skip {path}: {e}", flush=True)
+                continue
+            rel = str(path)
+            for root in icons_roots:
+                try:
+                    rel = str(path.resolve().relative_to(root.resolve()))
+                    break
+                except ValueError:
+                    continue
+            kept.append(path)
+            rels.append(rel)
+
+        if not kept:
             continue
 
-        rel = str(path)
-        for root in icons_roots:
-            try:
-                rel = str(path.resolve().relative_to(root.resolve()))
-                break
-            except ValueError:
-                continue
+        try:
+            if isinstance(enc, JinaClipEncoder):
+                img_vecs = enc.encode_images(images)
+                txt_vecs = enc.encode_texts(texts)
+            else:
+                img_vecs = [enc.encode_image(im) for im in images]
+                txt_vecs = [enc.encode_text(t) for t in texts]
+        except Exception as e:
+            if verbose >= 0:
+                print(f"iconlib: batch encode failed ({e}); falling back", flush=True)
+            img_vecs = []
+            txt_vecs = []
+            kept2: list[Path] = []
+            texts2: list[str] = []
+            rels2: list[str] = []
+            for path, image, text, rel in zip(kept, images, texts, rels, strict=True):
+                try:
+                    img_vecs.append(enc.encode_image(image))
+                    txt_vecs.append(enc.encode_text(text))
+                except Exception as e2:
+                    if verbose >= 0:
+                        print(f"iconlib: skip {path}: {e2}", flush=True)
+                    continue
+                kept2.append(path)
+                texts2.append(text)
+                rels2.append(rel)
+            kept, texts, rels = kept2, texts2, rels2
 
-        for vec in (img_vec, txt_vec):
-            vectors.append(np.asarray(vec, dtype=np.float32))
-            rel_paths.append(rel)
-            en_texts.append(text)
+        for path, text, rel, img_vec, txt_vec in zip(
+            kept, texts, rels, img_vecs, txt_vecs, strict=True
+        ):
+            for vec in (img_vec, txt_vec):
+                vectors.append(np.asarray(vec, dtype=np.float32))
+                rel_paths.append(rel)
+                en_texts.append(text)
+            if verbose > 0:
+                print(f"iconlib: {basename} {path} ({text})", flush=True)
 
-        if verbose > 0:
-            print(f"iconlib: {basename} {path} ({text})", flush=True)
+        if verbose >= 0 and (start // batch_n) % 10 == 0:
+            done = min(start + batch_n, len(paths))
+            print(f"iconlib: encoded {done}/{len(paths)} icons…", flush=True)
 
     if not vectors:
         raise ValueError("no icons could be encoded")
