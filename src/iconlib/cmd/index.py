@@ -11,7 +11,12 @@ import shutil
 import sys
 from pathlib import Path
 
-from ..faissidx import generate_faiss_index, parse_byte_size
+from ..faissidx import (
+    FAISS2_BASENAME,
+    FAISS_BASENAME,
+    generate_faiss_index,
+    parse_byte_size,
+)
 from ..paths import load_project_library
 from .context import Context
 
@@ -119,13 +124,27 @@ def register(sub: argparse._SubParsersAction) -> None:
         "-w",
         "--web",
         action="store_true",
-        help=_("create web preview (default when neither -w nor -F is given)"),
+        help=_("create web preview (default when neither -w, -F, nor -2 is given)"),
     )
     xp.add_argument(
         "-F",
         "--faiss",
         action="store_true",
         help=_("create FAISS index (faiss / faiss.map / faiss.json)"),
+    )
+    xp.add_argument(
+        "-2",
+        "--faiss2",
+        action="store_true",
+        help=_(
+            "create FAISS2 index with Jina CLIP v2 "
+            "(faiss2 / faiss2.map / faiss2.json; 512x512 canvas)"
+        ),
+    )
+    xp.add_argument(
+        "--xz",
+        action="store_true",
+        help=_("xz-compress FAISS outputs after writing (for packaging)"),
     )
     xp.add_argument(
         "-f",
@@ -215,13 +234,14 @@ def register(sub: argparse._SubParsersAction) -> None:
 def run(args: argparse.Namespace) -> int:
     do_web = bool(args.web)
     do_faiss = bool(args.faiss)
-    if not do_web and not do_faiss:
+    do_faiss2 = bool(args.faiss2)
+    if not do_web and not do_faiss and not do_faiss2:
         do_web = True
 
     project = Path.cwd().resolve()
     proj_lib = load_project_library(project)
-    # Packaging tree: ``iconlib index -F`` builds both web (index/) and FAISS (.).
-    if do_faiss and proj_lib is not None and not args.web:
+    # Packaging tree: ``iconlib index -F/-2`` builds both web (index/) and FAISS (.).
+    if (do_faiss or do_faiss2) and proj_lib is not None and not args.web:
         do_web = True
 
     roots = [Path(p).expanduser() for p in (args.icons_roots or [])]
@@ -325,15 +345,16 @@ def run(args: argparse.Namespace) -> int:
         if verbose >= 0:
             print(f"iconlib: wrote web preview for {name}: {count} icons → {web_outdir}")
 
+    shard_raw = args.shard_size
+    if shard_raw is None and proj_lib is not None:
+        shard_raw = proj_lib.faiss_shard_size or None
+    try:
+        shard_size = parse_byte_size(shard_raw)
+    except ValueError as e:
+        print(f"iconlib: {e}", file=sys.stderr)
+        return 1
+
     if do_faiss:
-        shard_raw = args.shard_size
-        if shard_raw is None and proj_lib is not None:
-            shard_raw = proj_lib.faiss_shard_size or None
-        try:
-            shard_size = parse_byte_size(shard_raw)
-        except ValueError as e:
-            print(f"iconlib: {e}", file=sys.stderr)
-            return 1
         try:
             n = generate_faiss_index(
                 icons_roots=roots,
@@ -341,12 +362,35 @@ def run(args: argparse.Namespace) -> int:
                 upscale=args.upscale,
                 force=args.force,
                 verbose=verbose,
+                basename=FAISS_BASENAME,
                 shard_size=shard_size,
+                encoder="openai",
+                compress=bool(args.xz),
             )
         except (FileExistsError, FileNotFoundError, ValueError, RuntimeError) as e:
             print(f"iconlib: {e}", file=sys.stderr)
             return 1
         if verbose >= 0:
             print(f"iconlib: wrote FAISS index for {n} icons → {faiss_outdir}")
+
+    if do_faiss2:
+        try:
+            n = generate_faiss_index(
+                icons_roots=roots,
+                outdir=faiss_outdir,
+                upscale="512x512",
+                force=args.force,
+                verbose=verbose,
+                basename=FAISS2_BASENAME,
+                shard_size=shard_size,
+                encoder="jina",
+                write_zh=True,
+                compress=bool(args.xz),
+            )
+        except (FileExistsError, FileNotFoundError, ValueError, RuntimeError) as e:
+            print(f"iconlib: {e}", file=sys.stderr)
+            return 1
+        if verbose >= 0:
+            print(f"iconlib: wrote FAISS2 index for {n} icons → {faiss_outdir}")
 
     return 0

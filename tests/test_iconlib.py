@@ -396,6 +396,56 @@ class FaissHelperTests(unittest.TestCase):
         self.assertEqual(parse_byte_size("10MiB"), 10 * 1024 * 1024)
         # dim=512 → 2048 bytes/vector; 10MiB ≈ 5119 vectors
         self.assertEqual(vectors_per_shard(512, 10 * 1024 * 1024), 5119)
+        # dim=1024 → 4096 bytes/vector; 10MiB ≈ 2559 vectors
+        self.assertEqual(vectors_per_shard(1024, 10 * 1024 * 1024), 2559)
+
+    def test_shard_regex_and_discover(self) -> None:
+        import tempfile
+
+        from iconlib.faissidx import (
+            FAISS2_BASENAME,
+            FAISS_BASENAME,
+            _shard_re,
+            discover_faiss_bases,
+        )
+
+        self.assertTrue(_shard_re(FAISS_BASENAME).match("faiss"))
+        self.assertTrue(_shard_re(FAISS_BASENAME).match("faiss.3"))
+        self.assertFalse(_shard_re(FAISS_BASENAME).match("faiss2"))
+        self.assertTrue(_shard_re(FAISS2_BASENAME).match("faiss2"))
+        self.assertTrue(_shard_re(FAISS2_BASENAME).match("faiss2.1"))
+        self.assertFalse(_shard_re(FAISS2_BASENAME).match("faiss"))
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "faiss").write_bytes(b"fake")
+            (root / "faiss2").write_bytes(b"fake")
+            (root / "faiss2.1").write_bytes(b"fake")
+            (root / "faiss.map").write_text("0\ticon.svg\n", encoding="utf-8")
+            (root / "faiss-en.json").write_text('{"0": "icon"}\n', encoding="utf-8")
+            self.assertEqual(
+                [p.name for p in discover_faiss_bases(root, prefix=FAISS_BASENAME)],
+                ["faiss"],
+            )
+            self.assertEqual(
+                sorted(p.name for p in discover_faiss_bases(root, prefix=FAISS2_BASENAME)),
+                ["faiss2.1"],
+            )
+
+    def test_library_faiss2_indexes(self) -> None:
+        from iconlib.paths import library_from_data
+        from iconlib.faissidx import resolve_library_faiss_bases, FAISS2_BASENAME
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "faiss2").write_bytes(b"fake")
+            lib = library_from_data(
+                {"name": "demo", "path": str(root), "faiss2_index": "faiss2"},
+                default_name="demo",
+            )
+            bases = resolve_library_faiss_bases(lib, prefix=FAISS2_BASENAME)
+            self.assertEqual(len(bases), 1)
+            self.assertEqual(bases[0].name, "faiss2")
 
 
 if __name__ == "__main__":

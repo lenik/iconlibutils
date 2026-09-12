@@ -1,3 +1,14 @@
+iconlibutils (0.0.8) unstable; urgency=medium
+
+  * FAISS2: Jina CLIP v2 (1024-d) index basename ``faiss2``; ``iconlib index -2``,
+    ``iconlib search -2``; ``faiss2_index=`` / ``faiss2_indexes`` in library metadata.
+  * Sidecars: ``-en.json`` (English text per vector id) for all indexes;
+    ``-zh.json`` for FAISS2 only; ``.json`` values are always file arrays.
+  * ``ICONLIB_CLIP2_MODEL`` for local Jina weights; ``hf download jinaai/jina-clip-v2``.
+  * ``iconlib index --xz`` xz-compresses FAISS/FAISS2 outputs for packaging.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Sat, 12 Sep 2026 11:40:37 +0800
+
 iconlibutils (0.0.7) unstable; urgency=medium
 
   * FAISS artifacts: basename ``faiss`` (shards ``faiss.N``), read ``.xz``,

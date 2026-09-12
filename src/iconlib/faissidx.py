@@ -13,17 +13,26 @@ from pathlib import Path
 IMAGE_EXTS = {".svg", ".png", ".jpg", ".jpeg", ".webp"}
 CLIP_MODEL_ID = "openai/clip-vit-base-patch32"
 CLIP_SIZE = 224
+JINA_CLIP_MODEL_ID = "jinaai/jina-clip-v2"
+JINA_CLIP_SIZE = 512
 # Index basename (no extension). Shards: faiss.1, faiss.2, …
 FAISS_BASENAME = "faiss"
+FAISS2_BASENAME = "faiss2"
 FAISS_MAP_SUFFIX = ".map"
 FAISS_JSON_SUFFIX = ".json"
+FAISS_EN_JSON_SUFFIX = "-en.json"
+FAISS_ZH_JSON_SUFFIX = "-zh.json"
 # Legacy names still accepted when reading.
 FAISS_INDEX_LEGACY = "faiss.index"
 FAISS_MAP_LEGACY = "faiss.map"
 FAISS_JSON_LEGACY = "faiss.json"
 
 _FILENAME_SEP_RE = re.compile(r"[_\-./\\+|]+")
-_SHARD_RE = re.compile(r"^faiss(?:\.\d+)?$")
+
+
+def _shard_re(prefix: str) -> re.Pattern[str]:
+    """Match ``prefix`` or numbered shards ``prefix.N``."""
+    return re.compile(rf"^{re.escape(prefix)}(?:\.\d+)?$")
 
 _WEIGHT_NAMES = ("model.safetensors", "pytorch_model.bin")
 
@@ -107,49 +116,10 @@ def _clip_from_hf_cli() -> Path | None:
 
 def _clip_from_hf_hub() -> Path | None:
     """Locate a cached snapshot of CLIP_MODEL_ID via huggingface_hub, hf CLI, or cache layout."""
-    # Prefer the official API when available.
-    try:
-        from huggingface_hub import snapshot_download
-
-        snap = snapshot_download(CLIP_MODEL_ID, local_files_only=True)
-        path = Path(snap)
-        if _looks_like_clip_dir(path):
-            return path
-    except Exception:
-        pass
-
-    try:
-        from huggingface_hub import scan_cache_dir
-
-        cache = scan_cache_dir()
-        for repo in cache.repos:
-            if repo.repo_id != CLIP_MODEL_ID:
-                continue
-            # Prefer the most recently modified revision.
-            revisions = sorted(
-                repo.revisions,
-                key=lambda r: getattr(r, "last_modified", 0) or 0,
-                reverse=True,
-            )
-            for rev in revisions:
-                path = Path(rev.snapshot_path)
-                if _looks_like_clip_dir(path):
-                    return path
-    except Exception:
-        pass
-
-    found = _clip_from_hf_cli()
+    found = _model_from_hf_hub(CLIP_MODEL_ID)
     if found is not None:
         return found
-
-    # Fallback: walk the standard hub cache directory layout.
-    repo_dir = _hf_hub_cache_dir() / ("models--" + CLIP_MODEL_ID.replace("/", "--"))
-    snaps = repo_dir / "snapshots"
-    if snaps.is_dir():
-        for snap in sorted(snaps.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
-            if snap.is_dir() and _looks_like_clip_dir(snap):
-                return snap
-    return None
+    return _clip_from_hf_cli()
 
 
 def clip_download_help() -> str:
@@ -205,6 +175,96 @@ def resolve_clip_model() -> str:
     (hub id alone is not enough — weights must be downloaded first).
     """
     return str(require_clip_model())
+
+
+def _model_from_hf_hub(model_id: str) -> Path | None:
+    """Locate a cached snapshot of *model_id* via huggingface_hub or cache layout."""
+    try:
+        from huggingface_hub import snapshot_download
+
+        snap = snapshot_download(model_id, local_files_only=True)
+        path = Path(snap)
+        if _looks_like_clip_dir(path):
+            return path
+    except Exception:
+        pass
+
+    try:
+        from huggingface_hub import scan_cache_dir
+
+        cache = scan_cache_dir()
+        for repo in cache.repos:
+            if repo.repo_id != model_id:
+                continue
+            revisions = sorted(
+                repo.revisions,
+                key=lambda r: getattr(r, "last_modified", 0) or 0,
+                reverse=True,
+            )
+            for rev in revisions:
+                path = Path(rev.snapshot_path)
+                if _looks_like_clip_dir(path):
+                    return path
+    except Exception:
+        pass
+
+    repo_dir = _hf_hub_cache_dir() / ("models--" + model_id.replace("/", "--"))
+    snaps = repo_dir / "snapshots"
+    if snaps.is_dir():
+        for snap in sorted(snaps.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+            if snap.is_dir() and _looks_like_clip_dir(snap):
+                return snap
+    return None
+
+
+def jina_clip_download_help() -> str:
+    """User-facing instructions to fetch Jina CLIP v2 weights into the HF hub cache."""
+    cache = _hf_hub_cache_dir()
+    return (
+        "Jina CLIP v2 model not available for FAISS2 indexing/search.\n"
+        "\n"
+        f"Expected hub id: {JINA_CLIP_MODEL_ID}\n"
+        f"Hub cache: {cache}\n"
+        "\n"
+        "Download with the Hugging Face CLI (uses the default hub cache):\n"
+        "\n"
+        f"  hf download {JINA_CLIP_MODEL_ID}\n"
+        "\n"
+        "China mirror (optional):\n"
+        "\n"
+        "  export HF_ENDPOINT=https://hf-mirror.com\n"
+        f"  hf download {JINA_CLIP_MODEL_ID}\n"
+        "\n"
+        "Or point ICONLIB_CLIP2_MODEL at an existing local checkout:\n"
+        "\n"
+        "  export ICONLIB_CLIP2_MODEL=/path/to/jina-clip-v2\n"
+    )
+
+
+def local_jina_clip_model() -> Path | None:
+    """Return a usable local Jina CLIP directory, or None if not downloaded."""
+    import os
+
+    env = os.environ.get("ICONLIB_CLIP2_MODEL", "").strip()
+    if env:
+        path = Path(env).expanduser()
+        if _looks_like_clip_dir(path):
+            return path
+        return None
+    return _model_from_hf_hub(JINA_CLIP_MODEL_ID)
+
+
+def require_jina_clip_model() -> Path:
+    """Require a local Jina CLIP model; raise RuntimeError with download help."""
+    found = local_jina_clip_model()
+    if found is not None:
+        return found
+    raise RuntimeError(jina_clip_download_help())
+
+
+def resolve_jina_clip_model() -> str:
+    """Resolve local Jina CLIP v2 directory (ICONLIB_CLIP2_MODEL or HF cache)."""
+    return str(require_jina_clip_model())
 
 
 def parse_upscale(size: str) -> tuple[int, int]:
@@ -358,6 +418,71 @@ class ClipEncoder:
         return feats[0].detach().cpu().float().numpy()
 
 
+class JinaClipEncoder:
+    """Lazy Jina CLIP v2 image/text encoder (1024-d, multilingual)."""
+
+    def __init__(self, model_id: str | None = None) -> None:
+        import numpy as np
+        import torch
+        from transformers import AutoModel
+
+        model_id = model_id or resolve_jina_clip_model()
+        self.torch = torch
+        self.np = np
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        try:
+            self.model = AutoModel.from_pretrained(
+                model_id, trust_remote_code=True
+            ).to(self.device)
+        except Exception as e:
+            raise RuntimeError(
+                f"failed to load Jina CLIP model {model_id!r}: {e}"
+            ) from e
+        self.model.eval()
+
+    def _normalize(self, feats) -> "np.ndarray":
+        np = self.np
+        arr = np.asarray(feats, dtype=np.float32)
+        if arr.ndim > 1:
+            arr = arr[0]
+        norm = np.linalg.norm(arr)
+        if norm > 0:
+            arr = arr / norm
+        return arr
+
+    def encode_image(self, image) -> "np.ndarray":
+        torch = self.torch
+        with torch.no_grad():
+            feats = self.model.encode_image([image], truncate_dim=None)
+            if hasattr(feats, "detach"):
+                feats = feats.detach().cpu().float().numpy()
+        return self._normalize(feats)
+
+    def encode_text(self, text: str) -> "np.ndarray":
+        torch = self.torch
+        with torch.no_grad():
+            feats = self.model.encode_text([text], truncate_dim=None)
+            if hasattr(feats, "detach"):
+                feats = feats.detach().cpu().float().numpy()
+        return self._normalize(feats)
+
+
+def _make_encoder(kind: str | ClipEncoder | JinaClipEncoder | None, basename: str):
+    """Resolve encoder kind or instance from *kind* and *basename*."""
+    if isinstance(kind, (ClipEncoder, JinaClipEncoder)):
+        return kind
+    if kind == "openai" or (kind is None and basename == FAISS_BASENAME):
+        require_clip_model()
+        return ClipEncoder()
+    if kind == "jina" or (kind is None and basename == FAISS2_BASENAME):
+        require_jina_clip_model()
+        return JinaClipEncoder()
+    if kind is None:
+        require_clip_model()
+        return ClipEncoder()
+    raise ValueError(f"unknown encoder kind {kind!r} (use 'openai' or 'jina')")
+
+
 def iter_icon_files(roots: list[Path]) -> list[Path]:
     files: list[Path] = []
     for root in roots:
@@ -395,12 +520,16 @@ def _write_one_faiss_shard(
     basename: str,
     vectors: list,
     rel_paths: list[str],
+    en_texts: list[str],
     force: bool,
+    write_zh: bool = False,
+    compress: bool = False,
 ) -> Path:
     """
-    Write one shard: ``basename``, ``basename.map``, ``basename.json``.
+    Write one shard: ``basename``, ``basename.map``, ``basename.json``,
+    ``basename-en.json``, and optionally ``basename-zh.json``.
 
-    *rel_paths[i]* is the path for vector *i*. Returns the index path.
+    *rel_paths[i]* / *en_texts[i]* belong to vector *i*. Returns the index path.
     """
     import faiss
     import numpy as np
@@ -408,7 +537,12 @@ def _write_one_faiss_shard(
     index_path = outdir / basename
     map_path = outdir / f"{basename}{FAISS_MAP_SUFFIX}"
     json_path = outdir / f"{basename}{FAISS_JSON_SUFFIX}"
-    for p in (index_path, map_path, json_path):
+    en_json_path = outdir / f"{basename}{FAISS_EN_JSON_SUFFIX}"
+    zh_json_path = outdir / f"{basename}{FAISS_ZH_JSON_SUFFIX}"
+    sidecars = [index_path, map_path, json_path, en_json_path]
+    if write_zh:
+        sidecars.append(zh_json_path)
+    for p in sidecars:
         if p.exists() and not force:
             raise FileExistsError(f"{p} exists (use -f/--force to overwrite)")
         xz = Path(str(p) + ".xz")
@@ -421,19 +555,34 @@ def _write_one_faiss_shard(
     faiss.write_index(index, str(index_path))
 
     id_to_paths: dict[str, list[str]] = {}
+    id_to_en: dict[str, str] = {}
     map_lines: list[str] = []
-    for i, rel in enumerate(rel_paths):
+    for i, (rel, en) in enumerate(zip(rel_paths, en_texts, strict=True)):
         vid = str(i)
         id_to_paths.setdefault(vid, []).append(rel)
+        id_to_en[vid] = en
         map_lines.append(f"{vid}\t{rel}")
     map_path.write_text("\n".join(map_lines) + "\n", encoding="utf-8")
-    json_obj = {
-        k: (v[0] if len(v) == 1 else v) for k, v in id_to_paths.items()
-    }
     json_path.write_text(
-        json.dumps(json_obj, indent=2, ensure_ascii=False) + "\n",
+        json.dumps(id_to_paths, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    en_json_path.write_text(
+        json.dumps(id_to_en, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    if write_zh:
+        # Without a translator, reuse the English filename phrase for now.
+        zh_json_path.write_text(
+            json.dumps(id_to_en, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+
+    if compress:
+        for p in sidecars:
+            _xz_compress_file(p)
+            p.unlink(missing_ok=True)
+
     return index_path
 
 
@@ -540,20 +689,30 @@ def _partition_by_shard_size(
 
 
 def _clear_faiss_outputs(outdir: Path, basename: str = FAISS_BASENAME) -> None:
-    """Remove existing ``faiss`` / ``faiss.N`` (+ map/json / xz / legacy) artifacts."""
+    """Remove existing index shards (+ map/json/en/zh / xz / legacy) artifacts."""
+    shard_re = _shard_re(basename)
     for child in list(outdir.iterdir()):
         n = child.name
         if n.endswith(".xz"):
             n = n[: -len(".xz")]
         base = n
-        if base.endswith(FAISS_MAP_SUFFIX):
-            base = base[: -len(FAISS_MAP_SUFFIX)]
-        elif base.endswith(FAISS_JSON_SUFFIX):
-            base = base[: -len(FAISS_JSON_SUFFIX)]
-        if base in (FAISS_INDEX_LEGACY, FAISS_MAP_LEGACY, FAISS_JSON_LEGACY):
+        for suffix in (
+            FAISS_MAP_SUFFIX,
+            FAISS_EN_JSON_SUFFIX,
+            FAISS_ZH_JSON_SUFFIX,
+            FAISS_JSON_SUFFIX,
+        ):
+            if base.endswith(suffix):
+                base = base[: -len(suffix)]
+                break
+        if basename == FAISS_BASENAME and base in (
+            FAISS_INDEX_LEGACY,
+            FAISS_MAP_LEGACY,
+            FAISS_JSON_LEGACY,
+        ):
             child.unlink(missing_ok=True)
             continue
-        if base == basename or _SHARD_RE.match(base):
+        if base == basename or shard_re.match(base):
             child.unlink(missing_ok=True)
 
 
@@ -566,17 +725,27 @@ def generate_faiss_index(
     verbose: int = 0,
     basename: str = FAISS_BASENAME,
     shard_size: int = 0,
+    encoder: str | ClipEncoder | JinaClipEncoder | None = None,
+    compress: bool = False,
+    write_zh: bool | None = None,
 ) -> int:
     """
-    Write ``faiss`` (or ``faiss.1``…) plus ``.map`` / ``.json`` sidecars.
+    Write ``faiss`` / ``faiss2`` (or ``.N`` shards) plus sidecar files.
 
     *shard_size* is an approximate max size in bytes for each raw FAISS index
-    file (not xz). ``0`` means do not shard (single ``faiss``). When sharding,
-    vector count per shard is derived from CLIP dim × 4 bytes.
+    file (not xz). ``0`` means do not shard. When sharding, vector count per
+    shard is derived from embedding dim × 4 bytes.
+
+    *encoder* may be ``"openai"``, ``"jina"``, or a :class:`ClipEncoder` /
+    :class:`JinaClipEncoder` instance. Defaults from *basename* when omitted.
     """
-    require_clip_model()
     _require_deps()
     import numpy as np
+
+    if write_zh is None:
+        write_zh = basename == FAISS2_BASENAME or encoder == "jina"
+
+    enc = _make_encoder(encoder, basename)
 
     outdir = outdir.resolve()
     outdir.mkdir(parents=True, exist_ok=True)
@@ -586,23 +755,24 @@ def generate_faiss_index(
     if not paths:
         raise ValueError("no icon images found under the given roots")
 
+    label = "Jina CLIP v2" if isinstance(enc, JinaClipEncoder) else "CLIP"
     if verbose >= 0:
         print(
             f"iconlib: FAISS indexing {len(paths)} icons "
-            "(loading CLIP; this can take a while)...",
+            f"(loading {label}; this can take a while)...",
             flush=True,
         )
 
-    encoder = ClipEncoder()
     vectors: list = []
     rel_paths: list[str] = []
+    en_texts: list[str] = []
 
     for path in paths:
         try:
             image = load_icon_rgb(path, canvas_size)
-            img_vec = encoder.encode_image(image)
+            img_vec = enc.encode_image(image)
             text = filename_to_text(path)
-            txt_vec = encoder.encode_text(text)
+            txt_vec = enc.encode_text(text)
         except Exception as e:
             if verbose >= 0:
                 print(f"iconlib: skip {path}: {e}", flush=True)
@@ -619,9 +789,10 @@ def generate_faiss_index(
         for vec in (img_vec, txt_vec):
             vectors.append(np.asarray(vec, dtype=np.float32))
             rel_paths.append(rel)
+            en_texts.append(text)
 
         if verbose > 0:
-            print(f"iconlib: faiss {path} ({text})", flush=True)
+            print(f"iconlib: {basename} {path} ({text})", flush=True)
 
     if not vectors:
         raise ValueError("no icons could be encoded")
@@ -629,6 +800,18 @@ def generate_faiss_index(
     parts = _partition_by_shard_size(
         vectors, rel_paths, shard_size, verbose=verbose
     )
+    # Re-partition en_texts alongside vectors/rel_paths.
+    if len(parts) > 1:
+        idx = 0
+        reparts: list[tuple[list, list[str], list[str]]] = []
+        for vecs, rels in parts:
+            n = len(vecs)
+            reparts.append((vecs, rels, en_texts[idx : idx + n]))
+            idx += n
+        parts = reparts
+    else:
+        parts = [(vectors, rel_paths, en_texts)]
+
     names = (
         [basename]
         if len(parts) == 1
@@ -638,18 +821,23 @@ def generate_faiss_index(
     if force or len(parts) > 1:
         _clear_faiss_outputs(outdir, basename)
 
-    for name, (vecs, rels) in zip(names, parts, strict=True):
+    for name, (vecs, rels, ens) in zip(names, parts, strict=True):
         out = _write_one_faiss_shard(
             outdir=outdir,
             basename=name,
             vectors=vecs,
             rel_paths=rels,
+            en_texts=ens,
             force=True,
+            write_zh=write_zh,
+            compress=compress,
         )
         if verbose >= 0:
+            blob = out if out.is_file() else Path(str(out) + ".xz")
+            size = blob.stat().st_size if blob.is_file() else 0
             print(
                 f"iconlib: wrote {name} ({len(vecs)} vectors, "
-                f"{out.stat().st_size} bytes) → {out}",
+                f"{size} bytes) → {blob}",
                 flush=True,
             )
 
@@ -728,30 +916,43 @@ def read_faiss_index(blob: Path):
     return faiss.read_index(str(blob))
 
 
-def discover_faiss_bases(directory: Path) -> list[Path]:
+def discover_faiss_bases(
+    directory: Path, prefix: str = FAISS_BASENAME
+) -> list[Path]:
     """
     Discover FAISS basenames under *directory*.
 
-    Returns paths like ``…/faiss`` or ``…/faiss.1`` (no ``.xz`` / ``.map``).
-    Prefers numbered shards when present; otherwise a single ``faiss``.
+    Returns paths like ``…/faiss`` or ``…/faiss2.1`` (no ``.xz`` / sidecars).
+    Prefers numbered shards when present; otherwise a single *prefix* basename.
     """
     if not directory.is_dir():
         return []
+    shard_re = _shard_re(prefix)
     shards: list[Path] = []
     single: Path | None = None
     seen: set[str] = set()
+    skip_suffixes = (
+        FAISS_MAP_SUFFIX,
+        FAISS_JSON_SUFFIX,
+        FAISS_EN_JSON_SUFFIX,
+        FAISS_ZH_JSON_SUFFIX,
+    )
     for child in sorted(directory.iterdir()):
         name = child.name
         if name.endswith(".xz"):
             name = name[: -len(".xz")]
-        if name.endswith(FAISS_MAP_SUFFIX) or name.endswith(FAISS_JSON_SUFFIX):
+        if any(name.endswith(s) for s in skip_suffixes):
             continue
-        if name in (FAISS_MAP_LEGACY, FAISS_JSON_LEGACY, FAISS_INDEX_LEGACY):
-            if name == FAISS_INDEX_LEGACY and FAISS_BASENAME not in seen:
-                single = directory / FAISS_BASENAME
-                seen.add(FAISS_BASENAME)
+        if prefix == FAISS_BASENAME and name in (
+            FAISS_MAP_LEGACY,
+            FAISS_JSON_LEGACY,
+            FAISS_INDEX_LEGACY,
+        ):
+            if name == FAISS_INDEX_LEGACY and prefix not in seen:
+                single = directory / prefix
+                seen.add(prefix)
             continue
-        if not _SHARD_RE.match(name):
+        if not shard_re.match(name):
             continue
         if name in seen:
             continue
@@ -759,7 +960,7 @@ def discover_faiss_bases(directory: Path) -> list[Path]:
         base = directory / name
         if resolve_faiss_blob(base) is None:
             continue
-        if name == FAISS_BASENAME:
+        if name == prefix:
             single = base
         else:
             shards.append(base)
@@ -770,8 +971,10 @@ def discover_faiss_bases(directory: Path) -> list[Path]:
     return []
 
 
-def resolve_library_faiss_bases(lib) -> list[Path]:
-    """Resolve FAISS basenames for a Library (explicit faiss_index= or discover)."""
+def resolve_library_faiss_bases(
+    lib, prefix: str = FAISS_BASENAME
+) -> list[Path]:
+    """Resolve FAISS basenames for a Library (explicit index= metadata or discover)."""
     from .paths import Library
 
     if not isinstance(lib, Library):
@@ -782,7 +985,11 @@ def resolve_library_faiss_bases(lib) -> list[Path]:
         search_dirs.append(parent)
     search_dirs.append(lib.path)
 
-    explicit = getattr(lib, "faiss_indexes", ()) or ()
+    if prefix == FAISS2_BASENAME:
+        explicit = getattr(lib, "faiss2_indexes", ()) or ()
+    else:
+        explicit = getattr(lib, "faiss_indexes", ()) or ()
+    shard_re = _shard_re(prefix)
     if explicit:
         bases: list[Path] = []
         only_dirs = True
@@ -791,9 +998,9 @@ def resolve_library_faiss_bases(lib) -> list[Path]:
             # Legacy: faiss_index=/usr/share/icons-foo (directory to search).
             if p.is_absolute() and (
                 p.is_dir()
-                or (not resolve_faiss_blob(p) and not _SHARD_RE.match(p.name))
+                or (not resolve_faiss_blob(p) and not shard_re.match(p.name))
             ):
-                found = discover_faiss_bases(p)
+                found = discover_faiss_bases(p, prefix=prefix)
                 if found:
                     return found
                 continue
@@ -819,12 +1026,13 @@ def resolve_library_faiss_bases(lib) -> list[Path]:
             return bases
 
     for d in search_dirs:
-        found = discover_faiss_bases(d)
+        found = discover_faiss_bases(d, prefix=prefix)
         if found:
             return found
-        if (d / FAISS_INDEX_LEGACY).is_file() or (
-            d / f"{FAISS_INDEX_LEGACY}.xz"
-        ).is_file():
+        if prefix == FAISS_BASENAME and (
+            (d / FAISS_INDEX_LEGACY).is_file()
+            or (d / f"{FAISS_INDEX_LEGACY}.xz").is_file()
+        ):
             return [d / FAISS_BASENAME]
     return []
 
@@ -891,7 +1099,7 @@ def query_faiss_base(
     base: Path,
     query: str,
     *,
-    encoder: ClipEncoder | None = None,
+    encoder: ClipEncoder | JinaClipEncoder | None = None,
     top_k: int = 32,
 ) -> list[tuple[float, str]]:
     """
@@ -911,7 +1119,11 @@ def query_faiss_base(
     if not id_map:
         return []
 
-    enc = encoder or ClipEncoder()
+    if encoder is None:
+        prefix = base.name.split(".")[0]
+        enc = _make_encoder(None, prefix)
+    else:
+        enc = encoder
     vec = np.asarray(enc.encode_text(query), dtype=np.float32).reshape(1, -1)
     index = read_faiss_index(blob)
     k = min(top_k, index.ntotal)
@@ -935,13 +1147,14 @@ def query_faiss_dir(
     faiss_dir: Path,
     query: str,
     *,
-    encoder: ClipEncoder | None = None,
+    encoder: ClipEncoder | JinaClipEncoder | None = None,
     top_k: int = 32,
+    prefix: str = FAISS_BASENAME,
 ) -> list[tuple[float, str]]:
     """Query all FAISS shards discovered under *faiss_dir*."""
-    bases = discover_faiss_bases(faiss_dir)
-    if not bases and resolve_faiss_blob(faiss_dir / FAISS_BASENAME):
-        bases = [faiss_dir / FAISS_BASENAME]
+    bases = discover_faiss_bases(faiss_dir, prefix=prefix)
+    if not bases and resolve_faiss_blob(faiss_dir / prefix):
+        bases = [faiss_dir / prefix]
     best: dict[str, float] = {}
     for base in bases:
         for score, rel in query_faiss_base(
@@ -958,27 +1171,28 @@ def query_libraries_faiss(
     *,
     top_k: int = 32,
     verbose: int = 0,
+    prefix: str = FAISS_BASENAME,
+    encoder: ClipEncoder | JinaClipEncoder | None = None,
 ) -> list[tuple[float, str, str]]:
     """
     Query FAISS indexes for libraries that have one.
 
     Returns (score, library_name, icon_name) sorted by score descending.
-    Skips libraries without an index. If CLIP is missing, raises RuntimeError.
+    Skips libraries without an index. Raises RuntimeError if the model is missing.
     """
     from .paths import Library
 
     plain_libs = [lib for lib in libs if isinstance(lib, Library)]
     indexed: list[tuple] = []
     for lib in plain_libs:
-        bases = resolve_library_faiss_bases(lib)
+        bases = resolve_library_faiss_bases(lib, prefix=prefix)
         if bases:
             indexed.append((lib, bases))
     if not indexed:
         return []
 
-    require_clip_model()
     _require_deps()
-    encoder = ClipEncoder()
+    enc = encoder or _make_encoder(None, prefix)
 
     best: dict[tuple[str, str], float] = {}
     for lib, bases in indexed:
@@ -988,7 +1202,7 @@ def query_libraries_faiss(
         for base in bases:
             try:
                 hits = query_faiss_base(
-                    base, query, encoder=encoder, top_k=top_k
+                    base, query, encoder=enc, top_k=top_k
                 )
             except Exception as e:
                 if verbose >= 0:

@@ -33,6 +33,8 @@ class Library:
     description: str = ""
     # FAISS shard bases relative to path (e.g. "faiss" or "faiss.1,faiss.2").
     faiss_indexes: tuple[str, ...] = ()
+    # FAISS2 (Jina CLIP v2) shard bases (e.g. "faiss2" or "faiss2.1,faiss2.2").
+    faiss2_indexes: tuple[str, ...] = ()
     # Optional approximate raw FAISS shard budget (e.g. "10M"); empty = no shard.
     faiss_shard_size: str = ""
     # Project-tree icon roots (relative paths from library.iconlib), pre-install.
@@ -92,6 +94,9 @@ def library_from_data(
     faiss_indexes = _split_roots(
         data.get("faiss_index") or data.get("faiss_indexes") or data.get("faiss") or ""
     )
+    faiss2_indexes = _split_roots(
+        data.get("faiss2_index") or data.get("faiss2_indexes") or ""
+    )
     faiss_shard_size = (
         data.get("faiss_shard_size")
         or data.get("shard_size")
@@ -109,6 +114,7 @@ def library_from_data(
         homepage=data.get("homepage") or "",
         description=data.get("description") or "",
         faiss_indexes=faiss_indexes,
+        faiss2_indexes=faiss2_indexes,
         faiss_shard_size=faiss_shard_size,
         icons_roots=roots,
         meta_path=meta_path,

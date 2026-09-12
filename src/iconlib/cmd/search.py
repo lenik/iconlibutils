@@ -24,6 +24,12 @@ def register(sub: argparse._SubParsersAction) -> None:
         action="store_true",
         help=_("output names only (default)"),
     )
+    sp.add_argument(
+        "-2",
+        "--faiss2",
+        action="store_true",
+        help=_("use FAISS2 (Jina CLIP v2) indexes when present"),
+    )
     sp.add_argument("pattern", nargs="?", default="")
     sp.set_defaults(_run=run)
 
@@ -47,18 +53,30 @@ def run(args: argparse.Namespace) -> int:
 
     # Optional FAISS enrichment when indexes exist; otherwise keep semantics only.
     if pattern and is_plain_query(pattern):
-        from ..faissidx import resolve_library_faiss_bases
+        from ..faissidx import (
+            FAISS2_BASENAME,
+            FAISS_BASENAME,
+            resolve_library_faiss_bases,
+        )
 
-        has_faiss = any(resolve_library_faiss_bases(lib) for lib in ctx.libs)
+        use_faiss2 = bool(getattr(ctx.args, "faiss2", False))
+        prefix = FAISS2_BASENAME if use_faiss2 else FAISS_BASENAME
+        has_faiss = any(
+            resolve_library_faiss_bases(lib, prefix=prefix) for lib in ctx.libs
+        )
         if has_faiss:
             try:
                 faiss_hits = query_libraries_faiss(
-                    ctx.libs, pattern, verbose=ctx.verbose
+                    ctx.libs,
+                    pattern,
+                    verbose=ctx.verbose,
+                    prefix=prefix,
                 )
             except RuntimeError as e:
                 if ctx.verbose >= 0:
+                    label = "FAISS2" if use_faiss2 else "FAISS"
                     print(
-                        f"iconlib: FAISS unavailable, using WordNet/semantic search:\n{e}",
+                        f"iconlib: {label} unavailable, using WordNet/semantic search:\n{e}",
                         file=sys.stderr,
                     )
                 faiss_hits = []
@@ -76,8 +94,9 @@ def run(args: argparse.Namespace) -> int:
                 if prev is None or score > prev[0]:
                     by_name[icon_name] = (score, ng)
         elif ctx.verbose > 0:
+            label = "FAISS2" if use_faiss2 else "FAISS"
             print(
-                "iconlib: no FAISS index; using WordNet/semantic search",
+                f"iconlib: no {label} index; using WordNet/semantic search",
                 file=sys.stderr,
             )
 

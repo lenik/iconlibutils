@@ -87,7 +87,7 @@ flags override the rc file.
 
 === search
 
-*iconlib* *search* [*-l*|*--long* | *-1*|*--names*] [_pattern_]
+*iconlib* *search* [*-2*|*--faiss2*] [*-l*|*--long* | *-1*|*--names*] [_pattern_]
 
 List icons matching _pattern_, ordered by relevance score (highest first).
 Default output is names only.
@@ -99,6 +99,10 @@ singular/plural inflection (*python3-inflect*) and offline WordNet
 (*wordnet-base*) synonyms/related senses (for example, searching *cat* can
 also surface *kitty*).
 Glob, regex, and empty patterns keep literal matching.
+
+When a library has a FAISS index, CLIP text-query hits are merged into the
+ranking. Use *-2* / *--faiss2* to query FAISS2 (Jina CLIP v2) indexes instead
+of the default OpenAI CLIP *faiss* indexes.
 
 === libraries
 
@@ -154,7 +158,7 @@ Run *themestylebrowser* on the first matching library that contains
 
 === index
 
-*iconlib* *index* [*-w*|*--web*] [*-F*|*--faiss*] [*-f*|*--force*]
+*iconlib* *index* [*-w*|*--web*] [*-F*|*--faiss*] [*-2*|*--faiss2*] [*-f*|*--force*]
 [*-u*|*--upscale* _SIZE_] [*-s*|*--shard-size* _SIZE_] [*-o*|*--outdir* _DIR_] …
 
 Build indexes for selected libraries (*-l*) and/or explicit
@@ -162,15 +166,23 @@ Build indexes for selected libraries (*-l*) and/or explicit
 
 *-w, --web*::
   Write an HTML preview (*index.html*, *icons.json*, assets).
-  This is the default when neither *-w* nor *-F* is given.
+  This is the default when neither *-w*, *-F*, nor *-2* is given.
 
 *-F, --faiss*::
   Write a CLIP/FAISS index: *faiss* (or *faiss.1*… when sharding),
-  *faiss.map* (*id* TAB *path*), and *faiss.json*.
+  *faiss.map* (*id* TAB *path*), *faiss.json* (paths as arrays),
+  and *faiss-en.json* (English text per vector id).
   Each icon contributes an image vector and a filename-text vector.
   Icons are fitted onto a white canvas (*--upscale*, default *300x300*,
-  aspect preserved), then embedded with CLIP at *224×224*.
+  aspect preserved), then embedded with OpenAI CLIP ViT-B/32.
   Filename tokens (*_*, *-*, …) become spaces for the text embedding.
+
+*-2, --faiss2*::
+  Write a FAISS2 index with Jina CLIP v2 (1024-d): *faiss2* (or *faiss2.1*…),
+  sidecars *faiss2.map*, *faiss2.json*, *faiss2-en.json*, and *faiss2-zh.json*.
+  Uses a *512×512* white canvas (independent of *--upscale*).
+  Requires Jina weights (*hf download jinaai/jina-clip-v2* or
+  *ICONLIB_CLIP2_MODEL*). *-F* and *-2* may be used together.
 
 *-f, --force*::
   Overwrite existing outputs.

@@ -107,6 +107,25 @@ class BytesizeFaissTests(unittest.TestCase):
                     (outdir / "faiss.map").is_file()
                     or (outdir / "faiss.map.xz").is_file()
                 )
+                en_json = outdir / "faiss-en.json"
+                self.assertTrue(en_json.is_file() or (outdir / "faiss-en.json.xz").is_file())
+                import json
+
+                raw_json = en_json if en_json.is_file() else None
+                if raw_json is None:
+                    import lzma
+
+                    with lzma.open(outdir / "faiss-en.json.xz", "rt", encoding="utf-8") as fh:
+                        en_data = json.load(fh)
+                else:
+                    en_data = json.loads(raw_json.read_text(encoding="utf-8"))
+                self.assertIsInstance(next(iter(en_data.values())), str)
+
+                faiss_json = outdir / "faiss.json"
+                if faiss_json.is_file():
+                    path_data = json.loads(faiss_json.read_text(encoding="utf-8"))
+                    for val in path_data.values():
+                        self.assertIsInstance(val, list)
 
                 import io
                 from contextlib import redirect_stdout

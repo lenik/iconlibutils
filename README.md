@@ -36,21 +36,23 @@ iconlib [OPTIONS] COMMAND [ARGS...]
   descending; `--long` includes score). Plain English queries expand
   singular/plural and WordNet synonyms via `python3-inflect` + `wordnet-base`
   (e.g. `cat` → `kitty`). When a selected library has a FAISS index
-  (`faiss.index` next to the library / preview dir), CLIP text query results
-  are merged in. `findicon` is a shortcut for this command.
+  (`faiss` / `faiss.index` next to the library / preview dir), CLIP text query
+  results are merged in; use `-2` / `--faiss2` to query FAISS2 (Jina CLIP v2)
+  indexes instead. `findicon` is a shortcut for this command.
 - `libraries` / `ls` `[-l|--long | -1|--names]` — list discovered libraries
 - `which [-a] <name>` — print preferred path (or all with `-a`)
 - `info <name>` — formats, sizes, variants, paths
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — copy into the project
 - `push [pattern]` — not implemented yet
 - `browse [pattern]` — run `themestylebrowser` on libraries with `.themestyles`
-- `index [-w|--web] [-F|--faiss] [-f|--force] [-u|--upscale SIZE] [-s|--shard-size SIZE] [-o DIR]` —
+- `index [-w|--web] [-F|--faiss] [-2|--faiss2] [-f|--force] [-u|--upscale SIZE] [-s|--shard-size SIZE] [-o DIR]` —
   web preview and/or CLIP FAISS index (`faiss` / `faiss.N` when sharding).
-  Default is no sharding; set `-s 10M` or `faiss_shard_size=10M` in
-  `library.iconlib` for large packages. FAISS needs CLIP weights in the
-  Hugging Face hub cache (`hf download openai/clip-vit-base-patch32`;
-  optional `HF_ENDPOINT=https://hf-mirror.com`), or `ICONLIB_CLIP_MODEL`
-  pointing at an existing local checkout.
+  `-2` builds a FAISS2 index with Jina CLIP v2 (`faiss2` / `faiss2.N`, 512×512
+  canvas). `-F` and `-2` may be combined in one run. Default is no sharding;
+  set `-s 10M` or `faiss_shard_size=10M` in `library.iconlib` for large packages.
+  FAISS needs CLIP weights (`hf download openai/clip-vit-base-patch32`) or
+  `ICONLIB_CLIP_MODEL`; FAISS2 needs Jina CLIP v2
+  (`hf download jinaai/jina-clip-v2`) or `ICONLIB_CLIP2_MODEL`.
 - `delete <name>...` — remove local icon files (all variants/sizes/formats)
 - `rename <old> <new>` — rename local icon files
 - `copy <from> <to>` — copy local icon files
