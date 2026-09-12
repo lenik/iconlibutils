@@ -13,11 +13,17 @@ from pathlib import Path
 IMAGE_EXTS = {".svg", ".png", ".jpg", ".jpeg", ".webp"}
 CLIP_MODEL_ID = "openai/clip-vit-base-patch32"
 CLIP_SIZE = 224
-FAISS_INDEX = "faiss.index"
-FAISS_MAP = "faiss.map"
-FAISS_JSON = "faiss.json"
+# Index basename (no extension). Shards: faiss.1, faiss.2, …
+FAISS_BASENAME = "faiss"
+FAISS_MAP_SUFFIX = ".map"
+FAISS_JSON_SUFFIX = ".json"
+# Legacy names still accepted when reading.
+FAISS_INDEX_LEGACY = "faiss.index"
+FAISS_MAP_LEGACY = "faiss.map"
+FAISS_JSON_LEGACY = "faiss.json"
 
 _FILENAME_SEP_RE = re.compile(r"[_\-./\\+|]+")
+_SHARD_RE = re.compile(r"^faiss(?:\.\d+)?$")
 
 _WEIGHT_NAMES = ("model.safetensors", "pytorch_model.bin")
 
@@ -211,6 +217,45 @@ def parse_upscale(size: str) -> tuple[int, int]:
     return n, n
 
 
+_BYTE_SIZE_RE = re.compile(
+    r"^\s*(\d+(?:\.\d+)?)\s*([kmgt]i?b?|b)?\s*$", re.IGNORECASE
+)
+
+
+def parse_byte_size(size: str | int | None) -> int:
+    """
+    Parse a human size (``10M``, ``10MiB``, ``1024``) into bytes.
+
+    Empty / ``0`` / ``none`` / ``off`` → ``0`` (no shard limit).
+    Suffixes: K/M/G/T are binary (1024**n); KB/MB… and KiB/MiB… accepted.
+    """
+    if size is None:
+        return 0
+    if isinstance(size, int):
+        return max(0, size)
+    raw = str(size).strip()
+    if not raw or raw.lower() in ("0", "none", "off", "unlimited", "-"):
+        return 0
+    m = _BYTE_SIZE_RE.match(raw)
+    if not m:
+        raise ValueError(f"invalid size {size!r} (expected e.g. 10M, 512K, 0)")
+    amount = float(m.group(1))
+    unit = (m.group(2) or "b").lower()
+    if unit in ("b",):
+        mult = 1
+    elif unit in ("k", "kb", "ki", "kib"):
+        mult = 1024
+    elif unit in ("m", "mb", "mi", "mib"):
+        mult = 1024**2
+    elif unit in ("g", "gb", "gi", "gib"):
+        mult = 1024**3
+    elif unit in ("t", "tb", "ti", "tib"):
+        mult = 1024**4
+    else:
+        raise ValueError(f"invalid size unit in {size!r}")
+    return int(amount * mult)
+
+
 def filename_to_text(path: Path) -> str:
     """Convert icon filename stem into a CLIP text phrase."""
     stem = path.stem
@@ -332,6 +377,186 @@ def iter_icon_files(roots: list[Path]) -> list[Path]:
     return out
 
 
+def _xz_compress_file(path: Path) -> Path:
+    """Write ``path.xz`` beside *path* (overwrite) and return the xz path."""
+    import lzma
+
+    xz_path = Path(str(path) + ".xz")
+    with path.open("rb") as src, lzma.open(
+        xz_path, "wb", format=lzma.FORMAT_XZ, preset=6
+    ) as dst:
+        dst.write(src.read())
+    return xz_path
+
+
+def _write_one_faiss_shard(
+    *,
+    outdir: Path,
+    basename: str,
+    vectors: list,
+    rel_paths: list[str],
+    force: bool,
+) -> Path:
+    """
+    Write one shard: ``basename``, ``basename.map``, ``basename.json``.
+
+    *rel_paths[i]* is the path for vector *i*. Returns the index path.
+    """
+    import faiss
+    import numpy as np
+
+    index_path = outdir / basename
+    map_path = outdir / f"{basename}{FAISS_MAP_SUFFIX}"
+    json_path = outdir / f"{basename}{FAISS_JSON_SUFFIX}"
+    for p in (index_path, map_path, json_path):
+        if p.exists() and not force:
+            raise FileExistsError(f"{p} exists (use -f/--force to overwrite)")
+        xz = Path(str(p) + ".xz")
+        if xz.exists() and not force:
+            raise FileExistsError(f"{xz} exists (use -f/--force to overwrite)")
+
+    mat = np.vstack(vectors).astype(np.float32)
+    index = faiss.IndexFlatIP(mat.shape[1])
+    index.add(mat)
+    faiss.write_index(index, str(index_path))
+
+    id_to_paths: dict[str, list[str]] = {}
+    map_lines: list[str] = []
+    for i, rel in enumerate(rel_paths):
+        vid = str(i)
+        id_to_paths.setdefault(vid, []).append(rel)
+        map_lines.append(f"{vid}\t{rel}")
+    map_path.write_text("\n".join(map_lines) + "\n", encoding="utf-8")
+    json_obj = {
+        k: (v[0] if len(v) == 1 else v) for k, v in id_to_paths.items()
+    }
+    json_path.write_text(
+        json.dumps(json_obj, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    return index_path
+
+
+def _path_group_key(rel: str, depth: int = 1) -> str:
+    parts = Path(rel).parts
+    if not parts:
+        return ""
+    return "/".join(parts[: min(depth, len(parts))])
+
+
+def vectors_per_shard(dim: int, shard_size: int) -> int:
+    """
+    Estimate how many float32 vectors fit in an IndexFlatIP of ~*shard_size* bytes.
+
+    CLIP ViT-B/32 uses dim=512 → 2048 bytes/vector; FAISS header is negligible.
+    *shard_size* is a rough budget for the raw ``faiss`` file (not xz).
+    """
+    if shard_size <= 0:
+        return 0
+    bytes_per_vec = max(1, int(dim) * 4)
+    # Leave a little room for the IndexFlat header (~tens of bytes).
+    return max(1, (shard_size - 64) // bytes_per_vec)
+
+
+def _partition_by_shard_size(
+    vectors: list,
+    rel_paths: list[str],
+    shard_size: int,
+    *,
+    verbose: int = 0,
+) -> list[tuple[list, list[str]]]:
+    """
+    Split vectors into shards of roughly *shard_size* raw FAISS bytes.
+
+    Uses fixed CLIP dim → vectors-per-shard; groups by path prefix when packing
+    so related icons stay together. Final sizes only need to be approximately
+    near the budget — not exact.
+    """
+    import numpy as np
+
+    if shard_size <= 0 or not vectors:
+        return [(vectors, rel_paths)]
+
+    dim = int(np.asarray(vectors[0]).shape[-1])
+    max_vecs = vectors_per_shard(dim, shard_size)
+    if len(vectors) <= max_vecs:
+        return [(vectors, rel_paths)]
+
+    groups: dict[str, list[int]] = {}
+    for i, rel in enumerate(rel_paths):
+        key = _path_group_key(rel, 1) or "_"
+        groups.setdefault(key, []).append(i)
+
+    def emit_indices(idxs: list[int]) -> list[list[int]]:
+        if len(idxs) <= max_vecs:
+            return [idxs]
+        sub: dict[str, list[int]] = {}
+        for i in idxs:
+            key = _path_group_key(rel_paths[i], 2) or _path_group_key(
+                rel_paths[i], 1
+            )
+            sub.setdefault(key, []).append(i)
+        if len(sub) > 1:
+            out: list[list[int]] = []
+            for part in sub.values():
+                out.extend(emit_indices(part))
+            return out
+        return [
+            idxs[start : start + max_vecs]
+            for start in range(0, len(idxs), max_vecs)
+        ]
+
+    shards_idx: list[list[int]] = []
+    pending: list[int] = []
+    for key in sorted(groups):
+        for piece in emit_indices(groups[key]):
+            if len(piece) >= max_vecs:
+                if pending:
+                    shards_idx.append(pending)
+                    pending = []
+                shards_idx.extend(emit_indices(piece))
+                continue
+            if len(pending) + len(piece) <= max_vecs:
+                pending.extend(piece)
+            else:
+                if pending:
+                    shards_idx.append(pending)
+                pending = list(piece)
+    if pending:
+        shards_idx.append(pending)
+
+    result = [
+        ([vectors[i] for i in idxs], [rel_paths[i] for i in idxs])
+        for idxs in shards_idx
+    ]
+    if verbose >= 0:
+        approx = max_vecs * dim * 4
+        print(
+            f"iconlib: sharding into {len(result)} parts "
+            f"(~{max_vecs} vectors/shard ≈ {approx} bytes raw @ dim={dim})",
+            flush=True,
+        )
+    return result
+
+
+def _clear_faiss_outputs(outdir: Path, basename: str = FAISS_BASENAME) -> None:
+    """Remove existing ``faiss`` / ``faiss.N`` (+ map/json / xz / legacy) artifacts."""
+    for child in list(outdir.iterdir()):
+        n = child.name
+        if n.endswith(".xz"):
+            n = n[: -len(".xz")]
+        base = n
+        if base.endswith(FAISS_MAP_SUFFIX):
+            base = base[: -len(FAISS_MAP_SUFFIX)]
+        elif base.endswith(FAISS_JSON_SUFFIX):
+            base = base[: -len(FAISS_JSON_SUFFIX)]
+        if base in (FAISS_INDEX_LEGACY, FAISS_MAP_LEGACY, FAISS_JSON_LEGACY):
+            child.unlink(missing_ok=True)
+            continue
+        if base == basename or _SHARD_RE.match(base):
+            child.unlink(missing_ok=True)
+
+
 def generate_faiss_index(
     *,
     icons_roots: list[Path],
@@ -339,27 +564,22 @@ def generate_faiss_index(
     upscale: str = "300x300",
     force: bool = False,
     verbose: int = 0,
+    basename: str = FAISS_BASENAME,
+    shard_size: int = 0,
 ) -> int:
     """
-    Write faiss.index, faiss.map (id TAB path), faiss.json {id: path}.
+    Write ``faiss`` (or ``faiss.1``…) plus ``.map`` / ``.json`` sidecars.
 
-    Each icon contributes two vectors (image + filename text) sharing the path.
-    Icons are fitted onto a white upscale canvas (aspect preserved), then CLIP
-    embeds at 224×224.
+    *shard_size* is an approximate max size in bytes for each raw FAISS index
+    file (not xz). ``0`` means do not shard (single ``faiss``). When sharding,
+    vector count per shard is derived from CLIP dim × 4 bytes.
     """
     require_clip_model()
     _require_deps()
-    import faiss
     import numpy as np
 
     outdir = outdir.resolve()
     outdir.mkdir(parents=True, exist_ok=True)
-    index_path = outdir / FAISS_INDEX
-    map_path = outdir / FAISS_MAP
-    json_path = outdir / FAISS_JSON
-    for p in (index_path, map_path, json_path):
-        if p.exists() and not force:
-            raise FileExistsError(f"{p} exists (use -f/--force to overwrite)")
 
     canvas_size = parse_upscale(upscale)
     paths = iter_icon_files(icons_roots)
@@ -375,14 +595,11 @@ def generate_faiss_index(
 
     encoder = ClipEncoder()
     vectors: list = []
-    id_to_path: dict[str, str] = {}
-    map_lines: list[str] = []
-    next_id = 0
+    rel_paths: list[str] = []
 
     for path in paths:
         try:
             image = load_icon_rgb(path, canvas_size)
-            # CLIP processor resizes to 224×224
             img_vec = encoder.encode_image(image)
             text = filename_to_text(path)
             txt_vec = encoder.encode_text(text)
@@ -400,11 +617,8 @@ def generate_faiss_index(
                 continue
 
         for vec in (img_vec, txt_vec):
-            vid = str(next_id)
             vectors.append(np.asarray(vec, dtype=np.float32))
-            id_to_path[vid] = rel
-            map_lines.append(f"{vid}\t{rel}")
-            next_id += 1
+            rel_paths.append(rel)
 
         if verbose > 0:
             print(f"iconlib: faiss {path} ({text})", flush=True)
@@ -412,51 +626,259 @@ def generate_faiss_index(
     if not vectors:
         raise ValueError("no icons could be encoded")
 
-    mat = np.vstack(vectors).astype(np.float32)
-    index = faiss.IndexFlatIP(mat.shape[1])
-    index.add(mat)
-    faiss.write_index(index, str(index_path))
-    map_path.write_text("\n".join(map_lines) + "\n", encoding="utf-8")
-    json_path.write_text(
-        json.dumps(id_to_path, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
+    parts = _partition_by_shard_size(
+        vectors, rel_paths, shard_size, verbose=verbose
     )
+    names = (
+        [basename]
+        if len(parts) == 1
+        else [f"{basename}.{i}" for i in range(1, len(parts) + 1)]
+    )
+
+    if force or len(parts) > 1:
+        _clear_faiss_outputs(outdir, basename)
+
+    for name, (vecs, rels) in zip(names, parts, strict=True):
+        out = _write_one_faiss_shard(
+            outdir=outdir,
+            basename=name,
+            vectors=vecs,
+            rel_paths=rels,
+            force=True,
+        )
+        if verbose >= 0:
+            print(
+                f"iconlib: wrote {name} ({len(vecs)} vectors, "
+                f"{out.stat().st_size} bytes) → {out}",
+                flush=True,
+            )
+
     return len(paths)
+
+
+def _open_text_maybe_xz(path: Path) -> str:
+    """Read UTF-8 text from *path* or *path.xz*."""
+    import lzma
+
+    if path.is_file():
+        return path.read_text(encoding="utf-8")
+    xz = Path(str(path) + ".xz")
+    if xz.is_file():
+        with lzma.open(xz, "rt", encoding="utf-8") as fh:
+            return fh.read()
+    raise FileNotFoundError(path)
+
+
+def resolve_faiss_blob(base: Path) -> Path | None:
+    """
+    Resolve the on-disk FAISS binary for basename *base*.
+
+    Prefers uncompressed ``base``, then ``base.xz``, then legacy ``faiss.index``.
+    """
+    if base.is_file():
+        return base
+    xz = Path(str(base) + ".xz")
+    if xz.is_file():
+        return xz
+    # Legacy single-index name beside a directory that was named wrongly.
+    if base.name == FAISS_BASENAME:
+        legacy = base.with_name(FAISS_INDEX_LEGACY)
+        if legacy.is_file():
+            return legacy
+        legacy_xz = Path(str(legacy) + ".xz")
+        if legacy_xz.is_file():
+            return legacy_xz
+    return None
+
+
+def resolve_faiss_map(base: Path) -> Path | None:
+    """Resolve map sidecar for index basename *base* (``.map`` / ``.map.xz`` / legacy)."""
+    mapped = Path(str(base) + FAISS_MAP_SUFFIX)
+    if mapped.is_file() or Path(str(mapped) + ".xz").is_file():
+        return mapped
+    if base.name == FAISS_BASENAME:
+        legacy = base.with_name(FAISS_MAP_LEGACY)
+        if legacy.is_file() or Path(str(legacy) + ".xz").is_file():
+            return legacy
+        # Old layout: faiss.index + faiss.map in same dir
+        sibling = base.with_name(FAISS_MAP_LEGACY)
+        if sibling.is_file() or Path(str(sibling) + ".xz").is_file():
+            return sibling
+    # Shard: faiss.1 → faiss.1.map
+    return mapped if Path(str(mapped) + ".xz").is_file() else None
+
+
+def read_faiss_index(blob: Path):
+    """``faiss.read_index`` supporting ``.xz`` via a temp file."""
+    import lzma
+    import tempfile
+
+    import faiss
+
+    if blob.suffix == ".xz" or str(blob).endswith(".xz"):
+        with lzma.open(blob, "rb") as src:
+            data = src.read()
+        with tempfile.NamedTemporaryFile(suffix=".faiss", delete=False) as tmp:
+            tmp.write(data)
+            tmp_path = tmp.name
+        try:
+            return faiss.read_index(tmp_path)
+        finally:
+            Path(tmp_path).unlink(missing_ok=True)
+    return faiss.read_index(str(blob))
+
+
+def discover_faiss_bases(directory: Path) -> list[Path]:
+    """
+    Discover FAISS basenames under *directory*.
+
+    Returns paths like ``…/faiss`` or ``…/faiss.1`` (no ``.xz`` / ``.map``).
+    Prefers numbered shards when present; otherwise a single ``faiss``.
+    """
+    if not directory.is_dir():
+        return []
+    shards: list[Path] = []
+    single: Path | None = None
+    seen: set[str] = set()
+    for child in sorted(directory.iterdir()):
+        name = child.name
+        if name.endswith(".xz"):
+            name = name[: -len(".xz")]
+        if name.endswith(FAISS_MAP_SUFFIX) or name.endswith(FAISS_JSON_SUFFIX):
+            continue
+        if name in (FAISS_MAP_LEGACY, FAISS_JSON_LEGACY, FAISS_INDEX_LEGACY):
+            if name == FAISS_INDEX_LEGACY and FAISS_BASENAME not in seen:
+                single = directory / FAISS_BASENAME
+                seen.add(FAISS_BASENAME)
+            continue
+        if not _SHARD_RE.match(name):
+            continue
+        if name in seen:
+            continue
+        seen.add(name)
+        base = directory / name
+        if resolve_faiss_blob(base) is None:
+            continue
+        if name == FAISS_BASENAME:
+            single = base
+        else:
+            shards.append(base)
+    if shards:
+        return shards
+    if single is not None and resolve_faiss_blob(single) is not None:
+        return [single]
+    return []
+
+
+def resolve_library_faiss_bases(lib) -> list[Path]:
+    """Resolve FAISS basenames for a Library (explicit faiss_index= or discover)."""
+    from .paths import Library
+
+    if not isinstance(lib, Library):
+        return []
+    search_dirs: list[Path] = []
+    if lib.meta_path is not None:
+        parent = lib.meta_path.parent if lib.meta_path.is_file() else lib.meta_path
+        search_dirs.append(parent)
+    search_dirs.append(lib.path)
+
+    explicit = getattr(lib, "faiss_indexes", ()) or ()
+    if explicit:
+        bases: list[Path] = []
+        only_dirs = True
+        for rel in explicit:
+            p = Path(rel).expanduser()
+            # Legacy: faiss_index=/usr/share/icons-foo (directory to search).
+            if p.is_absolute() and (
+                p.is_dir()
+                or (not resolve_faiss_blob(p) and not _SHARD_RE.match(p.name))
+            ):
+                found = discover_faiss_bases(p)
+                if found:
+                    return found
+                continue
+            only_dirs = False
+            if not p.is_absolute():
+                candidates = []
+                if lib.meta_path is not None:
+                    candidates.append(lib.meta_path.parent / p)
+                candidates.append(lib.path / p)
+                for c in candidates:
+                    if resolve_faiss_blob(c) is not None:
+                        bases.append(c)
+                        break
+                else:
+                    bases.append(candidates[0])
+            else:
+                bases.append(p)
+        if bases:
+            return bases
+        if only_dirs:
+            pass  # fall through to discovery
+        else:
+            return bases
+
+    for d in search_dirs:
+        found = discover_faiss_bases(d)
+        if found:
+            return found
+        if (d / FAISS_INDEX_LEGACY).is_file() or (
+            d / f"{FAISS_INDEX_LEGACY}.xz"
+        ).is_file():
+            return [d / FAISS_BASENAME]
+    return []
 
 
 def find_faiss_dir(
     lib_path: Path,
     meta_path: Path | None = None,
-    faiss_index: Path | None = None,
+    faiss_index: Path | str | None = None,
+    faiss_indexes: tuple[str, ...] | None = None,
 ) -> Path | None:
-    """Locate a directory containing faiss.index + faiss.map for a library."""
-    candidates: list[Path] = []
-    if faiss_index is not None:
-        candidates.append(Path(faiss_index))
-    candidates.extend([lib_path, lib_path / "preview", lib_path / "index"])
-    if meta_path is not None:
-        # meta_path is normally a drop-in file; FAISS lives beside icons, not meta.
-        if meta_path.is_dir():
-            candidates.append(meta_path)
-        elif meta_path.parent.is_dir():
-            candidates.append(meta_path.parent)
-    for d in candidates:
-        if (d / FAISS_INDEX).is_file() and (d / FAISS_MAP).is_file():
-            return d
-    return None
+    """
+    Locate a directory that contains at least one FAISS index.
+
+    Kept for compatibility; prefer :func:`resolve_library_faiss_bases`.
+    """
+    from .paths import Library
+
+    indexes = faiss_indexes
+    if indexes is None and isinstance(faiss_index, str) and "," in faiss_index:
+        indexes = tuple(p.strip() for p in faiss_index.split(",") if p.strip())
+    elif indexes is None and faiss_index is not None and not isinstance(
+        faiss_index, (str, Path)
+    ):
+        indexes = ()
+    lib = Library(
+        type="auto",
+        name="_",
+        path=Path(lib_path),
+        faiss_indexes=indexes
+        or (
+            (str(faiss_index),)
+            if faiss_index is not None and str(faiss_index)
+            else ()
+        ),
+        meta_path=meta_path,
+    )
+    bases = resolve_library_faiss_bases(lib)
+    if not bases:
+        return None
+    return bases[0].parent
 
 
-def load_faiss_map(map_path: Path) -> dict[int, str]:
-    """Parse faiss.map lines: id TAB path."""
-    out: dict[int, str] = {}
-    for raw in map_path.read_text(encoding="utf-8").splitlines():
+def load_faiss_map(map_path: Path) -> dict[int, list[str]]:
+    """Parse faiss.map: id TAB path (same id may appear on multiple lines)."""
+    out: dict[int, list[str]] = {}
+    text = _open_text_maybe_xz(map_path)
+    for raw in text.splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
         if "\t" not in line:
             continue
         sid, path = line.split("\t", 1)
-        out[int(sid)] = path
+        out.setdefault(int(sid), []).append(path)
     return out
 
 
@@ -465,25 +887,24 @@ def path_to_icon_name(rel_path: str) -> str:
     return Path(rel_path).stem
 
 
-def query_faiss_dir(
-    faiss_dir: Path,
+def query_faiss_base(
+    base: Path,
     query: str,
     *,
     encoder: ClipEncoder | None = None,
     top_k: int = 32,
 ) -> list[tuple[float, str]]:
     """
-    Query one FAISS index with a text string.
+    Query one FAISS shard basename with a text string.
 
     Returns (score, relative_path) with score in roughly 0..100 (CLIP IP × 100),
     best score kept per path.
     """
-    import faiss
     import numpy as np
 
-    index_path = faiss_dir / FAISS_INDEX
-    map_path = faiss_dir / FAISS_MAP
-    if not index_path.is_file() or not map_path.is_file():
+    blob = resolve_faiss_blob(base)
+    map_path = resolve_faiss_map(base)
+    if blob is None or map_path is None:
         return []
 
     id_map = load_faiss_map(map_path)
@@ -492,7 +913,7 @@ def query_faiss_dir(
 
     enc = encoder or ClipEncoder()
     vec = np.asarray(enc.encode_text(query), dtype=np.float32).reshape(1, -1)
-    index = faiss.read_index(str(index_path))
+    index = read_faiss_index(blob)
     k = min(top_k, index.ntotal)
     if k <= 0:
         return []
@@ -502,12 +923,32 @@ def query_faiss_dir(
     for score, idx in zip(scores[0], ids[0], strict=False):
         if idx < 0:
             continue
-        rel = id_map.get(int(idx))
-        if not rel:
-            continue
+        paths = id_map.get(int(idx)) or []
         s = float(score) * 100.0
-        if rel not in best or s > best[rel]:
-            best[rel] = s
+        for rel in paths:
+            if rel not in best or s > best[rel]:
+                best[rel] = s
+    return sorted(((s, p) for p, s in best.items()), key=lambda x: -x[0])
+
+
+def query_faiss_dir(
+    faiss_dir: Path,
+    query: str,
+    *,
+    encoder: ClipEncoder | None = None,
+    top_k: int = 32,
+) -> list[tuple[float, str]]:
+    """Query all FAISS shards discovered under *faiss_dir*."""
+    bases = discover_faiss_bases(faiss_dir)
+    if not bases and resolve_faiss_blob(faiss_dir / FAISS_BASENAME):
+        bases = [faiss_dir / FAISS_BASENAME]
+    best: dict[str, float] = {}
+    for base in bases:
+        for score, rel in query_faiss_base(
+            base, query, encoder=encoder, top_k=top_k
+        ):
+            if rel not in best or score > best[rel]:
+                best[rel] = score
     return sorted(((s, p) for p, s in best.items()), key=lambda x: -x[0])
 
 
@@ -529,9 +970,9 @@ def query_libraries_faiss(
     plain_libs = [lib for lib in libs if isinstance(lib, Library)]
     indexed: list[tuple] = []
     for lib in plain_libs:
-        d = find_faiss_dir(lib.path, lib.meta_path, lib.faiss_index)
-        if d is not None:
-            indexed.append((lib, d))
+        bases = resolve_library_faiss_bases(lib)
+        if bases:
+            indexed.append((lib, bases))
     if not indexed:
         return []
 
@@ -540,23 +981,27 @@ def query_libraries_faiss(
     encoder = ClipEncoder()
 
     best: dict[tuple[str, str], float] = {}
-    for lib, faiss_dir in indexed:
+    for lib, bases in indexed:
         if verbose > 0:
-            print(f"iconlib: FAISS query {lib.name} ← {faiss_dir}", file=sys.stderr)
-        try:
-            hits = query_faiss_dir(faiss_dir, query, encoder=encoder, top_k=top_k)
-        except Exception as e:
-            if verbose >= 0:
-                print(
-                    f"iconlib: FAISS query failed for {lib.name}: {e}",
-                    file=sys.stderr,
+            labels = ", ".join(b.name for b in bases)
+            print(f"iconlib: FAISS query {lib.name} ← {labels}", file=sys.stderr)
+        for base in bases:
+            try:
+                hits = query_faiss_base(
+                    base, query, encoder=encoder, top_k=top_k
                 )
-            continue
-        for score, rel in hits:
-            name = path_to_icon_name(rel)
-            key = (lib.name, name)
-            if key not in best or score > best[key]:
-                best[key] = score
+            except Exception as e:
+                if verbose >= 0:
+                    print(
+                        f"iconlib: FAISS query failed for {lib.name}/{base.name}: {e}",
+                        file=sys.stderr,
+                    )
+                continue
+            for score, rel in hits:
+                name = path_to_icon_name(rel)
+                key = (lib.name, name)
+                if key not in best or score > best[key]:
+                    best[key] = score
 
     out = [(s, lib, name) for (lib, name), s in best.items()]
     out.sort(key=lambda x: (-x[0], x[1], x[2]))

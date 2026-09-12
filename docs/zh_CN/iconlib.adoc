@@ -134,7 +134,7 @@ glob、正则与空模式仍使用字面匹配。
 === index
 
 *iconlib* *index* [*-w*|*--web*] [*-F*|*--faiss*] [*-f*|*--force*]
-[*-s*|*--upscale* _SIZE_] [*-o*|*--outdir* _DIR_] …
+[*-u*|*--upscale* _SIZE_] [*-s*|*--shard-size* _SIZE_] [*-o*|*--outdir* _DIR_] …
 
 为选定库（*-l*）和/或 *--icons-root* 生成索引。
 
@@ -142,15 +142,20 @@ glob、正则与空模式仍使用字面匹配。
   生成 HTML 预览（默认：未指定 *-w*/*-F* 时启用）。
 
 *-F, --faiss*::
-  生成 CLIP/FAISS 索引：*faiss.index*、*faiss.map*、*faiss.json*。
+  生成 CLIP/FAISS 索引：*faiss*（分片时为 *faiss.1*…）、*faiss.map*、*faiss.json*。
   图标先放入白底画布（*--upscale*，默认 *300x300*，保持比例），再用
   CLIP *224×224* 编码图像与文件名文本（文件名中的 *_*、*-* 等转为空格）。
 
 *-f, --force*::
   覆盖已有输出。
 
-*-s, --upscale* _SIZE_::
+*-u, --upscale* _SIZE_::
   FAISS 预处理画布尺寸（默认 *300x300*）。
+
+*-s, --shard-size* _SIZE_::
+  每个原始 FAISS 索引的大致上限（如 *10M*）；默认不分片。
+  工程 *library.iconlib* 中的 *faiss_shard_size=* 在省略本选项时生效。
+  按固定 CLIP 维度估算每片向量数（dim×4 字节），最终大小大致接近即可。
 
 *-o, --outdir* _DIR_::
   输出目录（默认 *.*）。

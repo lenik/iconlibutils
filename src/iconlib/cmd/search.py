@@ -31,7 +31,7 @@ def register(sub: argparse._SubParsersAction) -> None:
 def run(args: argparse.Namespace) -> int:
     # Heavy imports deferred so ``iconlib -h`` stays fast.
     from ..autoindex import IconGroup, prefer_asset, search_groups
-    from ..faissidx import find_faiss_dir, query_libraries_faiss
+    from ..faissidx import query_libraries_faiss
     from ..semantic import is_plain_query
     from .context import Context
 
@@ -47,10 +47,9 @@ def run(args: argparse.Namespace) -> int:
 
     # Optional FAISS enrichment when indexes exist; otherwise keep semantics only.
     if pattern and is_plain_query(pattern):
-        has_faiss = any(
-            find_faiss_dir(lib.path, lib.meta_path, lib.faiss_index)
-            for lib in ctx.libs
-        )
+        from ..faissidx import resolve_library_faiss_bases
+
+        has_faiss = any(resolve_library_faiss_bases(lib) for lib in ctx.libs)
         if has_faiss:
             try:
                 faiss_hits = query_libraries_faiss(

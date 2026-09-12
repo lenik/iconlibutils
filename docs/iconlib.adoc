@@ -155,7 +155,7 @@ Run *themestylebrowser* on the first matching library that contains
 === index
 
 *iconlib* *index* [*-w*|*--web*] [*-F*|*--faiss*] [*-f*|*--force*]
-[*-s*|*--upscale* _SIZE_] [*-o*|*--outdir* _DIR_] …
+[*-u*|*--upscale* _SIZE_] [*-s*|*--shard-size* _SIZE_] [*-o*|*--outdir* _DIR_] …
 
 Build indexes for selected libraries (*-l*) and/or explicit
 *--icons-root* trees.
@@ -165,8 +165,8 @@ Build indexes for selected libraries (*-l*) and/or explicit
   This is the default when neither *-w* nor *-F* is given.
 
 *-F, --faiss*::
-  Write a CLIP/FAISS index: *faiss.index*, *faiss.map* (*id* TAB *path*),
-  and *faiss.json* (*{id: path}*).
+  Write a CLIP/FAISS index: *faiss* (or *faiss.1*… when sharding),
+  *faiss.map* (*id* TAB *path*), and *faiss.json*.
   Each icon contributes an image vector and a filename-text vector.
   Icons are fitted onto a white canvas (*--upscale*, default *300x300*,
   aspect preserved), then embedded with CLIP at *224×224*.
@@ -175,8 +175,15 @@ Build indexes for selected libraries (*-l*) and/or explicit
 *-f, --force*::
   Overwrite existing outputs.
 
-*-s, --upscale* _SIZE_::
+*-u, --upscale* _SIZE_::
   Canvas size for FAISS preprocessing (*N* or *NxN*; default *300x300*).
+
+*-s, --shard-size* _SIZE_::
+  Approximate max size of each raw FAISS index file (e.g. *10M*).
+  Default is no sharding. With a project *library.iconlib*,
+  *faiss_shard_size=* is used when this flag is omitted.
+  Vector count per shard is derived from the fixed CLIP dimension
+  (dim×4 bytes); final file sizes only need to be roughly near the budget.
 
 *-o, --outdir* _DIR_::
   Output directory (default: *.*).

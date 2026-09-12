@@ -31,8 +31,10 @@ class Library:
     license: str = ""
     homepage: str = ""
     description: str = ""
-    # Optional absolute dir containing faiss.index / faiss.map (packaging install).
-    faiss_index: Path | None = None
+    # FAISS shard bases relative to path (e.g. "faiss" or "faiss.1,faiss.2").
+    faiss_indexes: tuple[str, ...] = ()
+    # Optional approximate raw FAISS shard budget (e.g. "10M"); empty = no shard.
+    faiss_shard_size: str = ""
     # Project-tree icon roots (relative paths from library.iconlib), pre-install.
     icons_roots: tuple[str, ...] = ()
     meta_path: Path | None = field(default=None, compare=False)
@@ -87,8 +89,14 @@ def library_from_data(
     if not lib_path:
         lib_path = str(default_icon_datadir(name))
     typ = data.get("type") or "auto"
-    faiss_raw = data.get("faiss_index") or data.get("faiss") or ""
-    faiss_index = Path(faiss_raw).expanduser() if faiss_raw else None
+    faiss_indexes = _split_roots(
+        data.get("faiss_index") or data.get("faiss_indexes") or data.get("faiss") or ""
+    )
+    faiss_shard_size = (
+        data.get("faiss_shard_size")
+        or data.get("shard_size")
+        or ""
+    )
     roots = _split_roots(
         data.get("icons_root") or data.get("icons_roots") or ""
     )
@@ -100,7 +108,8 @@ def library_from_data(
         license=data.get("license") or "",
         homepage=data.get("homepage") or "",
         description=data.get("description") or "",
-        faiss_index=faiss_index,
+        faiss_indexes=faiss_indexes,
+        faiss_shard_size=faiss_shard_size,
         icons_roots=roots,
         meta_path=meta_path,
     )

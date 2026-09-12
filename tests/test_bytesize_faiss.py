@@ -98,8 +98,14 @@ class BytesizeFaissTests(unittest.TestCase):
                     ]
                 )
                 self.assertEqual(rc, 0)
-                self.assertTrue((outdir / "faiss.index").is_file())
-                self.assertTrue((outdir / "faiss.map").is_file())
+                self.assertTrue(
+                    (outdir / "faiss").is_file()
+                    or (outdir / "faiss.index").is_file()
+                )
+                self.assertTrue(
+                    (outdir / "faiss.map").is_file()
+                    or (outdir / "faiss.map.xz").is_file()
+                )
 
                 import io
                 from contextlib import redirect_stdout

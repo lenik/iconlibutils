@@ -44,12 +44,13 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — copy into the project
 - `push [pattern]` — not implemented yet
 - `browse [pattern]` — run `themestylebrowser` on libraries with `.themestyles`
-- `index [-w|--web] [-F|--faiss] [-f|--force] [-s|--upscale SIZE] [-o DIR]` —
-  web preview (default) and/or CLIP FAISS index (`faiss.index` /
-  `faiss.map` / `faiss.json`). FAISS needs CLIP weights in the Hugging Face
-  hub cache (`hf download openai/clip-vit-base-patch32`; optional
-  `HF_ENDPOINT=https://hf-mirror.com`), or `ICONLIB_CLIP_MODEL` pointing at
-  an existing local checkout.
+- `index [-w|--web] [-F|--faiss] [-f|--force] [-u|--upscale SIZE] [-s|--shard-size SIZE] [-o DIR]` —
+  web preview and/or CLIP FAISS index (`faiss` / `faiss.N` when sharding).
+  Default is no sharding; set `-s 10M` or `faiss_shard_size=10M` in
+  `library.iconlib` for large packages. FAISS needs CLIP weights in the
+  Hugging Face hub cache (`hf download openai/clip-vit-base-patch32`;
+  optional `HF_ENDPOINT=https://hf-mirror.com`), or `ICONLIB_CLIP_MODEL`
+  pointing at an existing local checkout.
 - `delete <name>...` — remove local icon files (all variants/sizes/formats)
 - `rename <old> <new>` — rename local icon files
 - `copy <from> <to>` — copy local icon files

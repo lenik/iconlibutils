@@ -381,8 +381,21 @@ class FaissHelperTests(unittest.TestCase):
 
         self.assertEqual(parse_upscale("300"), (300, 300))
         self.assertEqual(parse_upscale("300x200"), (300, 200))
-        self.assertEqual(filename_to_text(Path("chess-queen_outline.svg")), "chess queen outline")
+        self.assertEqual(filename_to_text(Path("foo_bar-baz.svg")), "foo bar baz")
+        self.assertEqual(
+            filename_to_text(Path("chess-queen_outline.svg")), "chess queen outline"
+        )
         self.assertEqual(filename_to_text(Path("a/b/foo_bar-baz.png")), "foo bar baz")
+
+    def test_parse_byte_size_and_vectors_per_shard(self) -> None:
+        from iconlib.faissidx import parse_byte_size, vectors_per_shard
+
+        self.assertEqual(parse_byte_size(None), 0)
+        self.assertEqual(parse_byte_size("0"), 0)
+        self.assertEqual(parse_byte_size("10M"), 10 * 1024 * 1024)
+        self.assertEqual(parse_byte_size("10MiB"), 10 * 1024 * 1024)
+        # dim=512 → 2048 bytes/vector; 10MiB ≈ 5119 vectors
+        self.assertEqual(vectors_per_shard(512, 10 * 1024 * 1024), 5119)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from ..faissidx import generate_faiss_index
+from ..faissidx import generate_faiss_index, parse_byte_size
 from ..paths import load_project_library
 from .context import Context
 
@@ -125,7 +125,7 @@ def register(sub: argparse._SubParsersAction) -> None:
         "-F",
         "--faiss",
         action="store_true",
-        help=_("create FAISS index (faiss.index / faiss.map / faiss.json)"),
+        help=_("create FAISS index (faiss / faiss.map / faiss.json)"),
     )
     xp.add_argument(
         "-f",
@@ -134,11 +134,21 @@ def register(sub: argparse._SubParsersAction) -> None:
         help=_("overwrite existing outputs"),
     )
     xp.add_argument(
-        "-s",
+        "-u",
         "--upscale",
         default="300x300",
         metavar="SIZE",
         help=_("FAISS canvas size before CLIP (default: 300x300)"),
+    )
+    xp.add_argument(
+        "-s",
+        "--shard-size",
+        default=None,
+        metavar="SIZE",
+        help=_(
+            "approx. max raw FAISS shard size (e.g. 10M); "
+            "0/omit = no sharding (or library.iconlib faiss_shard_size=)"
+        ),
     )
     xp.add_argument(
         "-o",
@@ -316,6 +326,14 @@ def run(args: argparse.Namespace) -> int:
             print(f"iconlib: wrote web preview for {name}: {count} icons → {web_outdir}")
 
     if do_faiss:
+        shard_raw = args.shard_size
+        if shard_raw is None and proj_lib is not None:
+            shard_raw = proj_lib.faiss_shard_size or None
+        try:
+            shard_size = parse_byte_size(shard_raw)
+        except ValueError as e:
+            print(f"iconlib: {e}", file=sys.stderr)
+            return 1
         try:
             n = generate_faiss_index(
                 icons_roots=roots,
@@ -323,6 +341,7 @@ def run(args: argparse.Namespace) -> int:
                 upscale=args.upscale,
                 force=args.force,
                 verbose=verbose,
+                shard_size=shard_size,
             )
         except (FileExistsError, FileNotFoundError, ValueError, RuntimeError) as e:
             print(f"iconlib: {e}", file=sys.stderr)

@@ -42,9 +42,10 @@ iconlib [OPTIONS] COMMAND [ARGS...]
 - `pull [-F FORMAT]... [-S SIZE]... [pattern]` — 复制到项目
 - `push [pattern]` — 尚未实现
 - `browse [pattern]` — 对含 `.themestyles` 的库启动 `themestylebrowser`
-- `index [-w|--web] [-F|--faiss] [-f|--force] [-s|--upscale SIZE] [-o DIR]` —
-  生成网页预览（默认）和/或 CLIP FAISS 索引（`faiss.index` /
-  `faiss.map` / `faiss.json`）
+- `index [-w|--web] [-F|--faiss] [-f|--force] [-u|--upscale SIZE] [-s|--shard-size SIZE] [-o DIR]` —
+  生成网页预览和/或 CLIP FAISS 索引（`faiss` / 分片时 `faiss.N`）。
+  默认不分片；大包可用 `-s 10M` 或在 `library.iconlib` 写
+  `faiss_shard_size=10M`。
 - `delete <name>...` — 删除本地图标文件（含各 variant/size/format）
 - `rename <old> <new>` — 本地改名
 - `copy <from> <to>` — 本地复制
