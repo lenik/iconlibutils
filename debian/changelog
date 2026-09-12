@@ -5,6 +5,7 @@ iconlibutils (0.0.7) unstable; urgency=medium
   * index: ``-u/--upscale`` (was ``-s``); ``-s/--shard-size`` optional
     (default: no shard). Package may set ``faiss_shard_size=10M``.
   * Shard count from fixed CLIP dim (dim×4 bytes); size is approximate.
+  * Harden FAISS unit-test import against broken torchaudio/CUDA.
 
  -- Lenik (谢继雷) <lenik@bodz.net>  Sat, 12 Sep 2026 10:00:28 +0800
 

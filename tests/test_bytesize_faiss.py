@@ -26,7 +26,8 @@ def _faiss_ready() -> bool:
         import faiss  # noqa: F401
         import torch  # noqa: F401
         from transformers import CLIPModel  # noqa: F401
-    except ImportError:
+    except Exception:
+        # ImportError, or OSError from broken optional deps (e.g. torchaudio CUDA).
         return False
     return _clip_ready()
 
