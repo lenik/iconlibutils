@@ -1,3 +1,11 @@
+iconlibutils (0.0.9) unstable; urgency=medium
+
+  * Jina CLIP v2: repair EVA vision RoPE freqs after from_pretrained
+    (fixes NaN image embeddings on transformers 5.x).
+  * Compatibility shim for renamed transformers clip_loss.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Sat, 12 Sep 2026 12:37:55 +0800
+
 iconlibutils (0.0.8) unstable; urgency=medium
 
   * FAISS2: Jina CLIP v2 (1024-d) index basename ``faiss2``; ``iconlib index -2``,

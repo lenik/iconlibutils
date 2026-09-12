@@ -418,6 +418,51 @@ class ClipEncoder:
         return feats[0].detach().cpu().float().numpy()
 
 
+def _patch_transformers_clip_loss() -> None:
+    """transformers≥5 renamed ``clip_loss``; jina remote code still imports it."""
+    try:
+        import transformers.models.clip.modeling_clip as clip_mod
+
+        if not hasattr(clip_mod, "clip_loss"):
+            for alt in ("image_text_contrastive_loss", "contrastive_loss"):
+                if hasattr(clip_mod, alt):
+                    setattr(clip_mod, "clip_loss", getattr(clip_mod, alt))
+                    break
+    except Exception:
+        pass
+
+
+def _repair_jina_vision_rope(model) -> None:
+    """
+    Rebuild EVA vision RoPE cos/sin buffers if corrupted.
+
+    Recent transformers ``from_pretrained`` paths can leave non-persistent
+    ``freqs_cos`` / ``freqs_sin`` as uninitialized memory (→ NaN image embeds).
+    """
+    import torch
+
+    vm = getattr(model, "vision_model", None)
+    rope = getattr(vm, "rope", None) if vm is not None else None
+    if rope is None or not hasattr(rope, "freqs_cos"):
+        return
+    fc = rope.freqs_cos
+    # Valid cos/sin values lie in [-1, 1]; garbage/NaN fails this.
+    bad = bool(torch.isnan(fc).any()) or bool((fc.abs() > 1.01).any())
+    if not bad:
+        return
+
+    half = int(fc.shape[-1]) // 2
+    ft = int(round(float(fc.shape[0]) ** 0.5))
+    vc = getattr(getattr(model, "config", None), "vision_config", None)
+    pt = int(getattr(vc, "pt_hw_seq_len", 16) or 16) if vc is not None else 16
+    if ft <= 0 or half <= 0:
+        return
+    new = rope.__class__(dim=half, pt_seq_len=pt, ft_seq_len=ft)
+    with torch.no_grad():
+        rope.freqs_cos.copy_(new.freqs_cos.to(device=fc.device, dtype=fc.dtype))
+        rope.freqs_sin.copy_(new.freqs_sin.to(device=fc.device, dtype=fc.dtype))
+
+
 class JinaClipEncoder:
     """Lazy Jina CLIP v2 image/text encoder (1024-d, multilingual)."""
 
@@ -425,6 +470,8 @@ class JinaClipEncoder:
         import numpy as np
         import torch
         from transformers import AutoModel
+
+        _patch_transformers_clip_loss()
 
         model_id = model_id or resolve_jina_clip_model()
         self.torch = torch
@@ -438,6 +485,7 @@ class JinaClipEncoder:
             raise RuntimeError(
                 f"failed to load Jina CLIP model {model_id!r}: {e}"
             ) from e
+        _repair_jina_vision_rope(self.model)
         self.model.eval()
 
     def _normalize(self, feats) -> "np.ndarray":
@@ -445,6 +493,8 @@ class JinaClipEncoder:
         arr = np.asarray(feats, dtype=np.float32)
         if arr.ndim > 1:
             arr = arr[0]
+        if np.isnan(arr).any():
+            raise RuntimeError("Jina CLIP embedding contains NaN")
         norm = np.linalg.norm(arr)
         if norm > 0:
             arr = arr / norm
